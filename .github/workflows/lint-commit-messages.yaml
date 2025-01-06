@@ -5,6 +5,12 @@ name: commit-messages
 on:
   workflow_call:
     inputs:
+      git_ref:
+        required: true
+        type: string
+      fetch_depth:
+        required: true
+        type: number
       from:
         required: true
         type: string
@@ -21,7 +27,8 @@ jobs:
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         repository: ${{ github.repository }}
-        ref: ${{ github.head_ref }}
+        ref: ${{ inputs.git_ref }}
+        fetch-depth: ${{ inputs.fetch_depth }}
 
     - name: Setup mise
       uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
