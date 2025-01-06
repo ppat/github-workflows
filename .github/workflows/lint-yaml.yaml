@@ -62,8 +62,6 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        mise cfg
-        mise ls
         if [[ "${YAML_FILES}" == "ALL" ]]; then
           yamllint -c .yamllint --list-files --strict --format github .
         else
