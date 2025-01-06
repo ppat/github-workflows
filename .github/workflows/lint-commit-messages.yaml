@@ -40,6 +40,7 @@ jobs:
 
     - name: Lint commit messages
       run: |
+        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -10
         bunx commitlint --help
         set -x
         bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
