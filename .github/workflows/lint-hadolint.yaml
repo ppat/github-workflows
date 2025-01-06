@@ -44,7 +44,8 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        dockerfile: ${{fromJSON(needs.detect-dockerfiles.outputs.dockerfiles)}}
+        # dockerfile: ${{fromJSON(needs.detect-dockerfiles.outputs.dockerfiles)}}
+        dockerfile: ${{ needs.detect-dockerfiles.outputs.dockerfiles }}
     timeout-minutes: 5
     steps:
     - name: Checkout

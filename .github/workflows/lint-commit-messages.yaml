@@ -23,12 +23,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+    - name: Set fetch depth
+      env:
+        DEPTH: ${{ inputs.fetch_depth }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
+
     - name: Checkout
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
-        fetch-depth: ${{ inputs.fetch_depth + 1 }}
+        fetch-depth: ${{ env.FETCH_DEPTH }}
 
     - name: Setup mise
       uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
@@ -44,7 +52,7 @@ jobs:
 
     - name: Lint commit messages
       run: |
-        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -${{ inputs.fetch_depth + 1 }}
+        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -${{ env.FETCH_DEPTH }}
         bunx commitlint --help
         set -x
         bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
