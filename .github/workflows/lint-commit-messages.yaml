@@ -51,8 +51,8 @@ jobs:
       run: bun install --frozen-lockfile
 
     - name: Lint commit messages
+      shell: bash
+      # yamllint disable-line rule:indentation
       run: |
-        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -${{ env.FETCH_DEPTH }}
-        bunx commitlint --help
         set -x
         bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
