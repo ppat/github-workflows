@@ -39,6 +39,9 @@ jobs:
         MISE_VERSION: "v2025.1.0"
       run: |
         curl https://mise.run | sh
+        eval "$($HOME/.local/bin/mise activate bash)"
+        $HOME/.local/bin/mise upgrade --yes
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
         echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
         echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
