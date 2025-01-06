@@ -1,0 +1,51 @@
+---
+# yamllint disable rule:line-length
+name: github-actions
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      files:
+        required: false
+        type: string
+        default: 'ALL'
+
+jobs:
+  github-actions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Setup mise
+      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.1.0"
+        install: true
+        cache: true
+        cache_key_prefix: mise-v1
+
+    - name: Lint github actions
+      env:
+        ACTIONS_FILES: ${{ inputs.files }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "${ACTIONS_FILES}" == "ALL" ]]; then
+          set -x
+          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc"
+          set +x
+        else
+          set -x
+          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $ACTIONS_FILES
+          set +x
+        fi

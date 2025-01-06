@@ -1,0 +1,58 @@
+---
+# yamllint disable rule:line-length
+name: renovate-config-check
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      files:
+        required: false
+        type: string
+        default: 'ALL'
+
+jobs:
+  renovate-config-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Setup mise
+      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.1.0"
+        install: true
+        cache: true
+        cache_key_prefix: mise-v1
+
+    - name: Validate renovate config files
+      env:
+        RENOVATE_CONFIG_FILES: ${{ inputs.files }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "${RENOVATE_CONFIG_FILES}" == "ALL" ]]; then
+          echo "Validating main configuration..."
+          echo ".github/renovate.json:"
+          renovate-config-validator .github/renovate.json | pr -t -o 4
+          echo "Validating all 'extends' configuration files..."
+          for rc in $(find .github/renovate -type f -name '*.json' | sort); do
+            echo "${rc}:"
+            renovate-config-validator ${rc} | pr -t -o 4
+          done
+        else
+          echo "Validating changed configuration files..."
+          for rc in ${RENOVATE_CONFIG_FILES}; do
+            echo "${rc}:"
+            renovate-config-validator ${rc} | pr -t -o 4
+          done
+        fi

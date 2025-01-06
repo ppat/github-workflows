@@ -1,0 +1,64 @@
+---
+# yamllint disable rule:line-length
+name: hadolint
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      files:
+        required: false
+        type: string
+        default: 'ALL'
+
+jobs:
+  detect-dockerfiles:
+    outputs:
+      dockerfiles: ${{ steps.select-dockerfiles.outputs.files }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Select dockerfiles
+      id: select-dockerfiles
+      env:
+        FILES: ${{ inputs.files }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "$FILES" == "ALL" ]]; then
+          echo files=$(jq -c -n -s --arg f "$(find . -type f -name Dockerfile)" '$f | split("\n")') >> "$GITHUB_OUTPUT"
+        else
+          echo files=$(jq -c -n -s --arg f "$(echo ${FILES} | tr ' ' ',')" '$f | split(",")') >> "$GITHUB_OUTPUT"
+        fi
+
+  hadolint:
+    needs: [detect-dockerfiles]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        dockerfile: ${{fromJSON(needs.detect-dockerfiles.outputs.dockerfiles)}}
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Lint specific dockerfiles
+      uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+      with:
+        dockerfile: ${{ matrix.dockerfile }}
+        recursive: false
+        failure-threshold: warning
+        config: ./.hadolint.yaml

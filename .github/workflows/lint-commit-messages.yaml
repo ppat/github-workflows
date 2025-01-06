@@ -1,0 +1,58 @@
+---
+# yamllint disable rule:line-length
+name: commit-messages
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      fetch_depth:
+        required: true
+        type: number
+      from:
+        required: true
+        type: string
+      to:
+        required: true
+        type: string
+
+jobs:
+  commit-messages:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Set fetch depth
+      env:
+        DEPTH: ${{ inputs.fetch_depth }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
+
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+        fetch-depth: ${{ env.FETCH_DEPTH }}
+
+    - name: Setup mise
+      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.1.0"
+        install: true
+        cache: true
+        cache_key_prefix: mise-v1
+
+    - name: Install node packages
+      run: bun install --frozen-lockfile
+
+    - name: Lint commit messages
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        set -x
+        bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
