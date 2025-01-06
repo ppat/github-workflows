@@ -55,9 +55,10 @@ jobs:
         echo "------------------------------------------------"
         mise ls
         echo "------------------------------------------------"
-        which yamllint
+        /opt/pipx_bin/yamllint --version
+        mise exec yamllint --version
         if [[ "${YAML_FILES}" == "ALL" ]]; then
-          yamllint -c .yamllint --list-files --strict --format github .
+          mise exec yamllint -c .yamllint --list-files --strict --format github .
         else
-          yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
+          mise exec yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
         fi
