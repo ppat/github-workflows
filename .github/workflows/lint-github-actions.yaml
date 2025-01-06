@@ -59,6 +59,7 @@ jobs:
       env:
         ACTIONS_FILES: ${{ inputs.files }}
       shell: bash
+      working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
         if [[ "${ACTIONS_FILES}" == "ALL" ]]; then

@@ -69,8 +69,15 @@ jobs:
         echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Install node packages
-      working-directory: ./tools
-      run: bun install --frozen-lockfile
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ ! -e bun.lockb ]]; then
+          cp $GITHUB_WORKSPACE/tools/package.json .
+          cp $GITHUB_WORKSPACE/tools/bun.lockb .
+        fi
+        bun install --frozen-lockfile
 
     - name: Lint commit messages
       shell: bash
