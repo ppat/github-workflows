@@ -26,13 +26,6 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Fetch mise config
-      shell: bash
-      # yamllint disable-line rule:indentation
-      run: |
-        curl -sSL https://raw.githubusercontent.com/ppat/github-workflows/refs/heads/main/mise.toml -o /tmp/mise.toml
-        echo MISE_TOML="$(</tmp/mise.toml)" >> $GITHUB_ENV
-
     - name: Setup mise
       uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
       with:
@@ -40,8 +33,10 @@ jobs:
         version: "v2025.1.0"
         install: true
         cache: true
-        cache_key_prefix: mise-v1
-        mise_toml: ${{ env.MISE_TOML }}
+        cache_key_prefix: mise-pre-commit
+        mise_toml: |
+          [tools]
+          pre-commit = "4.0.1"
 
     - name: Cache pre-commit hooks
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
