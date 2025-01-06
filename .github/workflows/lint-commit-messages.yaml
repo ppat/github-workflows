@@ -39,4 +39,7 @@ jobs:
       run: bun install --frozen-lockfile
 
     - name: Lint commit messages
-      run: bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
+      run: |
+        bunx commitlint --help
+        set -x
+        bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
