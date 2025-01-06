@@ -14,7 +14,7 @@ on:
         default: 'ALL'
 
 jobs:
-  select-dockerfiles:
+  detect-dockerfiles:
     outputs:
       dockerfiles: ${{ steps.select-dockerfiles.outputs.files }}
     runs-on: ubuntu-24.04
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        dockerfile: ${{fromJSON(needs.select-dockerfiles.outputs.dockerfiles)}}
+        dockerfile: ${{fromJSON(needs.detect-dockerfiles.outputs.dockerfiles)}}
     timeout-minutes: 5
     steps:
     - name: Checkout

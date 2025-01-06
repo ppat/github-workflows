@@ -39,4 +39,4 @@ jobs:
       run: bun install
 
     - name: Lint commit messages
-      run: npx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
+      run: commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
