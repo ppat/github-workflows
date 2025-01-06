@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Checkout
+    - name: Checkout tools
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         fetch-depth: 0
         path: tools
         repository: ppat/github-workflows
 
-    - name: Checkout
+    - name: Checkout current
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         fetch-depth: 0

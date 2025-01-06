@@ -14,17 +14,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Checkout
+    - name: Checkout tools
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         fetch-depth: 0
+        path: tools
+        repository: ppat/github-workflows
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        path: current
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
-
-    - name: Set up python
-      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5
-      with:
-        python-version: '3.12'
 
     - name: Cache mise
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
@@ -47,6 +50,8 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         MISE_VERSION: "v2025.1.0"
       run: |
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
         curl https://mise.run | sh
         eval "$($HOME/.local/bin/mise activate bash)"
         $HOME/.local/bin/mise upgrade --yes
@@ -55,36 +60,45 @@ jobs:
         echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Install pre-commit hooks
+      working-directory: ./current
       run: pre-commit install --install-hooks --hook-type pre-commit
 
     - name: check-added-large-files
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always check-added-large-files
 
     - name: check-executables-have-shebangs
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always check-executables-have-shebangs
 
     - name: check-json
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always check-json
 
     - name: detect-private-key
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always detect-private-key
 
     - name: end-of-file-fixer
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always end-of-file-fixer
 
     - name: forbid-new-submodules
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always forbid-new-submodules
 
     - name: mixed-line-ending
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always mixed-line-ending
 
     - name: trailing-whitespace
       if: success() || failure()
+      working-directory: ./current
       run: pre-commit run --all-files --color=always trailing-whitespace

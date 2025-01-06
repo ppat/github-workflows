@@ -31,12 +31,20 @@ jobs:
       run: |
         echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
 
-    - name: Checkout
+    - name: Checkout tools
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
+        fetch-depth: 0
+        path: tools
+        repository: ppat/github-workflows
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: ${{ env.FETCH_DEPTH }}
+        path: current
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
-        fetch-depth: ${{ env.FETCH_DEPTH }}
 
     - name: Cache mise
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
@@ -51,6 +59,8 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         MISE_VERSION: "v2025.1.0"
       run: |
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
         curl https://mise.run | sh
         eval "$($HOME/.local/bin/mise activate bash)"
         $HOME/.local/bin/mise upgrade --yes
@@ -59,10 +69,12 @@ jobs:
         echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Install node packages
+      working-directory: ./tools
       run: bun install --frozen-lockfile
 
     - name: Lint commit messages
       shell: bash
+      working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
         set -x
