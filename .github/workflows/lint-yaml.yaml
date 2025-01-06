@@ -39,8 +39,8 @@ jobs:
         MISE_VERSION: "v2025.1.0"
       run: |
         curl https://mise.run | sh
-        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+        eval "$($HOME/.local/bin/mise activate bash)"
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Lint yaml files
       env:
@@ -50,10 +50,8 @@ jobs:
       run: |
         echo $PATH
         set -x
-        /home/runner/.local/bin/mise --help
         mise cfg
-        ls -al $HOME/.local/share/mise/bin
-        ls -al $HOME/.local/share/mise/shims
+        mise ls
         if [[ "${YAML_FILES}" == "ALL" ]]; then
           yamllint -c .yamllint --list-files --strict --format github .
         else
