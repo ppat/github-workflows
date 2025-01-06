@@ -48,10 +48,14 @@ jobs:
       shell: bash
       # yamllint disable-line rule:indentation
       run: |
+        echo "------------------------------------------------"
         echo $PATH
-        set -x
+        echo "------------------------------------------------"
         mise cfg
+        echo "------------------------------------------------"
         mise ls
+        echo "------------------------------------------------"
+        which yamllint
         if [[ "${YAML_FILES}" == "ALL" ]]; then
           yamllint -c .yamllint --list-files --strict --format github .
         else
