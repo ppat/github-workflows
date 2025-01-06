@@ -1,3 +1,4 @@
+---
 # yamllint disable rule:line-length
 name: hadolint
 
@@ -13,8 +14,9 @@ on:
         default: 'ALL'
 
 jobs:
-  hadolint-all:
-    if: ${{ inputs.files == 'ALL' }}
+  select-dockerfiles:
+    outputs:
+      dockerfiles: ${{ steps.select-dockerfiles.outputs.files }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -25,21 +27,24 @@ jobs:
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
 
-    - name: Lint all dockerfiles
-      if: ${{ inputs.files == 'ALL' }}
-      uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
-      with:
-        dockerfile: "Dockerfile"
-        recursive: true
-        failure-threshold: warning
-        config: ./.hadolint.yaml
+    - name: Select dockerfiles
+      id: select-dockerfiles
+      env:
+        FILES: ${{ inputs.files }}
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "$FILES" == "ALL" ]]; then
+          echo files=$(jq -c -n -s --arg f "$(find . -type f -name Dockerfile)" '$f | split("\n")') >> "$GITHUB_OUTPUT"
+        else
+          echo files=$(jq -c -n -s --arg f "$(echo ${FILES} | tr ' ' ',')" '$f | split(",")') >> "$GITHUB_OUTPUT"
+        fi
 
-  hadolint-each:
-    if: ${{ inputs.files != 'ALL' }}
+  hadolint:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        dockerfile: ${{ inputs.files }}
+        dockerfile: ${{fromJSON(needs.select-dockerfiles.outputs.dockerfiles)}}
     timeout-minutes: 5
     steps:
     - name: Checkout

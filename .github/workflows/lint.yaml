@@ -47,7 +47,7 @@ jobs:
           - '**.sh'
           yaml:
           - '**.yaml'
-  
+
   commit-messages:
     needs: [detect-changes]
     if: ${{ github.event_name == 'pull_request' }}
@@ -89,7 +89,7 @@ jobs:
   shellcheck:
     needs: [detect-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.shellscripts_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-shellcheck.yaml    
+    uses: ./.github/workflows/lint-shellcheck.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.shellscripts_all_changed_files }}
@@ -97,7 +97,7 @@ jobs:
   yaml:
     needs: [detect-changes]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.yaml_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-yaml.yaml    
+    uses: ./.github/workflows/lint-yaml.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.yaml_all_changed_files }}
