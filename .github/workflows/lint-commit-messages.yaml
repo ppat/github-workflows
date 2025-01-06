@@ -36,7 +36,7 @@ jobs:
         cache_key_prefix: mise-v1
 
     - name: Install node packages
-      run: npm ci --no-fund --no-audit
+      run: bun install
 
     - name: Lint commit messages
       run: npx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
