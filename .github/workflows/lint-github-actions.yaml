@@ -46,6 +46,6 @@ jobs:
           set +x
         else
           set -x
-          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $CHANGED_FILES
+          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $ACTIONS_FILES
           set +x
         fi
