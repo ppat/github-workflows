@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: github-actions
+name: lint-github-actions
 
 on:
   workflow_call:

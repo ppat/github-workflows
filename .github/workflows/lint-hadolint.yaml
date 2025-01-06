@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: hadolint
+name: lint-hadolint
 
 on:
   workflow_call:
