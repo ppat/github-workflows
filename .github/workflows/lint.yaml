@@ -1,0 +1,103 @@
+---
+# yamllint disable rule:line-length
+name: lint
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-changes:
+    outputs:
+      actions_any_changed: ${{ steps.changed-files-yaml.outputs.actions_any_changed }}
+      actions_all_changed_files: ${{ steps.changed-files-yaml.outputs.actions_all_changed_files}}
+      docker_any_changed: ${{ steps.changed-files-yaml.outputs.docker_any_changed }}
+      docker_all_changed_files: ${{ steps.changed-files-yaml.outputs.docker_all_changed_files}}
+      renovate_any_changed: ${{ steps.changed-files-yaml.outputs.renovate_any_changed }}
+      renovate_all_changed_files: ${{ steps.changed-files-yaml.outputs.renovate_all_changed_files}}
+      shellscripts_any_changed: ${{ steps.changed-files-yaml.outputs.shellscripts_any_changed }}
+      shellscripts_all_changed_files: ${{ steps.changed-files-yaml.outputs.shellscripts_all_changed_files}}
+      yaml_any_changed: ${{ steps.changed-files-yaml.outputs.yaml_any_changed }}
+      yaml_all_changed_files: ${{ steps.changed-files-yaml.outputs.yaml_all_changed_files}}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 1
+
+    - name: Determine what files types have changed
+      id: changed-files-yaml
+      uses: tj-actions/changed-files@bab30c2299617f6615ec02a68b9a40d10bd21366 # v45
+      with:
+        files_yaml: |
+          actions:
+          - .github/workflows/**
+          docker:
+          - '**/Dockerfile'
+          renovate:
+          - .github/renovate.json
+          - .github/renovate/**
+          shellscripts:
+          - '**.sh'
+          yaml:
+          - '**.yaml'
+  
+  commit-messages:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/lint-commit-messages.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      from: ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}
+      to: ${{ github.event.pull_request.head.sha }}
+
+  github-actions:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.actions_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-github-actions.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.actions_all_changed_files }}
+
+  docker-files:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.docker_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-hadolint.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.docker_all_changed_files }}
+
+  pre-commit:
+    uses: ./.github/workflows/lint-pre-commit.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+
+  renovate-config-check:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.renovate_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-renovate-config-check.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.renovate_all_changed_files }}
+
+  shellcheck:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.shellscripts_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-shellcheck.yaml    
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.shellscripts_all_changed_files }}
+
+  yaml:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.yaml_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-yaml.yaml    
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.yaml_all_changed_files }}

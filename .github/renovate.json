@@ -27,6 +27,13 @@
   ],
   "internalChecksFilter": "strict",
   "packageRules": [
+    {
+      "allowedVersions": "1.7.4",
+      "description": "actionlint > 1.7.4 cannot provide shellcheck arguments",
+      "matchPackageNames": [
+        "rhysd/actionlint"
+      ]
+    }
   ],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,

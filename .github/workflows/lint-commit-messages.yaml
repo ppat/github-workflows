@@ -1,0 +1,41 @@
+# yamllint disable rule:line-length
+name: commit-messages
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      from:
+        required: true
+        type: string
+      to:
+        required: true
+        type: string
+
+jobs:
+  commit-messages:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Setup mise
+      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.1.0"
+        install: true
+        cache: true
+        cache_key_prefix: mise-v1
+
+    - name: Install node packages
+      run: npm ci --no-fund --no-audit
+
+    - name: Lint commit messages
+      run: npx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose

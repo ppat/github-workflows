@@ -1,0 +1,58 @@
+# yamllint disable rule:line-length
+name: hadolint
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      files:
+        required: false
+        type: string
+        default: 'ALL'
+
+jobs:
+  hadolint-all:
+    if: ${{ inputs.files == 'ALL' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Lint all dockerfiles
+      if: ${{ inputs.files == 'ALL' }}
+      uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+      with:
+        dockerfile: "Dockerfile"
+        recursive: true
+        failure-threshold: warning
+        config: ./.hadolint.yaml
+
+  hadolint-each:
+    if: ${{ inputs.files != 'ALL' }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        dockerfile: ${{ inputs.files }}
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Lint specific dockerfiles
+      uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+      with:
+        dockerfile: ${{ matrix.dockerfile }}
+        recursive: false
+        failure-threshold: warning
+        config: ./.hadolint.yaml
