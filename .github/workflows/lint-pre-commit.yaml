@@ -26,22 +26,22 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Setup mise
-      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
-      with:
-        # renovate: datasource=github-releases depName=jdx/mise
-        version: "v2025.1.0"
-        install: true
-        cache: true
-        cache_key_prefix: mise-v1
-
-    - name: Cache pre-commit hooks
+    - name: Cache mise
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
       with:
-        path: ~/.cache/pre-commit/
-        key: pre-commit-${{runner.os}}-${{runner.arch}}-${{env.pythonLocation}}-${{hashFiles('.pre-commit-config.yaml')}}
+        path: ~/.cache/mise/
+        key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
         restore-keys: |
-          pre-commit--${{runner.os}}-${{runner.arch}}-
+          mise-${{runner.os}}-${{runner.arch}}-
+
+    - name: Setup mise
+      env:
+        # renovate: datasource=github-releases depName=jdx/mise
+        MISE_VERSION: "v2025.1.0"
+      run: |
+        curl https://mise.run | sh
+        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Install pre-commit hooks
       run: pre-commit install --install-hooks --hook-type pre-commit

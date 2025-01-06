@@ -25,14 +25,22 @@ jobs:
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
 
-    - name: Setup mise
-      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+    - name: Cache mise
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
       with:
+        path: ~/.cache/mise/
+        key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
+        restore-keys: |
+          mise-${{runner.os}}-${{runner.arch}}-
+
+    - name: Setup mise
+      env:
         # renovate: datasource=github-releases depName=jdx/mise
-        version: "v2025.1.0"
-        install: true
-        cache: true
-        cache_key_prefix: mise-v1
+        MISE_VERSION: "v2025.1.0"
+      run: |
+        curl https://mise.run | sh
+        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Lint shell scripts
       env:
