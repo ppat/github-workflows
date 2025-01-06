@@ -41,7 +41,7 @@ jobs:
     - name: Cache mise
       uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
       with:
-        path: ~/.cache/mise/
+        path: ~/.local/share/mise
         key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
         restore-keys: |
           mise-${{runner.os}}-${{runner.arch}}-
