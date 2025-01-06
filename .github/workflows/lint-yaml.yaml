@@ -42,6 +42,8 @@ jobs:
         eval "$($HOME/.local/bin/mise activate bash)"
         $HOME/.local/bin/mise upgrade --yes
         echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
 
     - name: Lint yaml files
       env:
@@ -49,15 +51,9 @@ jobs:
       shell: bash
       # yamllint disable-line rule:indentation
       run: |
-        eval "$($HOME/.local/bin/mise activate bash)"
-        echo "------------------------------------------------"
-        echo $PATH
-        echo "------------------------------------------------"
-        mise cfg
-        echo "------------------------------------------------"
-        mise ls
-        echo "------------------------------------------------"
         which yamllint
+        mise ls
+        mise cfg
         if [[ "${YAML_FILES}" == "ALL" ]]; then
           yamllint -c .yamllint --list-files --strict --format github .
         else
