@@ -25,6 +25,13 @@ jobs:
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
 
+    - name: Fetch mise config
+      shell: bash
+      # yamllint disable-line rule:indentation
+      run: |
+        curl -sSL https://raw.githubusercontent.com/ppat/github-workflows/refs/heads/main/mise.toml -o /tmp/mise.toml
+        echo MISE_TOML="$(</tmp/mise.toml)" >> $GITHUB_ENV
+
     - name: Setup mise
       uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
       with:
@@ -33,6 +40,7 @@ jobs:
         install: true
         cache: true
         cache_key_prefix: mise-v1
+        mise_toml: ${{ env.MISE_TOML }}
 
     - name: Validate renovate config files
       env:
