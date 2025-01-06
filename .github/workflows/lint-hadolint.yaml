@@ -41,6 +41,7 @@ jobs:
         fi
 
   hadolint:
+    needs: [detect-dockerfiles]
     runs-on: ubuntu-24.04
     strategy:
       matrix:
