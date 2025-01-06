@@ -40,6 +40,7 @@ jobs:
       run: |
         curl https://mise.run | sh
         eval "$($HOME/.local/bin/mise activate bash)"
+        $HOME/.local/bin/mise upgrade --yes
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Lint yaml files
@@ -48,6 +49,7 @@ jobs:
       shell: bash
       # yamllint disable-line rule:indentation
       run: |
+        eval "$($HOME/.local/bin/mise activate bash)"
         echo "------------------------------------------------"
         echo $PATH
         echo "------------------------------------------------"
@@ -55,10 +57,9 @@ jobs:
         echo "------------------------------------------------"
         mise ls
         echo "------------------------------------------------"
-        /opt/pipx_bin/yamllint --version
-        mise exec yamllint --version
+        which yamllint
         if [[ "${YAML_FILES}" == "ALL" ]]; then
-          mise exec yamllint -c .yamllint --list-files --strict --format github .
+          yamllint -c .yamllint --list-files --strict --format github .
         else
-          mise exec yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
+          yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
         fi
