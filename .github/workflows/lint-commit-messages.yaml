@@ -44,7 +44,7 @@ jobs:
 
     - name: Lint commit messages
       run: |
-        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -10
+        git log --oneline --no-decorate --no-abbrev-commit --pretty=format:"%h %s" -${{ inputs.fetch_depth }}
         bunx commitlint --help
         set -x
         bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
