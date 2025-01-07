@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: lint-pre-commit
+name: pre-commit
 
 on:
   workflow_call:

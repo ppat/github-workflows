@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: lint-commit-messages
+name: commit-messages
 
 on:
   workflow_call:

@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: lint-renovate-config-check
+name: renovate-config-check
 
 on:
   workflow_call:

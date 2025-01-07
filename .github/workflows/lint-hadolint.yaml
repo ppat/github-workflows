@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: lint-hadolint
+name: hadolint
 
 on:
   workflow_call:
@@ -41,6 +41,7 @@ jobs:
         fi
 
   hadolint:
+    if: ${{ needs.detect-dockerfiles.outputs.dockerfiles != '[]' }}
     needs: [detect-dockerfiles]
     runs-on: ubuntu-24.04
     strategy:
