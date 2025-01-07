@@ -45,6 +45,7 @@ jobs:
       env:
         # renovate: datasource=github-releases depName=jdx/mise
         MISE_VERSION: "v2025.1.0"
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         mkdir -p ~/.config/mise
         ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
