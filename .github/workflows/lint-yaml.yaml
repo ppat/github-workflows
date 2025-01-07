@@ -17,6 +17,9 @@ on:
         type: string
         default: ""
 
+env:
+  MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
+
 jobs:
   yamllint:
     runs-on: ubuntu-24.04
@@ -50,7 +53,6 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         MISE_VERSION: "v2025.1.1"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
       run: |
         mkdir -p ~/.config/mise
         ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
