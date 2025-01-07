@@ -54,7 +54,7 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         MISE_VERSION: "v2025.1.1"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != "" && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || "" }}
+        MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
