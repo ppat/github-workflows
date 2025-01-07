@@ -21,6 +21,8 @@ jobs:
       renovate_all_changed_files: ${{ steps.changed-files-yaml.outputs.renovate_all_changed_files}}
       shellscripts_any_changed: ${{ steps.changed-files-yaml.outputs.shellscripts_any_changed }}
       shellscripts_all_changed_files: ${{ steps.changed-files-yaml.outputs.shellscripts_all_changed_files}}
+      terraform_any_changed: ${{ steps.changed-files-yaml.outputs.terraform_any_changed }}
+      terraform_all_changed_files: ${{ steps.changed-files-yaml.outputs.terraform_all_changed_files}}
       yaml_any_changed: ${{ steps.changed-files-yaml.outputs.yaml_any_changed }}
       yaml_all_changed_files: ${{ steps.changed-files-yaml.outputs.yaml_all_changed_files}}
     runs-on: ubuntu-24.04
@@ -94,6 +96,13 @@ jobs:
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.shellscripts_all_changed_files }}
+
+  terraform:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.terraform_any_changed == 'true' }}
+    uses: ppat/github-workflows/.github/workflows/lint-terraform.yaml@main
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
 
   yaml:
     needs: [detect-changes]
