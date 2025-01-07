@@ -41,6 +41,7 @@ jobs:
         fi
 
   hadolint:
+    if: ${{ needs.detect-dockerfiles.outputs.dockerfiles != '[]' }}
     needs: [detect-dockerfiles]
     runs-on: ubuntu-24.04
     strategy:
@@ -62,3 +63,18 @@ jobs:
         recursive: false
         failure-threshold: warning
         config: ./.hadolint.yaml
+
+  # Summarize matrix https://github.community/t/status-check-for-a-matrix-jobs/127354/7
+  hadolint-success:
+    if: ${{ always() }}
+    needs: [hadolint]
+    runs-on: ubuntu-24.04
+    steps:
+    # yamllint disable-line rule:indentation
+    - run: |
+        result="${{ needs.hadolint.result }}"
+        if [[ $result == "success" || $result == "skipped" ]]; then
+          exit 0
+        else
+          exit 1
+        fi
