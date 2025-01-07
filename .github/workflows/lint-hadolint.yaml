@@ -69,6 +69,15 @@ jobs:
     needs: [hadolint]
     runs-on: ubuntu-24.04
     steps:
-    - if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
-      name: Check matrix status
-      run: exit 1
+    # - if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+    #   name: Check matrix status
+    #   run: exit 1
+    # yamllint disable-line rule:indentation
+    - run: |
+        result="${{ needs.hadolint.result }}"
+        if [[ $result == "success" || $result == "skipped" ]]; then
+          exit 0
+        else
+          echo ${{ needs.hadolint.result }}
+          exit 1
+        fi
