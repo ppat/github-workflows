@@ -1,0 +1,67 @@
+---
+# yamllint disable rule:line-length
+name: terraform
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout tools
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        path: tools
+        repository: ppat/github-workflows
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        path: current
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Cache mise
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
+        restore-keys: |
+          mise-${{runner.os}}-${{runner.arch}}-
+
+    - name: Setup mise
+      env:
+        # renovate: datasource=github-releases depName=jdx/mise
+        MISE_VERSION: "v2025.1.0"
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+        curl https://mise.run | sh
+        eval "$($HOME/.local/bin/mise activate bash)"
+        $HOME/.local/bin/mise upgrade --yes
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+
+    - name: terraform-fmt
+      working-directory: ./current
+      run: pre-commit run --all-files --color=always terraform-fmt
+
+    - name: terraform-validate
+      working-directory: ./current
+      run: pre-commit run --all-files --color=always terraform-validate
+
+    - name: tflint
+      working-directory: ./current
+      run: pre-commit run --all-files --color=always tflint
