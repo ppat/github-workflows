@@ -19,18 +19,11 @@
     "mergeConfidence:all-badges",
     "github>ppat/renovate-presets",
     "github>ppat/renovate-presets:dev-tools",
-    "github>ppat/renovate-presets:github-actions"
+    "github>ppat/renovate-presets:github-actions",
+    "github>ppat/dotfiles//.github/renovate/mise",
+    "github>ppat/dotfiles//.github/renovate/exceptions"
   ],
   "internalChecksFilter": "strict",
-  "packageRules": [
-    {
-      "allowedVersions": "1.7.4",
-      "description": "actionlint > 1.7.4 cannot provide shellcheck arguments",
-      "matchPackageNames": [
-        "rhysd/actionlint"
-      ]
-    }
-  ],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "rebaseWhen": "behind-base-branch",
