@@ -20,6 +20,12 @@ on:
       platforms:
         required: true
         type: string
+      private_registry_repository:
+        required: false
+        type: string
+      private_registry_build_cache:
+        required: false
+        type: string
       source_git_ref:
         required: true
         type: string
@@ -39,10 +45,6 @@ on:
         required: false
       private_registry:
         required: false
-      private_registry_repository:
-        required: false
-      private_registry_build_cache:
-        required: false
       tailscale_oauth_client_id:
         required: false
       tailscale_oauth_secret:
@@ -57,7 +59,7 @@ on:
 
 env:
   PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
-  PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && secrets.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
+  PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
   CONNECT_TAILSCALE: ${{ secrets.tailscale_oauth_client_id != '' && secrets.tailscale_oauth_secret != '' }}
   VERSION_SEMVER: ''
   VERSION_RAW: ''
@@ -120,7 +122,7 @@ jobs:
       shell: bash
       env:
         SOURCE_GIT_REF: ${{ inputs.source_git_ref }}
-        IMAGE_CACHE: ${{ secrets.private_registry }}/${{ secrets.private_registry_build_cache }}
+        IMAGE_CACHE: ${{ secrets.private_registry }}/${{ inputs.private_registry_build_cache }}
         CACHE_PARAMS: image-manifest=true,oci-mediatypes=true,mode=max,compression=zstd
       # yamllint disable-line rule:indentation
       run: |
@@ -180,7 +182,7 @@ jobs:
       uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5
       with:
         images: |-
-          ${{ secrets.private_registry != '' && secrets.private_registry_repository != '' && format('{0}/{1}', secrets.private_registry, secrets.private_registry_repository) || '' }}
+          ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
           ${{ inputs.dockerhub_repository != '' && inputs.dockerhub_repository || '' }}
         labels: |
           org.opencontainers.image.title=${{ inputs.label_title }}
