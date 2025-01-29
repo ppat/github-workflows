@@ -47,7 +47,7 @@ jobs:
     - name: Setup mise
       env:
         # renovate: datasource=github-releases depName=jdx/mise
-        MISE_VERSION: "v2025.1.6"
+        MISE_VERSION: "v2025.1.15"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       working-directory: ./current
       # yamllint disable-line rule:indentation
