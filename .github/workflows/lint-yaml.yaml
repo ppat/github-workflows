@@ -51,7 +51,7 @@ jobs:
     - name: Setup mise
       env:
         # renovate: datasource=github-releases depName=jdx/mise
-        MISE_VERSION: "v2025.1.16"
+        MISE_VERSION: "v2025.1.17"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         mkdir -p ~/.config/mise
