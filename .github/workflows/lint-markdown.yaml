@@ -55,6 +55,7 @@ jobs:
         MISE_VERSION: "v2025.2.4"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        rm -rf ~/.local/share/mise
         mkdir -p ~/.config/mise
         ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
         curl https://mise.run | sh
