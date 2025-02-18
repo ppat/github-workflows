@@ -31,7 +31,6 @@ jobs:
         fetch-depth: 1
         path: tools
         repository: ppat/github-workflows
-        branch: markdownlint
 
     - name: Checkout current
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -55,7 +54,6 @@ jobs:
         MISE_VERSION: "v2025.2.4"
         MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        rm -rf ~/.local/share/mise
         mkdir -p ~/.config/mise
         ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
         curl https://mise.run | sh
@@ -72,8 +70,6 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        env | sort
-        set -x
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
           markdownlint-cli2 "**/*.md"
         else
