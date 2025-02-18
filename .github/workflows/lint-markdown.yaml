@@ -72,9 +72,10 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        env | sort
         set -x
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
           markdownlint-cli2 "**/*.md"
         else
-          markdownlint-cli2 $YAML_FILES
+          markdownlint-cli2 $MARKDOWN_FILES
         fi
