@@ -1,0 +1,77 @@
+---
+# yamllint disable rule:line-length
+name: markdown
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      files:
+        required: false
+        type: string
+        default: 'ALL'
+      mise_ignore_cfg:
+        required: false
+        type: string
+        default: ""
+
+env:
+  MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout tools
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 1
+        path: tools
+        repository: ppat/github-workflows
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 1
+        path: current
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Cache mise
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
+        restore-keys: |
+          mise-${{runner.os}}-${{runner.arch}}-
+
+    - name: Setup mise
+      env:
+        # renovate: datasource=github-releases depName=jdx/mise
+        MISE_VERSION: "v2025.2.4"
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+        curl https://mise.run | sh
+        eval "$($HOME/.local/bin/mise activate bash)"
+        $HOME/.local/bin/mise upgrade --yes
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
+        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+
+    - name: Lint markdown files
+      env:
+        MARKDOWN_FILES: ${{ inputs.files }}
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
+          markdownlint-cli2 "**/*.md"
+        else
+          markdownlint-cli2 $MARKDOWN_FILES
+        fi
