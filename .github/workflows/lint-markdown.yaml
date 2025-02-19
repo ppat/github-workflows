@@ -70,6 +70,7 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        set -x 
         CONFIG_PARAM=""
         if [[ -f ./.markdownlint.yaml ]]; then
           CONFIG_PARAM="--config ./.markdownlint.yaml"
