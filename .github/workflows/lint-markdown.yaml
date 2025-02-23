@@ -70,6 +70,12 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        CONFIG_PARAM=""
+        if [[ -f ./.markdownlint-cli2.yaml ]]; then
+          CONFIG_PARAM="--config ./.markdownlint-cli2.yaml"
+        elif [[ -f ./.markdownlint.yaml ]]; then
+          CONFIG_PARAM="--config ./.markdownlint.yaml"
+        fi
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
           markdownlint-cli2 "**/*.md" $CONFIG_PARAM
         else
@@ -79,7 +85,7 @@ jobs:
               FILTERED="${FILTERED} ${file}"
             fi
           done
-          
+
           if [[ -z "${FILTERED}" ]]; then
             echo "No files to lint after filtering."
             exit 0
@@ -87,5 +93,4 @@ jobs:
           set -x
           markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
           set +x
-        fi      
-
+        fi
