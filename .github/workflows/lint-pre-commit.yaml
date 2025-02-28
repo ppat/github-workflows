@@ -37,7 +37,7 @@ jobs:
         ref: ${{ inputs.git_ref }}
 
     - name: Cache mise
-      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+      uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4
       with:
         path: ~/.local/share/mise
         key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
@@ -45,7 +45,7 @@ jobs:
           mise-${{runner.os}}-${{runner.arch}}-
 
     - name: Cache pre-commit hooks
-      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+      uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4
       with:
         path: ~/.cache/pre-commit/
         key: pre-commit-${{runner.os}}-${{runner.arch}}-${{env.pythonLocation}}-${{hashFiles('.pre-commit-config.yaml')}}
