@@ -1,12 +1,12 @@
 [tools]
 actionlint              = "1.7.4"
-bun                     = "1.2.2"
-node                    = "22.13.1"
+bun                     = "1.2.4"
+node                    = "22.14.0"
 "npm:markdownlint-cli2" = "0.17.2"
 "npm:renovate"          = "39.83.5"
 pre-commit              = "4.1.0"
 shellcheck              = "0.10.0"
-uv                      = "0.5.31"
+uv                      = "0.6.2"
 yamllint                = "1.35.1"
 
 [settings.npm]
