@@ -78,7 +78,7 @@ jobs:
         cache: false
         experimental: true
         log_level: debug
-        working_directory: $GITHUB_WORKSPACE/current
+        working_directory: ${{ github.workspace }}/current
 
     - name: Install node packages
       shell: bash
