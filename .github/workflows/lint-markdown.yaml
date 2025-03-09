@@ -48,20 +48,25 @@ jobs:
         restore-keys: |
           mise-${{runner.os}}-${{runner.arch}}-
 
-    - name: Setup mise
-      env:
-        # renovate: datasource=github-releases depName=jdx/mise
-        MISE_VERSION: "v2025.2.9"
-        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup default mise configuration
+      # yamllint disable-line rule:indentation
       run: |
         mkdir -p ~/.config/mise
         ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
-        curl https://mise.run | sh
-        eval "$($HOME/.local/bin/mise activate bash)"
-        $HOME/.local/bin/mise upgrade --yes
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/share/mise/bin" >> $GITHUB_PATH
-        echo "$HOME/.local/share/mise/shims" >> $GITHUB_PATH
+
+    - name: Setup mise
+      env:
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      working-directory: ./current
+      uses: jdx/mise-action@5083fe46898c414b2475087cc79da59e7da859e8 # v2.1.11
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.2.9"
+        install: true
+        cache: false
+        experimental: true
+        log_level: debug
+        working_directory: $GITHUB_WORKSPACE/current
 
     - name: Lint markdown files
       env:
