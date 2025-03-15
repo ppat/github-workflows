@@ -13,46 +13,217 @@ concurrency:
 jobs:
   detect-changes:
     outputs:
-      actions_any_changed: ${{ steps.changed-files-yaml.outputs.actions_any_changed }}
-      actions_all_changed_files: ${{ steps.changed-files-yaml.outputs.actions_all_changed_files}}
-      docker_any_changed: ${{ steps.changed-files-yaml.outputs.docker_any_changed }}
-      docker_all_changed_files: ${{ steps.changed-files-yaml.outputs.docker_all_changed_files}}
-      renovate_any_changed: ${{ steps.changed-files-yaml.outputs.renovate_any_changed }}
-      renovate_all_changed_files: ${{ steps.changed-files-yaml.outputs.renovate_all_changed_files}}
-      shellscripts_any_changed: ${{ steps.changed-files-yaml.outputs.shellscripts_any_changed }}
-      shellscripts_all_changed_files: ${{ steps.changed-files-yaml.outputs.shellscripts_all_changed_files}}
-      terraform_any_changed: ${{ steps.changed-files-yaml.outputs.terraform_any_changed }}
-      terraform_all_changed_files: ${{ steps.changed-files-yaml.outputs.terraform_all_changed_files}}
-      yaml_any_changed: ${{ steps.changed-files-yaml.outputs.yaml_any_changed }}
-      yaml_all_changed_files: ${{ steps.changed-files-yaml.outputs.yaml_all_changed_files}}
-      markdown_any_changed: ${{ steps.changed-files-yaml.outputs.markdown_any_changed }}
-      markdown_all_changed_files: ${{ steps.changed-files-yaml.outputs.markdown_all_changed_files}}
+      actions_any_changed: ${{ steps.filter-changes.outputs.actions }}
+      actions_all_changed_files: ${{ steps.get-changed-files.outputs.actions_files }}
+      docker_any_changed: ${{ steps.filter-changes.outputs.docker }}
+      docker_all_changed_files: ${{ steps.get-changed-files.outputs.docker_files }}
+      renovate_any_changed: ${{ steps.filter-changes.outputs.renovate }}
+      renovate_all_changed_files: ${{ steps.get-changed-files.outputs.renovate_files }}
+      shellscripts_any_changed: ${{ steps.filter-changes.outputs.shellscripts }}
+      shellscripts_all_changed_files: ${{ steps.get-changed-files.outputs.shellscripts_files }}
+      terraform_any_changed: ${{ steps.filter-changes.outputs.terraform }}
+      terraform_all_changed_files: ${{ steps.get-changed-files.outputs.terraform_files }}
+      yaml_any_changed: ${{ steps.filter-changes.outputs.yaml }}
+      yaml_all_changed_files: ${{ steps.get-changed-files.outputs.yaml_files }}
+      markdown_any_changed: ${{ steps.filter-changes.outputs.markdown }}
+      markdown_all_changed_files: ${{ steps.get-changed-files.outputs.markdown_files }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
     - name: Checkout
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
-        fetch-depth: 1
+        fetch-depth: 0  # Needed to get all history for comparing changes
 
-    - name: Determine what files types have changed
-      id: changed-files-yaml
-      uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
+    - name: Filter Changed Files
+      id: filter-changes
+      uses: actions/github-script@v7
       with:
-        files_yaml: |
-          actions:
-          - .github/workflows/**
-          docker:
-          - '**/Dockerfile'
-          renovate:
-          - .github/renovate.json
-          - .github/renovate/**
-          shellscripts:
-          - '**.sh'
-          yaml:
-          - '**.yaml'
-          markdown:
-          - '**.md'
+        # yamllint disable-line rule:indentation
+        script: |
+          const patterns = {
+            actions: ['.github/workflows/**'],
+            docker: ['**/Dockerfile'],
+            renovate: ['.github/renovate.json', '.github/renovate/**'],
+            shellscripts: ['**.sh'],
+            yaml: ['**.yaml'],
+            markdown: ['**.md']
+          };
+
+          // Helper function to check if a file matches any pattern
+          function matchesPattern(file, patterns) {
+            return patterns.some(pattern => {
+              // Convert glob patterns to regex
+              const regexPattern = pattern
+                .replace(/\./g, '\\.')
+                .replace(/\*\*/g, '.*')
+                .replace(/\*/g, '[^/]*')
+                .replace(/\?/g, '.');
+
+              // Check for negation (!) at the start of pattern
+              if (pattern.startsWith('!')) {
+                const negatedPattern = pattern.substring(1);
+                const negatedRegex = new RegExp(`^${negatedPattern
+                  .replace(/\./g, '\\.')
+                  .replace(/\*\*/g, '.*')
+                  .replace(/\*/g, '[^/]*')
+                  .replace(/\?/g, '.')}$`);
+                return !negatedRegex.test(file);
+              }
+
+              const regex = new RegExp(`^${regexPattern}$`);
+              return regex.test(file);
+            });
+          }
+
+          // Fetch changed files
+          let changedFiles = [];
+
+          if (context.eventName === 'pull_request') {
+            // Get the base and head commits
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+
+            const baseCommit = pullRequest.base.sha;
+            const headCommit = pullRequest.head.sha;
+
+            // Get list of changed files
+            const { data: compareData } = await github.rest.repos.compareCommits({
+              owner,
+              repo,
+              base: baseCommit,
+              head: headCommit
+            });
+
+            changedFiles = compareData.files.map(file => file.filename);
+          } else {
+            // For workflow_dispatch events, consider all files
+            // We'll need to get all files in the repo
+            const { execSync } = require('child_process');
+            changedFiles = execSync('git ls-files')
+              .toString()
+              .trim()
+              .split('\n');
+          }
+
+          // Initialize results
+          const results = {};
+          const filesByCategory = {};
+
+          // Check each category
+          for (const [category, categoryPatterns] of Object.entries(patterns)) {
+            // Filter files matching this category
+            const matchedFiles = changedFiles.filter(file => matchesPattern(file, categoryPatterns));
+
+            // Set outputs
+            results[category] = matchedFiles.length > 0 ? 'true' : 'false';
+            filesByCategory[`${category}_files`] = matchedFiles.join(',');
+          }
+
+          // Set all outputs
+          Object.entries(results).forEach(([key, value]) => {
+            core.setOutput(key, value);
+          });
+
+          // For debugging
+          console.log('Changed files:', changedFiles);
+          console.log('Filter results:', results);
+
+    - name: Get Changed Files Details
+      id: get-changed-files
+      uses: actions/github-script@v7
+      with:
+        # yamllint disable-line rule:indentation
+        script: |
+          const patterns = {
+            actions: ['.github/workflows/**'],
+            docker: ['**/Dockerfile'],
+            renovate: ['.github/renovate.json', '.github/renovate/**'],
+            shellscripts: ['**.sh'],
+            yaml: ['**.yaml'],
+            markdown: ['**.md']
+          };
+
+          // Helper function to check if a file matches any pattern
+          function matchesPattern(file, patterns) {
+            return patterns.some(pattern => {
+              // Convert glob patterns to regex
+              const regexPattern = pattern
+                .replace(/\./g, '\\.')
+                .replace(/\*\*/g, '.*')
+                .replace(/\*/g, '[^/]*')
+                .replace(/\?/g, '.');
+
+              // Check for negation (!) at the start of pattern
+              if (pattern.startsWith('!')) {
+                const negatedPattern = pattern.substring(1);
+                const negatedRegex = new RegExp(`^${negatedPattern
+                  .replace(/\./g, '\\.')
+                  .replace(/\*\*/g, '.*')
+                  .replace(/\*/g, '[^/]*')
+                  .replace(/\?/g, '.')}$`);
+                return !negatedRegex.test(file);
+              }
+
+              const regex = new RegExp(`^${regexPattern}$`);
+              return regex.test(file);
+            });
+          }
+
+          // Fetch changed files
+          let changedFiles = [];
+
+          if (context.eventName === 'pull_request') {
+            // Get the base and head commits
+            const { owner, repo } = context.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number
+            });
+
+            const baseCommit = pullRequest.base.sha;
+            const headCommit = pullRequest.head.sha;
+
+            // Get list of changed files
+            const { data: compareData } = await github.rest.repos.compareCommits({
+              owner,
+              repo,
+              base: baseCommit,
+              head: headCommit
+            });
+
+            changedFiles = compareData.files.map(file => file.filename);
+          } else {
+            // For workflow_dispatch events, consider all files
+            // We'll need to get all files in the repo
+            const { execSync } = require('child_process');
+            changedFiles = execSync('git ls-files')
+              .toString()
+              .trim()
+              .split('\n');
+          }
+
+          // Initialize file lists by category
+          const filesByCategory = {};
+
+          // Check each category
+          for (const [category, categoryPatterns] of Object.entries(patterns)) {
+            // Filter files matching this category
+            const matchedFiles = changedFiles.filter(file => matchesPattern(file, categoryPatterns));
+
+            // Set outputs for file lists
+            filesByCategory[`${category}_files`] = matchedFiles.join(',');
+            core.setOutput(`${category}_files`, matchedFiles.join(','));
+          }
 
   commit-messages:
     needs: [detect-changes]
