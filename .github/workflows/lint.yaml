@@ -37,7 +37,7 @@ jobs:
 
     - name: Determine what files types have changed
       id: changed-files-yaml
-      uses: tj-actions/changed-files@dcc7a0cba800f454d79fff4b993e8c3555bcc0a8 # v45
+      uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46
       with:
         files_yaml: |
           actions:
@@ -80,6 +80,14 @@ jobs:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.docker_all_changed_files }}
 
+  markdown:
+    needs: [detect-changes]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.markdown_any_changed == 'true' }}
+    uses: ./.github/workflows/lint-markdown.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.markdown_all_changed_files }}
+
   pre-commit:
     uses: ./.github/workflows/lint-pre-commit.yaml
     with:
@@ -107,6 +115,7 @@ jobs:
     uses: ppat/github-workflows/.github/workflows/lint-terraform.yaml@main
     with:
       git_ref: ${{ github.head_ref || github.ref }}
+      tf_dirs: ""
 
   yaml:
     needs: [detect-changes]
@@ -115,11 +124,3 @@ jobs:
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.yaml_all_changed_files }}
-
-  markdown:
-    needs: [detect-changes]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.markdown_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-markdown.yaml
-    with:
-      git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name == 'workflow_dispatch' && 'ALL' || needs.detect-changes.outputs.markdown_all_changed_files }}
