@@ -209,7 +209,7 @@ jobs:
         oauth-secret: ${{ secrets.tailscale_oauth_secret }}
         tags: tag:github-action-ci-runner
         # renovate: datasource=github-releases depName=tailscale/tailscale
-        version: "1.82.0"
+        version: "1.82.5"
 
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
