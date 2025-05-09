@@ -71,8 +71,11 @@ jobs:
       env:
         # renovate: datasource=npm depName=markdownlint-cli2
         MARKDOWNLINT_VERSION: "0.17.2"
+      shell: bash
       working-directory: ./current
-      run: bun add markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
+      # yamllint disable-line rule:indentation
+      run: |
+        mise use npm:markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
 
     - name: Lint markdown files
       env:
@@ -88,7 +91,7 @@ jobs:
           CONFIG_PARAM="--config ./.markdownlint.yaml"
         fi
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
-          bunx markdownlint-cli2 "**/*.md" $CONFIG_PARAM
+          markdownlint-cli2 "**/*.md" $CONFIG_PARAM
         else
           FILTERED=""
           for file in ${MARKDOWN_FILES}; do
@@ -102,6 +105,6 @@ jobs:
             exit 0
           fi
           set -x
-          bunx markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
+          markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
           set +x
         fi
