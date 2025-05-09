@@ -2,8 +2,6 @@
 actionlint              = "1.7.4"
 bun                     = "1.2.12"
 node                    = "22.15.0"
-"npm:markdownlint-cli2" = "0.17.2"
-"npm:renovate"          = "39.83.5"
 pre-commit              = "4.2.0"
 shellcheck              = "0.10.0"
 uv                      = "0.7.2"

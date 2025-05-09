@@ -85,9 +85,9 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        if [[ ! -e bun.lockb ]]; then
+        if [[ ! -e bun.lock ]]; then
           cp $GITHUB_WORKSPACE/tools/package.json .
-          cp $GITHUB_WORKSPACE/tools/bun.lockb .
+          cp $GITHUB_WORKSPACE/tools/bun.lock .
         fi
         bun install --frozen-lockfile
 

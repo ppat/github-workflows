@@ -67,6 +67,13 @@ jobs:
         log_level: debug
         working_directory: ${{ github.workspace }}/current
 
+    - name: Install markdownlint-cli2
+      env:
+        # renovate: datasource=npm depName=markdownlint-cli2
+        MARKDOWNLINT_VERSION: "0.17.2"
+      working-directory: ./current
+      run: bun add markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
+
     - name: Lint markdown files
       env:
         MARKDOWN_FILES: ${{ inputs.files }}
@@ -81,7 +88,7 @@ jobs:
           CONFIG_PARAM="--config ./.markdownlint.yaml"
         fi
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
-          markdownlint-cli2 "**/*.md" $CONFIG_PARAM
+          bunx markdownlint-cli2 "**/*.md" $CONFIG_PARAM
         else
           FILTERED=""
           for file in ${MARKDOWN_FILES}; do
@@ -95,6 +102,6 @@ jobs:
             exit 0
           fi
           set -x
-          markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
+          bunx markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
           set +x
         fi

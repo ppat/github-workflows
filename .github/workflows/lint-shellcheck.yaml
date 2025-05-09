@@ -76,7 +76,7 @@ jobs:
       run: |
         if [[ "${SHELLSCRIPT_FILES}" == "ALL" ]]; then
           set -x
-          find . -type f -not -path './node_modules/*' -not -path './.git/*' -not -path ./bun.lockb -executable -exec shellcheck --rcfile .shellcheckrc {} +
+          find . -type f -not -path './node_modules/*' -not -path './.git/*' -not -path ./bun.lock -executable -exec shellcheck --rcfile .shellcheckrc {} +
           set +x
         else
           set -x
