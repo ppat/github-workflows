@@ -75,7 +75,7 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        bun add renovate@${RENOVATE_VERSION} --global
+        mise use npm:renovate@${RENOVATE_VERSION}
 
     - name: Validate renovate config files
       env:
