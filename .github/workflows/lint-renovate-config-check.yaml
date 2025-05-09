@@ -71,8 +71,11 @@ jobs:
       env:
         # renovate: datasource=npm depName=renovate
         RENOVATE_VERSION: "40.11.2"
+      shell: bash
       working-directory: ./current
-      run: bun add renovate@${RENOVATE_VERSION} --global
+      # yamllint disable-line rule:indentation
+      run: |
+        bun add renovate@${RENOVATE_VERSION} --global
 
     - name: Validate renovate config files
       env:

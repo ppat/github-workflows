@@ -71,8 +71,11 @@ jobs:
       env:
         # renovate: datasource=npm depName=markdownlint-cli2
         MARKDOWNLINT_VERSION: "0.17.2"
+      shell: bash
       working-directory: ./current
-      run: bun add markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
+      # yamllint disable-line rule:indentation
+      run: |
+        bun add markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
 
     - name: Lint markdown files
       env:
