@@ -67,6 +67,13 @@ jobs:
         log_level: debug
         working_directory: ${{ github.workspace }}/current
 
+    - name: Install renovate
+      env:
+        # renovate: datasource=npm depName=renovate
+        RENOVATE_VERSION: "40.11.2"
+      working-directory: ./current
+      run: bun add renovate@${RENOVATE_VERSION} --global
+
     - name: Validate renovate config files
       env:
         RENOVATE_CONFIG_FILES: ${{ inputs.files }}
@@ -77,16 +84,16 @@ jobs:
         if [[ "${RENOVATE_CONFIG_FILES}" == "ALL" ]]; then
           echo "Validating main configuration..."
           echo ".github/renovate.json:"
-          renovate-config-validator .github/renovate.json | pr -t -o 4
+          bunx renovate-config-validator .github/renovate.json | pr -t -o 4
           echo "Validating all 'extends' configuration files..."
           for rc in $(find .github/renovate -type f -name '*.json' | sort); do
             echo "${rc}:"
-            renovate-config-validator ${rc} | pr -t -o 4
+            bunx renovate-config-validator ${rc} | pr -t -o 4
           done
         else
           echo "Validating changed configuration files..."
           for rc in ${RENOVATE_CONFIG_FILES}; do
             echo "${rc}:"
-            renovate-config-validator ${rc} | pr -t -o 4
+            bunx renovate-config-validator ${rc} | pr -t -o 4
           done
         fi
