@@ -70,7 +70,7 @@ jobs:
     - name: Install renovate
       env:
         # renovate: datasource=npm depName=renovate
-        RENOVATE_VERSION: "40.11.2"
+        RENOVATE_VERSION: "40.11.19"
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation
