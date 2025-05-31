@@ -7,7 +7,7 @@
         "@commitlint/config-conventional": "19.8.1",
         "@commitlint/ensure": "19.8.1",
         "@commitlint/load": "19.8.1",
-        "commitlint-plugin-function-rules": "4.0.1",
+        "commitlint-plugin-function-rules": "4.0.2",
       },
     },
   },
@@ -76,7 +76,7 @@
 
     "color-name": ["color-name@1.1.4", "", {}, "sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA=="],
 
-    "commitlint-plugin-function-rules": ["commitlint-plugin-function-rules@4.0.1", "", { "peerDependencies": { "@commitlint/lint": ">=19 <20" } }, "sha512-q3zniafaRo41x0eatCCe1ai9Tge4ArK4Mc5rVXTCtj6D9s0unxYpCnFiyLVOpKyz8za78qlZacCHTErvHnU+dw=="],
+    "commitlint-plugin-function-rules": ["commitlint-plugin-function-rules@4.0.2", "", { "peerDependencies": { "@commitlint/lint": ">=19 <20" } }, "sha512-sNAGb10MxaTgB0GdASD7hWclcXMSkoRtegNyGvp3VN0ZqXm/7/5p4kNv4Ei3mjgaEwpGTLcqj0ka7MtolONG0Q=="],
 
     "compare-func": ["compare-func@2.0.0", "", { "dependencies": { "array-ify": "^1.0.0", "dot-prop": "^5.1.0" } }, "sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA=="],
 
