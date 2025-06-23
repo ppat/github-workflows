@@ -46,7 +46,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: ${{ github.repository }}
-        ref: ${{ inputs.source_git_ref }}
+        ref: ${{ inputs.git_ref }}
 
     - name: Setup kubeconform
       uses: fluxcd/pkg/actions/kubeconform@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
