@@ -1,0 +1,131 @@
+---
+# yamllint disable rule:line-length
+name: validate-kubernetes-manifests
+# based on https://github.com/fluxcd/flux2-kustomize-helm-example/blob/main/scripts/validate.sh
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      kustomize_flags:
+        required: false
+        type: string
+        # default to kustomize-controller build options
+        default: '--load-restrictor=LoadRestrictionsNone'
+      kubeconform_flags:
+        required: false
+        type: string
+        # skip Kubernetes Secrets due to SOPS fields failing validation
+        default: '-skip=Secret'
+      env_file:
+        required: false
+        type: string
+        default: ''
+      mindepth:
+        required: false
+        type: number
+        default: 2
+      maxdepth:
+        required: false
+        type: number
+        default: 5
+
+env:
+  FLUX_SCHEMA_DIR: /tmp/flux-crd-schemas/master-standalone-strict
+  DATREE_SCHEMA_LOCATION: 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.source_git_ref }}
+
+    - name: Setup kubeconform
+      uses: fluxcd/pkg/actions/kubeconform@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      with:
+        # renovate: datasource=github-releases depName=yannh/kubeconform
+        version: "v0.7.0"
+
+    - name: Setup kustomize
+      uses: fluxcd/pkg/actions/kustomize@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      with:
+        # renovate: datasource=github-releases depName=kubernetes-sigs/kustomize extractVersion=^kustomize/(?<version>.*)$
+        version: "v5.6.0"
+
+    - name: Setup flux
+      uses: fluxcd/flux2/action@8d5f40dca5aa5d3c0fc3414457dda15a0ac92fa4 # v2.5.1
+      with:
+        # renovate: datasource=github-releases depName=fluxcd/flux2
+        version: "v2.5.1"
+
+    - name: Downloading Flux OpenAPI schemas
+      shell: bash
+      env:
+        # renovate: datasource=github-releases depName=fluxcd/flux2
+        version: "v2.5.1"
+      run: |
+        set -x
+        wget --progress=dot:giga -c https://github.com/fluxcd/flux2/releases/download/${version}/crd-schemas.tar.gz -O /tmp/crd-schemas.tar.gz
+        mkdir -p ${FLUX_SCHEMA_DIR}
+        cd ${FLUX_SCHEMA_DIR}
+        tar -xzvf /tmp/crd-schemas.tar.gz
+
+    - name: Validating kustomizations (pre-build)
+      shell: bash
+      env:
+        KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
+        kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
+        kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
+
+        find . -type f -name kustomization.yaml -not -path './.archive/*' -print0 | while IFS= read -r -d $'\0' file; do
+          kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" "${file}" | pr -t -o 6
+          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+            exit 1
+          fi
+        done
+
+    - name: Validating kustomizations (post-build)
+      shell: bash
+      env:
+        KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
+        KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
+        ENV_FILE: "${{ inputs.env_file }}"
+        MIN_DEPTH: "${{ inputs.mindepth }}"
+        MAX_DEPTH: "${{ inputs.maxdepth }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
+        kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
+        kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
+
+        if [[ ! -z "${ENV_FILE}" && -f "${ENV_FILE}" ]]; then
+          echo "        Setting up environment variables for envsubst..."
+          set -o allexport
+          source ${ENV_FILE}
+          set +o allexport
+        fi
+        echo
+
+        find . -mindepth ${MIN_DEPTH} -maxdepth ${MAX_DEPTH} -type f -name kustomization.yaml -not -path './components/*' -not -path './.archive/*' -print | sort > /tmp/kustomizations
+        while read -r file; do
+          kustomization_dir="${file/%kustomization.yaml}"
+          echo "      kustomization: $kustomization_dir"
+          kustomize build ${kustomization_dir} ${KUSTOMIZE_FLAGS} | \
+            flux envsubst | \
+            kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
+            pr -t -o 8
+          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+            exit 1
+          fi
+        done < /tmp/kustomizations
