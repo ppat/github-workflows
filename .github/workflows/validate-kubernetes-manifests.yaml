@@ -126,10 +126,11 @@ jobs:
         if [[ -f "${ENV_FILE}" ]]; then
           echo "----------------------------------------------------------------"
           echo "Setting up environment variables for envsubst from ${ENV_FILE}..."
+          echo
           set -o allexport
           source ./ci/validation/.env
           set +o allexport
-
+          echo
           if [[ "${DEBUG}" == "true" ]]; then
             echo
             echo "Environment variables loaded from: ${ENV_FILE}..."
