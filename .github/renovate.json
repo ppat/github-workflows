@@ -20,8 +20,8 @@
     "github>ppat/renovate-presets",
     "github>ppat/renovate-presets:dev-tools",
     "github>ppat/renovate-presets:github-actions",
-    "github>ppat/dotfiles//.github/renovate/mise",
-    "github>ppat/dotfiles//.github/renovate/exceptions"
+    "github>ppat/github-workflows//.github/renovate/mise",
+    "github>ppat/github-workflows//.github/renovate/exceptions"
   ],
   "internalChecksFilter": "strict",
   "labels": [
