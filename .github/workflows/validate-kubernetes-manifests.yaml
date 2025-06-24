@@ -101,7 +101,7 @@ jobs:
         fi
 
     - name: Validating kustomizations (pre-build)
-      if: inputs.prebuild_files != '[]'
+      if: inputs.kustomization_files != '[]'
       shell: bash
       env:
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
@@ -126,7 +126,7 @@ jobs:
         done
 
     - name: Validating kustomizations (post-build)
-      if: inputs.postbuild_kustomization_dirs != '[]'
+      if: inputs.kustomization_dirs != '[]'
       shell: bash
       env:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
