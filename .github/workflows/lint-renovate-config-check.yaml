@@ -44,8 +44,9 @@ jobs:
       uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
       with:
         path: ~/.local/share/mise
-        key: mise-${{hashFiles('tools/mise-renovate.toml')}}
+        key: mise-${{hashFiles('tools/mise-renovate.toml')}}-${{hashFiles('current/mise.toml')}}
         restore-keys: |
+          mise-${{hashFiles('tools/mise-renovate.toml')}}
           mise-
 
     - name: Setup default mise configuration
@@ -74,7 +75,7 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        if [[ "${RENOVATE_CONFIG_FILES}" == "ALL" ]]; then
+        # if [[ "${RENOVATE_CONFIG_FILES}" == "ALL" ]]; then
           echo "Validating main configuration..."
           echo ".github/renovate.json:"
           renovate-config-validator .github/renovate.json | pr -t -o 4
@@ -83,10 +84,10 @@ jobs:
             echo "${rc}:"
             renovate-config-validator ${rc} | pr -t -o 4
           done
-        else
-          echo "Validating changed configuration files..."
-          for rc in ${RENOVATE_CONFIG_FILES}; do
-            echo "${rc}:"
-            renovate-config-validator ${rc} | pr -t -o 4
-          done
-        fi
+        # else
+        #   echo "Validating changed configuration files..."
+        #   for rc in ${RENOVATE_CONFIG_FILES}; do
+        #     echo "${rc}:"
+        #     renovate-config-validator ${rc} | pr -t -o 4
+        #   done
+        # fi
