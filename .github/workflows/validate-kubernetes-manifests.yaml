@@ -105,7 +105,7 @@ jobs:
       shell: bash
       env:
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
-        PREBUILD_FILES: "${{ inputs.kustomization_files }}"
+        PREBUILD_FILES: "${{ fromJSON(inputs.kustomization_files) }}"
       # yamllint disable-line rule:indentation
       run: |
         flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
@@ -131,7 +131,7 @@ jobs:
       env:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
-        POSTBUILD_DIRS: "${{ inputs.kustomization_dirs }}"
+        POSTBUILD_DIRS: "${{ fromJSON(inputs.kustomization_dirs) }}"
       # yamllint disable-line rule:indentation
       run: |
         flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
