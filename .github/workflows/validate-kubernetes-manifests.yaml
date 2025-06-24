@@ -18,20 +18,24 @@ on:
         required: false
         type: string
         default: '-skip=Secret'
-      env_file:
-        required: false
-        type: string
-        default: ''
       kustomization_files:
         required: false
         type: string
         description: 'JSON array of kustomization.yaml files for pre-build validation'
         default: '[]'
-      kustomization_dirs:
+      kustomization_pkg_dirs:
         required: false
         type: string
         description: 'JSON array of kustomization directories for post-build validation'
         default: '[]'
+      env_file:
+        required: false
+        type: string
+        default: ''
+      base_kustomization_file:
+        required: false
+        type: string
+        default: ''
       debug:
         required: false
         type: boolean
@@ -108,14 +112,15 @@ jobs:
           fi
         done
 
-    - name: Validating kustomizations (post-build)
-      if: inputs.kustomization_dirs != '[]'
+    - name: Validating kustomization packages (post-build)
+      if: inputs.kustomization_pkg_dirs != '[]'
       shell: bash
       env:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
-        POSTBUILD_DIRS: "${{ fromJSON(inputs.kustomization_dirs) }}"
+        PKG_DIRS: "${{ fromJSON(inputs.kustomization_pkg_dirs) }}"
         ENV_FILE: "${{ inputs.env_file }}"
+        BASE_KUSTOMIZATION_FILE: "${{ inputs.base_kustomization_file }}"
         DEBUG: "${{ inputs.debug }}"
       # yamllint disable-line rule:indentation
       run: |
@@ -143,11 +148,17 @@ jobs:
         echo
 
         echo "Building and then validating kustomizations..."
-        echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
-          if [[ -d "${kustomization_dir}" ]]; then
-            echo "    kustomization: ${kustomization_dir}"
-            kustomize create
-            kustomize edit add resource $kustomization_dir
+        if [[ ! -f "${BASE_KUSTOMIZATION_FILE}" ]]; then
+          echo "Using temporary kustomization as build kustomization..."
+          kustomize create
+        else
+          echo "Using base kustomization as build kustomization: ${BASE_KUSTOMIZATION_FILE}..."
+          cp ${BASE_KUSTOMIZATION_FILE} .
+        fi
+        echo "${PKG_DIRS}" | jq -r '.[]' | while read -r pkg_dir; do
+          if [[ -d "${pkg_dir}" ]]; then
+            echo "    kustomization package: ${pkg_dir}"
+            kustomize edit add resource ${pkg_dir}
             kustomize build . ${KUSTOMIZE_FLAGS} | \
               flux envsubst | \
               kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
@@ -155,10 +166,10 @@ jobs:
             if [[ ${PIPESTATUS[0]} != 0 ]]; then
               exit 1
             fi
-            rm kustomization.yaml
+            kustomize edit remove resource ${pkg_dir}
           else
             echo "------------------------------------------------------------------------"
-            echo "  Warning: Directory not found: ${kustomization_dir}"
+            echo "  Warning: Directory not found: ${pkg_dir}"
             exit 1
           fi
         done
