@@ -95,7 +95,7 @@ jobs:
 
   renovate-config-check:
     needs: [detect-changes]
-    # if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.renovate_any_changed == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.detect-changes.outputs.renovate_any_changed == 'true' }}
     uses: ./.github/workflows/lint-renovate-config-check.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
