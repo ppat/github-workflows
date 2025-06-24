@@ -58,19 +58,19 @@ jobs:
         ref: ${{ inputs.git_ref }}
 
     - name: Setup kubeconform
-      uses: fluxcd/pkg/actions/kubeconform@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      uses: fluxcd/pkg/actions/kubeconform@2a76f6a42e243acd63a9298b7746415a03b4758b
       with:
         # renovate: datasource=github-releases depName=yannh/kubeconform
         version: "v0.7.0"
 
     - name: Setup kustomize
-      uses: fluxcd/pkg/actions/kustomize@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      uses: fluxcd/pkg/actions/kustomize@2a76f6a42e243acd63a9298b7746415a03b4758b
       with:
         # renovate: datasource=github-releases depName=kubernetes-sigs/kustomize extractVersion=^kustomize/(?<version>.*)$
         version: "v5.6.0"
 
     - name: Setup flux
-      uses: fluxcd/flux2/action@8d5f40dca5aa5d3c0fc3414457dda15a0ac92fa4 # v2.5.1
+      uses: fluxcd/flux2/action@a48f81a66c4ca9fbd993233ab99dd03a7cfbe09a # v2.6.2
       with:
         # renovate: datasource=github-releases depName=fluxcd/flux2
         version: "v2.6.2"
