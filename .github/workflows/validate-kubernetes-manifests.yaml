@@ -102,8 +102,10 @@ jobs:
           done < "${ENV_FILE}"
           if [[ "${DEBUG}" == "true" ]]; then
             echo
-            echo "Loaded environment variables..."
-            env | sort
+            echo "Environment variables loaded from: ${ENV_FILE}..."
+            echo "(showing all lowercase env vars)"
+            echo
+            env | sort | grep -E '^[a-z_][a-z0-9_]*='
             echo
           fi
         else
@@ -153,8 +155,10 @@ jobs:
         if [[ "${DEBUG}" == "true" ]]; then
           echo
           echo "Environment variables availble for envsubt:"
+          echo "(showing all lowercase env vars)"
+          echo
           echo "----------------------------------------------------------------"
-          env | sort
+          env | sort | grep -E '^[a-z_][a-z0-9_]*='
           echo "----------------------------------------------------------------"
           echo
         fi
