@@ -137,14 +137,15 @@ jobs:
             echo "(showing all lowercase env vars)"
             echo
             env | sort | grep -E '^[a-z_][a-z0-9_]*='
-            echo
           fi
         fi
         echo "----------------------------------------------------------------"
+        echo
 
+        echo "Building and then validating kustomizations..."
         echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
           if [[ -d "${kustomization_dir}" ]]; then
-            echo "      kustomization: ${kustomization_dir}"
+            echo "    kustomization: ${kustomization_dir}"
             kustomize build ${kustomization_dir} ${KUSTOMIZE_FLAGS} | \
               flux envsubst | \
               kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
@@ -158,3 +159,4 @@ jobs:
             exit 1
           fi
         done
+        echo "----------------------------------------------------------------"
