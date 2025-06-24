@@ -17,20 +17,21 @@ on:
       kubeconform_flags:
         required: false
         type: string
-        # skip Kubernetes Secrets due to SOPS fields failing validation
         default: '-skip=Secret'
       env_file:
         required: false
         type: string
         default: ''
-      mindepth:
+      kustomization_files:
         required: false
-        type: number
-        default: 2
-      maxdepth:
+        type: string
+        description: 'JSON array of kustomization.yaml files for pre-build validation'
+        default: '[]'
+      kustomization_dirs:
         required: false
-        type: number
-        default: 5
+        type: string
+        description: 'JSON array of kustomization directories for post-build validation'
+        default: '[]'
 
 env:
   FLUX_SCHEMA_DIR: /tmp/flux-crd-schemas/master-standalone-strict
@@ -78,54 +79,78 @@ jobs:
         cd ${FLUX_SCHEMA_DIR}
         tar -xzvf /tmp/crd-schemas.tar.gz
 
+    - name: Setting up environment variables for envsubst
+      if: inputs.env_file != ''
+      shell: bash
+      env:
+        ENV_FILE: "${{ inputs.env_file }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ -f "${ENV_FILE}" ]]; then
+          echo "Loading environment variables from ${ENV_FILE}..."
+          # Export variables to GITHUB_ENV for the post-build validation step
+          while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip empty lines and comments
+            if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
+              echo "$line" >> $GITHUB_ENV
+            fi
+          done < "${ENV_FILE}"
+        else
+          echo "Warning: Environment file not found: ${ENV_FILE}"
+          exit 1
+        fi
+
     - name: Validating kustomizations (pre-build)
+      if: inputs.prebuild_files != '[]'
       shell: bash
       env:
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
+        PREBUILD_FILES: "${{ inputs.kustomization_files }}"
       # yamllint disable-line rule:indentation
       run: |
         flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
         kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
         kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
 
-        find . -type f -name kustomization.yaml -not -path './.archive/*' -print0 | while IFS= read -r -d $'\0' file; do
-          kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" "${file}" | pr -t -o 6
-          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+        echo "${PREBUILD_FILES}" | jq -r '.[]' | while read -r file; do
+          if [[ -f "${file}" ]]; then
+            kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" "${file}" | pr -t -o 6
+            if [[ ${PIPESTATUS[0]} != 0 ]]; then
+              exit 1
+            fi
+          else
+            echo "----------------------------------------------------------------"
+            echo "  Warning: File not found: ${file}"
             exit 1
           fi
         done
 
     - name: Validating kustomizations (post-build)
+      if: inputs.postbuild_kustomization_dirs != '[]'
       shell: bash
       env:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
-        ENV_FILE: "${{ inputs.env_file }}"
-        MIN_DEPTH: "${{ inputs.mindepth }}"
-        MAX_DEPTH: "${{ inputs.maxdepth }}"
+        POSTBUILD_DIRS: "${{ inputs.kustomization_dirs }}"
       # yamllint disable-line rule:indentation
       run: |
         flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
         kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
         kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
 
-        if [[ ! -z "${ENV_FILE}" && -f "${ENV_FILE}" ]]; then
-          echo "        Setting up environment variables for envsubst..."
-          set -o allexport
-          source ${ENV_FILE}
-          set +o allexport
-        fi
-        echo
-
-        find . -mindepth ${MIN_DEPTH} -maxdepth ${MAX_DEPTH} -type f -name kustomization.yaml -not -path './components/*' -not -path './.archive/*' -print | sort > /tmp/kustomizations
-        while read -r file; do
-          kustomization_dir="${file/%kustomization.yaml}"
-          echo "      kustomization: $kustomization_dir"
-          kustomize build ${kustomization_dir} ${KUSTOMIZE_FLAGS} | \
-            flux envsubst | \
-            kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
-            pr -t -o 8
-          if [[ ${PIPESTATUS[0]} != 0 ]]; then
+        echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
+          if [[ -d "${kustomization_dir}" ]]; then
+            echo "      kustomization: ${kustomization_dir}"
+            kustomize build ${kustomization_dir} ${KUSTOMIZE_FLAGS} | \
+              flux envsubst | \
+              kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
+              pr -t -o 8
+            if [[ ${PIPESTATUS[0]} != 0 ]]; then
+              exit 1
+            fi
+          else
+            echo "----------------------------------------------------------------"
+            echo "  Warning: Directory not found: ${kustomization_dir}"
             exit 1
           fi
-        done < /tmp/kustomizations
+        done
