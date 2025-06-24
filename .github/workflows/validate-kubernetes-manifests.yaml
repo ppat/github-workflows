@@ -146,13 +146,16 @@ jobs:
         echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
           if [[ -d "${kustomization_dir}" ]]; then
             echo "    kustomization: ${kustomization_dir}"
-            kustomize build ${kustomization_dir} ${KUSTOMIZE_FLAGS} | \
+            kustomize create
+            kustomize edit add resource $kustomization_dir
+            kustomize build . ${KUSTOMIZE_FLAGS} | \
               flux envsubst | \
               kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
               pr -t -o 8
             if [[ ${PIPESTATUS[0]} != 0 ]]; then
               exit 1
             fi
+            rm kustomization.yaml
           else
             echo "------------------------------------------------------------------------"
             echo "  Warning: Directory not found: ${kustomization_dir}"
