@@ -44,16 +44,15 @@ jobs:
       uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
       with:
         path: ~/.local/share/mise
-        key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
+        key: mise-${{hashFiles('tools/mise-renovate.toml')}}
         restore-keys: |
-          mise-${{hashFiles('tools/mise.toml')}}
           mise-
 
     - name: Setup default mise configuration
       # yamllint disable-line rule:indentation
       run: |
         mkdir -p ~/.config/mise
-        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+        ln -s $GITHUB_WORKSPACE/tools/mise-renovate.toml ~/.config/mise/config.toml
 
     - name: Setup mise
       uses: jdx/mise-action@7a111ead46986ccad89a74ad013ba2a7c08c9e67 # v2.2.1
@@ -67,16 +66,6 @@ jobs:
         experimental: true
         log_level: debug
         working_directory: ${{ github.workspace }}/current
-
-    - name: Install renovate
-      env:
-        # renovate: datasource=npm depName=renovate
-        RENOVATE_VERSION: "40.57.1"
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        mise use npm:renovate@${RENOVATE_VERSION}
 
     - name: Validate renovate config files
       env:
