@@ -32,6 +32,10 @@ on:
         type: string
         description: 'JSON array of kustomization directories for post-build validation'
         default: '[]'
+      debug:
+        required: false
+        type: boolean
+        default: false
 
 env:
   FLUX_SCHEMA_DIR: /tmp/flux-crd-schemas/master-standalone-strict
@@ -84,6 +88,7 @@ jobs:
       shell: bash
       env:
         ENV_FILE: "${{ inputs.env_file }}"
+        DEBUG: "${{ inputs.debug }}"
       # yamllint disable-line rule:indentation
       run: |
         if [[ -f "${ENV_FILE}" ]]; then
@@ -95,6 +100,12 @@ jobs:
               echo "$line" >> $GITHUB_ENV
             fi
           done < "${ENV_FILE}"
+          if [[ "${DEBUG}" == "true" ]]; then
+            echo
+            echo "Loaded environment variables..."
+            env | sort
+            echo
+          fi
         else
           echo "Warning: Environment file not found: ${ENV_FILE}"
           exit 1
@@ -132,11 +143,21 @@ jobs:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
         POSTBUILD_DIRS: "${{ fromJSON(inputs.kustomization_dirs) }}"
+        DEBUG: "${{ inputs.debug }}"
       # yamllint disable-line rule:indentation
       run: |
         flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
         kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
         kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
+
+        if [[ "${DEBUG}" == "true" ]]; then
+          echo
+          echo "Environment variables availble for envsubt:"
+          echo "----------------------------------------------------------------"
+          env | sort
+          echo "----------------------------------------------------------------"
+          echo
+        fi
 
         echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
           if [[ -d "${kustomization_dir}" ]]; then
