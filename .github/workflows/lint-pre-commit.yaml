@@ -40,17 +40,18 @@ jobs:
       uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
       with:
         path: ~/.local/share/mise
-        key: mise-${{runner.os}}-${{runner.arch}}-${{hashFiles('mise.toml')}}
+        key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
         restore-keys: |
-          mise-${{runner.os}}-${{runner.arch}}-
+          mise-${{hashFiles('tools/mise.toml')}}
+          mise-
 
     - name: Cache pre-commit hooks
       uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
       with:
         path: ~/.cache/pre-commit/
-        key: pre-commit-${{runner.os}}-${{runner.arch}}-${{env.pythonLocation}}-${{hashFiles('.pre-commit-config.yaml')}}
+        key: pre-commit-${{hashFiles('.pre-commit-config.yaml')}}
         restore-keys: |
-          pre-commit--${{runner.os}}-${{runner.arch}}-
+          pre-commit-
 
     - name: Setup default mise configuration
       # yamllint disable-line rule:indentation
