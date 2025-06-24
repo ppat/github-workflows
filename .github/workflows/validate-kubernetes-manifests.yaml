@@ -124,7 +124,7 @@ jobs:
         kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
 
         if [[ -f "${ENV_FILE}" ]]; then
-          echo "----------------------------------------------------------------"
+          echo "------------------------------------------------------------------------"
           echo "Setting up environment variables for envsubst from ${ENV_FILE}..."
           echo
           set -o allexport
@@ -139,7 +139,7 @@ jobs:
             env | sort | grep -E '^[a-z_][a-z0-9_]*='
           fi
         fi
-        echo "----------------------------------------------------------------"
+        echo "------------------------------------------------------------------------"
         echo
 
         echo "Building and then validating kustomizations..."
@@ -154,9 +154,9 @@ jobs:
               exit 1
             fi
           else
-            echo "----------------------------------------------------------------"
+            echo "------------------------------------------------------------------------"
             echo "  Warning: Directory not found: ${kustomization_dir}"
             exit 1
           fi
         done
-        echo "----------------------------------------------------------------"
+        echo "------------------------------------------------------------------------"
