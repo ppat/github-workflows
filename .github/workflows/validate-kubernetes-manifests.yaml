@@ -83,36 +83,6 @@ jobs:
         cd ${FLUX_SCHEMA_DIR}
         tar -xzvf /tmp/crd-schemas.tar.gz
 
-    - name: Setting up environment variables for envsubst
-      if: inputs.env_file != ''
-      shell: bash
-      env:
-        ENV_FILE: "${{ inputs.env_file }}"
-        DEBUG: "${{ inputs.debug }}"
-      # yamllint disable-line rule:indentation
-      run: |
-        if [[ -f "${ENV_FILE}" ]]; then
-          echo "Loading environment variables from ${ENV_FILE}..."
-          # Export variables to GITHUB_ENV for the post-build validation step
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip empty lines and comments
-            if [[ -n "$line" && ! "$line" =~ ^[[:space:]]*# ]]; then
-              echo "$line" >> $GITHUB_ENV
-            fi
-          done < "${ENV_FILE}"
-          if [[ "${DEBUG}" == "true" ]]; then
-            echo
-            echo "Environment variables loaded from: ${ENV_FILE}..."
-            echo "(showing all lowercase env vars)"
-            echo
-            env | sort | grep -E '^[a-z_][a-z0-9_]*='
-            echo
-          fi
-        else
-          echo "Warning: Environment file not found: ${ENV_FILE}"
-          exit 1
-        fi
-
     - name: Validating kustomizations (pre-build)
       if: inputs.kustomization_files != '[]'
       shell: bash
@@ -145,6 +115,7 @@ jobs:
         KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
         KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
         POSTBUILD_DIRS: "${{ fromJSON(inputs.kustomization_dirs) }}"
+        ENV_FILE: "${{ inputs.env_file }}"
         DEBUG: "${{ inputs.debug }}"
       # yamllint disable-line rule:indentation
       run: |
@@ -152,16 +123,23 @@ jobs:
         kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
         kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
 
-        if [[ "${DEBUG}" == "true" ]]; then
-          echo
-          echo "Environment variables availble for envsubt:"
-          echo "(showing all lowercase env vars)"
-          echo
+        if [[ -f "${ENV_FILE}" ]]; then
           echo "----------------------------------------------------------------"
-          env | sort | grep -E '^[a-z_][a-z0-9_]*='
-          echo "----------------------------------------------------------------"
-          echo
+          echo "Setting up environment variables for envsubst from ${ENV_FILE}..."
+          set -o allexport
+          source ./ci/validation/.env
+          set +o allexport
+
+          if [[ "${DEBUG}" == "true" ]]; then
+            echo
+            echo "Environment variables loaded from: ${ENV_FILE}..."
+            echo "(showing all lowercase env vars)"
+            echo
+            env | sort | grep -E '^[a-z_][a-z0-9_]*='
+            echo
+          fi
         fi
+        echo "----------------------------------------------------------------"
 
         echo "${POSTBUILD_DIRS}" | jq -r '.[]' | while read -r kustomization_dir; do
           if [[ -d "${kustomization_dir}" ]]; then
