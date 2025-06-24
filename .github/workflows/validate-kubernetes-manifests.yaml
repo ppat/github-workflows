@@ -1,0 +1,176 @@
+---
+# yamllint disable rule:line-length
+name: validate-kubernetes-manifests
+# based on https://github.com/fluxcd/flux2-kustomize-helm-example/blob/main/scripts/validate.sh
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      kustomize_flags:
+        required: false
+        type: string
+        # default to kustomize-controller build options
+        default: '--load-restrictor=LoadRestrictionsNone'
+      kubeconform_flags:
+        required: false
+        type: string
+        default: '-skip=Secret'
+      kustomization_files:
+        required: false
+        type: string
+        description: 'JSON array of kustomization.yaml files for pre-build validation'
+        default: '[]'
+      kustomization_pkg_dirs:
+        required: false
+        type: string
+        description: 'JSON array of kustomization directories for post-build validation'
+        default: '[]'
+      env_file:
+        required: false
+        type: string
+        default: ''
+      base_kustomization_file:
+        required: false
+        type: string
+        default: ''
+      debug:
+        required: false
+        type: boolean
+        default: false
+
+env:
+  FLUX_SCHEMA_DIR: /tmp/flux-crd-schemas/master-standalone-strict
+  DATREE_SCHEMA_LOCATION: 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 0
+        repository: ${{ github.repository }}
+        ref: ${{ inputs.git_ref }}
+
+    - name: Setup kubeconform
+      uses: fluxcd/pkg/actions/kubeconform@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      with:
+        # renovate: datasource=github-releases depName=yannh/kubeconform
+        version: "v0.7.0"
+
+    - name: Setup kustomize
+      uses: fluxcd/pkg/actions/kustomize@69fd2d1e91bfb9a2f2b81c8ca36e08634ccea069
+      with:
+        # renovate: datasource=github-releases depName=kubernetes-sigs/kustomize extractVersion=^kustomize/(?<version>.*)$
+        version: "v5.6.0"
+
+    - name: Setup flux
+      uses: fluxcd/flux2/action@8d5f40dca5aa5d3c0fc3414457dda15a0ac92fa4 # v2.5.1
+      with:
+        # renovate: datasource=github-releases depName=fluxcd/flux2
+        version: "v2.5.1"
+
+    - name: Downloading Flux OpenAPI schemas
+      shell: bash
+      env:
+        # renovate: datasource=github-releases depName=fluxcd/flux2
+        version: "v2.5.1"
+      run: |
+        set -x
+        wget --progress=dot:giga -c https://github.com/fluxcd/flux2/releases/download/${version}/crd-schemas.tar.gz -O /tmp/crd-schemas.tar.gz
+        mkdir -p ${FLUX_SCHEMA_DIR}
+        cd ${FLUX_SCHEMA_DIR}
+        tar -xzvf /tmp/crd-schemas.tar.gz
+
+    - name: Validating kustomizations (pre-build)
+      if: inputs.kustomization_files != '[]'
+      shell: bash
+      env:
+        KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
+        PREBUILD_FILES: "${{ fromJSON(inputs.kustomization_files) }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
+        kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
+        kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
+
+        echo "${PREBUILD_FILES}" | jq -r '.[]' | while read -r file; do
+          if [[ -f "${file}" ]]; then
+            kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" "${file}" | pr -t -o 6
+            if [[ ${PIPESTATUS[0]} != 0 ]]; then
+              exit 1
+            fi
+          else
+            echo "----------------------------------------------------------------"
+            echo "  Warning: File not found: ${file}"
+            exit 1
+          fi
+        done
+
+    - name: Validating kustomization packages (post-build)
+      if: inputs.kustomization_pkg_dirs != '[]'
+      shell: bash
+      env:
+        KUSTOMIZE_FLAGS: "${{ inputs.kustomize_flags }}"
+        KUBECONFORM_FLAGS: "${{ inputs.kubeconform_flags }}"
+        PKG_DIRS: "${{ fromJSON(inputs.kustomization_pkg_dirs) }}"
+        ENV_FILE: "${{ inputs.env_file }}"
+        BASE_KUSTOMIZATION_FILE: "${{ inputs.base_kustomization_file }}"
+        DEBUG: "${{ inputs.debug }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        flux_schema_path=$(dirname ${FLUX_SCHEMA_DIR})
+        kubeconform_base_flags=("-strict" "-ignore-missing-schemas" "-verbose")
+        kubeconform_schema_flags=("-schema-location" "default" "-schema-location" ${flux_schema_path} -schema-location ${DATREE_SCHEMA_LOCATION})
+
+        if [[ -f "${ENV_FILE}" ]]; then
+          echo "------------------------------------------------------------------------"
+          echo "Setting up environment variables for envsubst from ${ENV_FILE}..."
+          echo
+          set -o allexport
+          source ./ci/validation/.env
+          set +o allexport
+          echo
+          if [[ "${DEBUG}" == "true" ]]; then
+            echo
+            echo "Environment variables loaded from: ${ENV_FILE}..."
+            echo "(showing all lowercase env vars)"
+            echo
+            env | sort | grep -E '^[a-z_][a-z0-9_]*='
+          fi
+        fi
+        echo "------------------------------------------------------------------------"
+        echo
+
+        echo "Building and then validating kustomizations..."
+        if [[ ! -f "${BASE_KUSTOMIZATION_FILE}" ]]; then
+          echo "Using temporary kustomization as build kustomization..."
+          kustomize create
+        else
+          echo "Using base kustomization as build kustomization: ${BASE_KUSTOMIZATION_FILE}..."
+          cp ${BASE_KUSTOMIZATION_FILE} .
+        fi
+        echo "${PKG_DIRS}" | jq -r '.[]' | while read -r pkg_dir; do
+          if [[ -d "${pkg_dir}" ]]; then
+            echo "    kustomization package: ${pkg_dir}"
+            kustomize edit add resource ${pkg_dir}
+            kustomize build . ${KUSTOMIZE_FLAGS} | \
+              flux envsubst | \
+              kubeconform ${KUBECONFORM_FLAGS} "${kubeconform_base_flags[@]}" "${kubeconform_schema_flags[@]}" | \
+              pr -t -o 8
+            if [[ ${PIPESTATUS[0]} != 0 ]]; then
+              exit 1
+            fi
+            kustomize edit remove resource ${pkg_dir}
+          else
+            echo "------------------------------------------------------------------------"
+            echo "  Warning: Directory not found: ${pkg_dir}"
+            exit 1
+          fi
+        done
+        echo "------------------------------------------------------------------------"
