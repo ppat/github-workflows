@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.1](https://github.com/ppat/github-workflows/compare/v0.1.0...v0.1.1) (2025-07-05)
+
+
+### Miscellaneous
+
+* do not hide chore commits in release notes ([659c246](https://github.com/ppat/github-workflows/commit/659c2467f8b63b761e3e5752b969a40c938fa353))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* build-docker-image workflow was breaking due to missing tailscale binaries ([#114](https://github.com/ppat/github-workflows/issues/114)) ([2373e2d](https://github.com/ppat/github-workflows/commit/2373e2df4a3cd32dfda4e30fb6cd1738e7aa9879))
+
 ## [0.1.0](https://github.com/ppat/github-workflows/compare/v0.0.1...v0.1.0) (2025-07-05)
 
 
