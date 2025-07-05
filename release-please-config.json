@@ -1,7 +1,7 @@
 {
   "changelog-sections": [
     { "type": "build", "section": "Build System", "hidden": true },
-    { "type": "chore", "section": "Miscellaneous", "hidden": true },
+    { "type": "chore", "section": "Miscellaneous", "hidden": false },
     { "type": "ci", "section": "🚦 Continuous Integration", "hidden": true },
     { "type": "docs", "section": "🛠 Improvements" },
     { "type": "feat", "section": "✨ Features" },
