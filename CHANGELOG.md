@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.0](https://github.com/ppat/github-workflows/compare/v0.0.1...v0.1.0) (2025-07-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove validate-kubernetes-manifests workflow, use ppat/validate-kubernetes-manifests action instead ([#110](https://github.com/ppat/github-workflows/issues/110))
+
+### 🚀 Enhancements + Bug Fixes
+
+* remove validate-kubernetes-manifests workflow, use ppat/validate-kubernetes-manifests action instead ([#110](https://github.com/ppat/github-workflows/issues/110)) ([ebd5f4c](https://github.com/ppat/github-workflows/commit/ebd5f4c2c4442149e74879ed51e104ec451f88ad))
+
 ## 0.0.1 (2025-07-05)
 
 
