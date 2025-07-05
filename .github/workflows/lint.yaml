@@ -17,6 +17,8 @@ jobs:
       actions_all_changed_files: ${{ steps.changed-files-yaml.outputs.actions_all_changed_files}}
       docker_any_changed: ${{ steps.changed-files-yaml.outputs.docker_any_changed }}
       docker_all_changed_files: ${{ steps.changed-files-yaml.outputs.docker_all_changed_files}}
+      markdown_any_changed: ${{ steps.changed-files-yaml.outputs.markdown_any_changed }}
+      markdown_all_changed_files: ${{ steps.changed-files-yaml.outputs.markdown_all_changed_files}}
       renovate_any_changed: ${{ steps.changed-files-yaml.outputs.renovate_any_changed }}
       renovate_all_changed_files: ${{ steps.changed-files-yaml.outputs.renovate_all_changed_files}}
       shellscripts_any_changed: ${{ steps.changed-files-yaml.outputs.shellscripts_any_changed }}
@@ -25,8 +27,6 @@ jobs:
       terraform_all_changed_files: ${{ steps.changed-files-yaml.outputs.terraform_all_changed_files}}
       yaml_any_changed: ${{ steps.changed-files-yaml.outputs.yaml_any_changed }}
       yaml_all_changed_files: ${{ steps.changed-files-yaml.outputs.yaml_all_changed_files}}
-      markdown_any_changed: ${{ steps.changed-files-yaml.outputs.markdown_any_changed }}
-      markdown_all_changed_files: ${{ steps.changed-files-yaml.outputs.markdown_all_changed_files}}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -44,6 +44,8 @@ jobs:
           - .github/workflows/**
           docker:
           - '**/Dockerfile'
+          markdown:
+          - '**.md'
           renovate:
           - .github/renovate.json
           - .github/renovate/**
@@ -51,8 +53,6 @@ jobs:
           - '**.sh'
           yaml:
           - '**.yaml'
-          markdown:
-          - '**.md'
 
   commit-messages:
     needs: [detect-changes]
