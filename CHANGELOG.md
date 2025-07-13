@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.1.2](https://github.com/ppat/github-workflows/compare/v0.1.1...v0.1.2) (2025-07-13)
+
+
+### Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.6.8 -&gt; v2025.7.0) ([#116](https://github.com/ppat/github-workflows/issues/116)) ([adfea80](https://github.com/ppat/github-workflows/commit/adfea80c9a58cad7e705e4d070a2e182fa4660e9))
+* **dev-tools:** update jdx/mise (v2025.7.0 -&gt; v2025.7.1) ([#119](https://github.com/ppat/github-workflows/issues/119)) ([d238a5a](https://github.com/ppat/github-workflows/commit/d238a5aa008da13502f4f57f64bf097c7c613e12))
+* **dev-tools:** update jdx/mise (v2025.7.1 -&gt; v2025.7.3) ([#121](https://github.com/ppat/github-workflows/issues/121)) ([a752671](https://github.com/ppat/github-workflows/commit/a752671518e9d4bd185c6aa1e233f36378c4eb42))
+* **dev-tools:** update jdx/mise (v2025.7.3 -&gt; v2025.7.4) ([#125](https://github.com/ppat/github-workflows/issues/125)) ([5eebf8a](https://github.com/ppat/github-workflows/commit/5eebf8a9d254bdcd8dfd79459785f95ddd664df9))
+* **dev-tools:** update renovatebot/renovate (41.7.2 -&gt; 41.17.2) ([#117](https://github.com/ppat/github-workflows/issues/117)) ([33aa1e8](https://github.com/ppat/github-workflows/commit/33aa1e8fe7048dabd1fe162f44d0bd2a1e60334f))
+* **github-actions:** update jdx/mise-action (v2.2.3 -&gt; v2.3.1) ([#118](https://github.com/ppat/github-workflows/issues/118)) ([5948b49](https://github.com/ppat/github-workflows/commit/5948b49aa9f4795d42e0cf6644b59591d7883d7c))
+* **github-actions:** update renovatebot/github-action (v43.0.1 -&gt; v43.0.2) ([#122](https://github.com/ppat/github-workflows/issues/122)) ([ef12ebe](https://github.com/ppat/github-workflows/commit/ef12ebed8f1782cb8c0c6dc90c49151b1ec4ff47))
+* **lang-sdk:** update node (non-major) ([#124](https://github.com/ppat/github-workflows/issues/124)) ([c2fb74b](https://github.com/ppat/github-workflows/commit/c2fb74b9da0ea1934a4af9da707009c90940ecbd))
+* **lang-sdk:** update uv (non-major) ([#123](https://github.com/ppat/github-workflows/issues/123)) ([0b5cfaf](https://github.com/ppat/github-workflows/commit/0b5cfafb4dd4ea76cd43cde5a2684de9c83c9f5a))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* do not persist git credentials in workflows unless needed ([#126](https://github.com/ppat/github-workflows/issues/126)) ([911175a](https://github.com/ppat/github-workflows/commit/911175ababcdeac39133f54d93a9fa6c7ec6d628))
+
 ## [0.1.1](https://github.com/ppat/github-workflows/compare/v0.1.0...v0.1.1) (2025-07-05)
 
 
