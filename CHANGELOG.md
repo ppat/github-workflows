@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.3](https://github.com/ppat/github-workflows/compare/v0.1.2...v0.1.3) (2025-07-18)
+
+
+### Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.7.10 -&gt; v2025.7.11) ([#130](https://github.com/ppat/github-workflows/issues/130)) ([1f3c112](https://github.com/ppat/github-workflows/commit/1f3c112f9d0ac7e2b673445cb2a76af9f01675d4))
+* **dev-tools:** update jdx/mise (v2025.7.4 -&gt; v2025.7.10) ([#127](https://github.com/ppat/github-workflows/issues/127)) ([bc016b3](https://github.com/ppat/github-workflows/commit/bc016b3783a94e2eeb077ea5d1e39e863412f2f9))
+* **dev-tools:** update renovatebot/renovate (41.17.2 -&gt; 41.30.4) ([#128](https://github.com/ppat/github-workflows/issues/128)) ([f16c5b3](https://github.com/ppat/github-workflows/commit/f16c5b30a082c331ebe9bb336e89d3c8ad3105cf))
+
 ## [0.1.2](https://github.com/ppat/github-workflows/compare/v0.1.1...v0.1.2) (2025-07-13)
 
 
