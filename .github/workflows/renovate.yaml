@@ -7,7 +7,7 @@ on:
     inputs:
       dry_run:
         required: false
-        type: bool
+        type: boolean
         default: true
       environment:
         required: false
