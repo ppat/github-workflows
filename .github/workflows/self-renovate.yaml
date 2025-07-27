@@ -1,0 +1,26 @@
+---
+# yamllint disable rule:line-length
+name: self-renovate
+
+on:
+  schedule:
+  - cron: '0 8 * * *'
+  pull_request:
+    paths:
+    - '.github/workflows/renovate.yaml'
+    - '.github/workflows/self-renovate.yaml'
+    - '.github/renovate.json'
+    - '.github/renovate/*.json'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  renovate:
+    uses: ./.github/workflows/renovate.yaml
+    with:
+      dry_run: "${{ github.event_name	== 'pull_request' }}"
+      git_ref: ${{ github.head_ref || github.ref }}
+      repository: ${{ github.repository }}
