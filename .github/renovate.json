@@ -28,6 +28,7 @@
     "github>ppat/renovate-presets:github-actions#v0.0.2",
     "github>ppat/renovate-presets:kubernetes#v0.0.2",
     "github>ppat/github-workflows//.github/renovate/mise",
+    "github>ppat/github-workflows//.github/renovate/other",
     "github>ppat/github-workflows//.github/renovate/exceptions"
   ],
   "internalChecksFilter": "strict",
