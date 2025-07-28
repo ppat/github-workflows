@@ -5,7 +5,7 @@ name: detect-changed-files
 on:
   workflow_call:
     inputs:
-      config:
+      files_yaml:
         required: true
         type: string
       git_ref:
@@ -33,4 +33,5 @@ jobs:
     - name: Determine what has changed
       id: changed-files
       uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46
-      with: ${{ inputs.config }}
+      with:
+        files_yaml: ${{ inputs.files_yaml }}

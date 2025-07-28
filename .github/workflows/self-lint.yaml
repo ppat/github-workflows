@@ -20,21 +20,20 @@ jobs:
     uses: ./.github/workflows/detect-changed-files.yaml
     with:
       # yamllint disable-line rule:indentation
-      config: |
-        files_yaml:
-          actions:
-          - .github/workflows/**
-          docker:
-          - '**/Dockerfile'
-          markdown:
-          - '**.md'
-          renovate:
-          - .github/renovate.json
-          - .github/renovate/**
-          shellscripts:
-          - '**.sh'
-          yaml:
-          - '**.yaml'
+      files_yaml: |
+        actions:
+        - .github/workflows/**
+        docker:
+        - '**/Dockerfile'
+        markdown:
+        - '**.md'
+        renovate:
+        - .github/renovate.json
+        - .github/renovate/**
+        shellscripts:
+        - '**.sh'
+        yaml:
+        - '**.yaml'
       git_ref: ${{ github.head_ref }}
 
   commit-messages:
