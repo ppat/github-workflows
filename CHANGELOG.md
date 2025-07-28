@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/ppat/github-workflows/compare/v1.0.0...v1.1.0) (2025-07-28)
+
+
+### Miscellaneous
+
+* **release:** update release please config ([#152](https://github.com/ppat/github-workflows/issues/152)) ([b0ad774](https://github.com/ppat/github-workflows/commit/b0ad77487d5fa75abd68ba7fad1035746176fdb7))
+
+
+### ✨ Features
+
+* add reusable workflow for chainsaw-test ([#154](https://github.com/ppat/github-workflows/issues/154)) ([eb85bfa](https://github.com/ppat/github-workflows/commit/eb85bfa5c9e2f762f2959de82309a9c45b0bc1d9))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update ppat/renovate-presets (v0.0.2 -&gt; v0.0.3) ([#155](https://github.com/ppat/github-workflows/issues/155)) ([182d1e1](https://github.com/ppat/github-workflows/commit/182d1e121d1b5ac6f70432c7e071e905843aa63e))
+
 ## [1.0.0](https://github.com/ppat/github-workflows/compare/v0.1.2...v1.0.0) (2025-07-28)
 
 
