@@ -41,4 +41,5 @@ jobs:
       dry_run: "${{ github.event_name	== 'pull_request' }}"
       git_ref: ${{ github.head_ref || github.ref }}
       repository: ${{ github.repository }}
+    secrets:
       renovate_token: ${{ needs.renovate-app-token.outputs.app-token }}
