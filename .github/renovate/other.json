@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "description": "update renovate itself",
+      "fetchChangeLogs": "off",
+      "groupName": "renovate",
+      "matchDatasources": [
+        "docker",
+        "github-releases",
+        "npm"
+      ],
+      "matchPackageNames": [
+        "renovate",
+        "renovate/renovate",
+        "renovatebot/renovate"
+      ],
+      "semanticCommitScope": "dev-tools",
+      "semanticCommitType": "chore",
+      "schedule": [
+        "every 7 day"
+      ]
+    }
+  ]
+}

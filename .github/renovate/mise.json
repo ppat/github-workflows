@@ -11,35 +11,11 @@
       ],
       "matchPackageNames": [
         "oven-sh/bun",
-        "golang/go",
         "nodejs",
-        "rust-lang/rust",
         "hashicorp/terraform",
         "astral-sh/uv"
       ],
-      "semanticCommitScope": "lang-sdk",
-      "separateMajorMinor": true,
-      "separateMinorPatch": false,
-      "separateMultipleMajor": true,
-      "separateMultipleMinor": true
-    },
-    {
-      "matchFileNames": [
-        "mise-renovate.toml",
-        "mise.toml"
-      ],
-      "matchManagers": [
-        "mise"
-      ],
-      "matchPackageNames": [
-        "!oven-sh/bun",
-        "!golang/go",
-        "!nodejs",
-        "!rust-lang/rust",
-        "!hashicorp/terraform",
-        "!astral-sh/uv"
-      ],
-      "semanticCommitScope": "cli-tools",
+      "semanticCommitScope": "dev-tools",
       "separateMajorMinor": true,
       "separateMinorPatch": false,
       "separateMultipleMajor": true,
@@ -55,7 +31,6 @@
       ],
       "matchPackageNames": [
         "oven-sh/bun",
-        "rust-lang/rust",
         "astral-sh/uv"
       ],
       "matchUpdateTypes": [
@@ -72,7 +47,6 @@
         "mise"
       ],
       "matchPackageNames": [
-        "golang/go",
         "nodejs",
         "hashicorp/terraform"
       ],
