@@ -3,35 +3,40 @@
 name: release
 
 on:
-  push:
-    branches:
-    - main
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-
-permissions: {}
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      timeout:
+        required: false
+        type: number
+        default: 10
+    secrets:
+      renovate_app_id:
+        required: true
+      renovate_app_private_key:
+        required: true
 
 jobs:
   release:
     name: release
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    environment: release
+    timeout-minutes: ${{ inputs.timeout }}
     steps:
     - name: Generate github app token for renovate
       uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
       id: app-token
       with:
-        app-id: ${{ secrets.HOMELAB_BOT_APP_ID }}
-        private-key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
+        app-id: ${{ secrets.renovate_app_id }}
+        private-key: ${{ secrets.renovate_app_private_key }}
         owner: ${{ github.repository_owner }}
 
     - name: Release Please
       uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4
       id: release
       with:
+        repo-url: ${{ inputs.repository }}
         token: ${{ steps.app-token.outputs.token }}
         config-file: release-please-config.json
         manifest-file: .release-please-manifest.json

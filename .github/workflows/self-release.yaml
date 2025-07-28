@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+name: self-release
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions: {}
+
+jobs:
+  release:
+    uses: ./.github/workflows/release.yaml
+    with:
+      repository: ${{ github.repository }}
+    secrets:
+      renovate_app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      renovate_app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
