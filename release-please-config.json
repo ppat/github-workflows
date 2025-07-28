@@ -14,16 +14,14 @@
     { "type": "test", "section": "🛠 Improvements" }
   ],
   "draft": false,
-  "initial-version": "0.0.1",
   "packages": {
     ".": {
-      "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true,
       "extra-label": "pr-type:release"
     }
   },
   "prerelease": false,
   "pull-request-title-pattern": "chore(release): release${component} v${version}",
+  "release-as": "1.0.0",
   "release-type": "simple",
   "separate-pull-requests": true,
   "sequential-calls": true,
