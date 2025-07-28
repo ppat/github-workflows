@@ -34,6 +34,12 @@
   "labels": [
     "pr-type:renovate"
   ],
+  "mise": {
+    "managerFilePatterns": [
+      "/^mise-renovate.toml$/",
+      "/^mise.toml$/"
+    ]
+  },
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "printConfig": true,
