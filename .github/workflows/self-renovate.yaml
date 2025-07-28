@@ -32,7 +32,7 @@ jobs:
         app-id: ${{ secrets.RENOVATE_APP_ID }}
         private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
-        repositories: ${{ inputs.repository }}
+        repositories: ${{ github.repository }}
 
   renovate:
     needs: [renovate-app-token]
