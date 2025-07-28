@@ -48,27 +48,27 @@ jobs:
 
   github-actions:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.actions_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.results.actions_any_changed == 'true' }}
     uses: ./.github/workflows/lint-github-actions.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.actions_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.actions_all_changed_files }}
 
   docker-files:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.docker_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.results.docker_any_changed == 'true' }}
     uses: ./.github/workflows/lint-hadolint.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.docker_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.docker_all_changed_files }}
 
   markdown:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.markdown_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.results.markdown_any_changed == 'true' }}
     uses: ./.github/workflows/lint-markdown.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.markdown_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.markdown_all_changed_files }}
 
   pre-commit:
     uses: ./.github/workflows/lint-pre-commit.yaml
@@ -77,24 +77,24 @@ jobs:
 
   renovate-config-check:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.renovate_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.results.renovate_any_changed == 'true' }}
     uses: ./.github/workflows/lint-renovate-config-check.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.renovate_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.renovate_all_changed_files }}
 
   shellcheck:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.shellscripts_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.results.shellscripts_any_changed == 'true' }}
     uses: ./.github/workflows/lint-shellcheck.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.shellscripts_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.shellscripts_all_changed_files }}
 
   yaml:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.outputs.yaml_any_changed == 'true' }}
+    if: ${{ github.event_name != 'pull_request' || needs.detect-changes.output.results.yaml_any_changed == 'true' }}
     uses: ./.github/workflows/lint-yaml.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.yaml_all_changed_files }}
+      files: ${{ github.event_name != 'pull_request' && 'ALL' || needs.detect-changes.outputs.results.yaml_all_changed_files }}

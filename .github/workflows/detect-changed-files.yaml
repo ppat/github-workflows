@@ -18,7 +18,8 @@ on:
 
 jobs:
   detect-changed-files:
-    outputs: ${{ steps.changed-files.outputs }}
+    outputs:
+      results: ${{ steps.changed-files.outputs }}
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
