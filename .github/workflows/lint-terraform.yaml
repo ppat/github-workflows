@@ -16,6 +16,10 @@ on:
         description: 'JSON array of Terraform directories to validate'
         required: true
         type: string
+      mise_log_level:
+        required: false
+        type: string
+        default: "info"
 
 env:
   MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
@@ -67,7 +71,7 @@ jobs:
         install: true
         cache: false
         experimental: true
-        log_level: debug
+        log_level: ${{ inputs.mise_log_level }}
         working_directory: ${{ github.workspace }}/current
 
     - name: terraform-fmt
@@ -123,7 +127,7 @@ jobs:
         install: true
         cache: false
         experimental: true
-        log_level: debug
+        log_level: ${{ inputs.mise_log_level }}
         working_directory: ${{ github.workspace }}/current
 
     - name: terraform-init
