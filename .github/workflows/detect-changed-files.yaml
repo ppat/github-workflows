@@ -15,6 +15,9 @@ on:
         required: false
         type: number
         default: 5
+    outputs:
+      results:
+        value: ${{ toJSON(jobs.detect-changed-files.outputs.results) }}
 
 jobs:
   detect-changed-files:
