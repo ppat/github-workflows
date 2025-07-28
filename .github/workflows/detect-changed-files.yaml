@@ -33,4 +33,4 @@ jobs:
     - name: Determine what has changed
       id: changed-files
       uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46
-      with: ${{ fromJSON(inputs.config) }}
+      with: ${{ inputs.config }}
