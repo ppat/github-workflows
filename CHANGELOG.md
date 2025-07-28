@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ppat/github-workflows/compare/v1.1.0...v1.1.1) (2025-07-28)
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** update detect-changed-files workflow to enable specifying fetch depth ([#156](https://github.com/ppat/github-workflows/issues/156)) ([568badc](https://github.com/ppat/github-workflows/commit/568badcdad01fe6de50250d653c94a16e86e03f3))
+
 ## [1.1.0](https://github.com/ppat/github-workflows/compare/v1.0.0...v1.1.0) (2025-07-28)
 
 
