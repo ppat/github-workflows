@@ -2,6 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "groupName": "mise packages",
       "matchFileNames": [
         "mise-renovate.toml",
         "mise.toml"
@@ -9,12 +10,7 @@
       "matchManagers": [
         "mise"
       ],
-      "matchPackageNames": [
-        "oven-sh/bun",
-        "nodejs",
-        "hashicorp/terraform",
-        "astral-sh/uv"
-      ],
+      "minimumReleaseAge": "7 days",
       "semanticCommitScope": "dev-tools",
       "separateMajorMinor": true,
       "separateMinorPatch": false,

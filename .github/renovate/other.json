@@ -11,10 +11,12 @@
         "npm"
       ],
       "matchPackageNames": [
+        "npm:renovate",
         "renovate",
         "renovate/renovate",
         "renovatebot/renovate"
       ],
+      "minimumReleaseAge": "3 days",
       "semanticCommitScope": "dev-tools",
       "semanticCommitType": "chore",
       "schedule": [
