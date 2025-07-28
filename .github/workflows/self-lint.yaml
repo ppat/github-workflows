@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: lint
+name: self-lint
 
 on:
   pull_request:
