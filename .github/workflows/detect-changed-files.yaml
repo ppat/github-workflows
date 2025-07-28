@@ -5,6 +5,10 @@ name: detect-changed-files
 on:
   workflow_call:
     inputs:
+      fetch_depth:
+        required: false
+        type: number
+        default: 0
       files:
         required: false
         type: string
@@ -52,12 +56,14 @@ jobs:
       with:
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
+        fetch-depth: ${{ inputs.fetch_depth }}
         persist-credentials: false
 
     - name: Determine what has changed
       id: changed-files
       uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46
       with:
+        fetch_depth: ${{ inputs.fetch_depth }}
         files: ${{ inputs.files }}
         files_yaml: ${{ inputs.files_yaml }}
         dir_names: ${{ inputs.dir_names }}
