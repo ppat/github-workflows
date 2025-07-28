@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.0.0](https://github.com/ppat/github-workflows/compare/v0.1.2...v1.0.0) (2025-07-28)
+
+
+### Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.7.10 -&gt; v2025.7.11) ([#130](https://github.com/ppat/github-workflows/issues/130)) ([1f3c112](https://github.com/ppat/github-workflows/commit/1f3c112f9d0ac7e2b673445cb2a76af9f01675d4))
+* **dev-tools:** update jdx/mise (v2025.7.11 -&gt; v2025.7.17) ([#131](https://github.com/ppat/github-workflows/issues/131)) ([43bc804](https://github.com/ppat/github-workflows/commit/43bc804aa9113708022491628af6b7bfa4745e10))
+* **dev-tools:** update jdx/mise (v2025.7.17 -&gt; v2025.7.27) ([#132](https://github.com/ppat/github-workflows/issues/132)) ([6e6b858](https://github.com/ppat/github-workflows/commit/6e6b858a06de1a03ae7e0d8cd216461f66bcd72c))
+* **dev-tools:** update jdx/mise (v2025.7.4 -&gt; v2025.7.10) ([#127](https://github.com/ppat/github-workflows/issues/127)) ([bc016b3](https://github.com/ppat/github-workflows/commit/bc016b3783a94e2eeb077ea5d1e39e863412f2f9))
+* **dev-tools:** update npm:renovate (40.57.1 -&gt; 41.43.2) ([#150](https://github.com/ppat/github-workflows/issues/150)) ([6e5ed60](https://github.com/ppat/github-workflows/commit/6e5ed606beccb53b016ace107665871ca0354541))
+* **dev-tools:** update renovatebot/renovate (41.17.2 -&gt; 41.30.4) ([#128](https://github.com/ppat/github-workflows/issues/128)) ([f16c5b3](https://github.com/ppat/github-workflows/commit/f16c5b30a082c331ebe9bb336e89d3c8ad3105cf))
+* **dev-tools:** update renovatebot/renovate (41.35.1 -&gt; 41.43.2) ([#146](https://github.com/ppat/github-workflows/issues/146)) ([3866332](https://github.com/ppat/github-workflows/commit/38663329882d1c2e567384208adaf23fa38f5228))
+* **dev-tools:** update sirosen/texthooks (non-major) ([#144](https://github.com/ppat/github-workflows/issues/144)) ([6f5f11c](https://github.com/ppat/github-workflows/commit/6f5f11c2b5b9f89bd77ba680c35d5b662abc332b))
+* **github-actions:** update jdx/mise-action (v2.3.1 -&gt; v2.4.4) ([#145](https://github.com/ppat/github-workflows/issues/145)) ([226c3d1](https://github.com/ppat/github-workflows/commit/226c3d1d1ce1d1d2a3483f95c7126461f75b7e9e))
+* **github-actions:** update renovatebot/github-action (v43.0.2 -&gt; v43.0.5) ([#142](https://github.com/ppat/github-workflows/issues/142)) ([de9a001](https://github.com/ppat/github-workflows/commit/de9a0015c23fae3ea466c6bf44de46d49005f59a))
+* **release:** prep for v1.0.0 release ([#136](https://github.com/ppat/github-workflows/issues/136)) ([f2c0ba3](https://github.com/ppat/github-workflows/commit/f2c0ba3ab9222096a09970d22fd4a3b95fdc4c89))
+
+
+### ✨ Features
+
+* create a reusable workflow for release-please ([#135](https://github.com/ppat/github-workflows/issues/135)) ([8d349ea](https://github.com/ppat/github-workflows/commit/8d349eaa3d1faf7ac6e2a23ef59454c32c1a58f5))
+* create a reusable workflow for renovate ([#134](https://github.com/ppat/github-workflows/issues/134)) ([b086832](https://github.com/ppat/github-workflows/commit/b0868329138d151a87b829f16c71cd2d43a5687c))
+* create workflow that wraps tj-actions/changed-files action ([#139](https://github.com/ppat/github-workflows/issues/139)) ([401f15e](https://github.com/ppat/github-workflows/commit/401f15ed5e2414d1c14cd27f7ffd6c68644dfa16))
+* **dev-tools:** update mise packages ([#151](https://github.com/ppat/github-workflows/issues/151)) ([fbc8e44](https://github.com/ppat/github-workflows/commit/fbc8e44cdceaccad8d7676e430a7314521d2e60c))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **dev-tools:** update mise packages ([#141](https://github.com/ppat/github-workflows/issues/141)) ([4533876](https://github.com/ppat/github-workflows/commit/453387621ff7cca784888829984c771c460bc7bf))
+* make mise log level configurable + default to info instead of debug ([#137](https://github.com/ppat/github-workflows/issues/137)) ([e6e7e7a](https://github.com/ppat/github-workflows/commit/e6e7e7a5a4d4bd46288fd10b7bf37d4fe6a0274a))
+* rename internal lint workflow - lint.yaml -&gt; self-lint.yaml ([#138](https://github.com/ppat/github-workflows/issues/138)) ([40537f0](https://github.com/ppat/github-workflows/commit/40537f0843e4a75248734a745a7c047963780a51))
+
 ## [0.1.2](https://github.com/ppat/github-workflows/compare/v0.1.1...v0.1.2) (2025-07-13)
 
 
