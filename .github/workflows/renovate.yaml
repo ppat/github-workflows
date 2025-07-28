@@ -3,55 +3,74 @@
 name: renovate
 
 on:
-  schedule:
-  - cron: '0 8 * * *'
-  pull_request:
-    paths:
-    - '.github/workflows/renovate.yaml'
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  workflow_call:
+    inputs:
+      dry_run:
+        required: false
+        type: boolean
+        default: true
+      git_ref:
+        required: true
+        type: string
+      log_level:
+        required: false
+        type: string
+        default: info
+      repository:
+        required: true
+        type: string
+      timeout:
+        required: false
+        type: number
+        default: 10
+    secrets:
+      renovate_app_id:
+        required: true
+      renovate_app_private_key:
+        required: true
+      dockerhub_username:
+        required: true
+      dockerhub_token:
+        required: true
 
 jobs:
   renovate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment: renovate
-
+    runs-on: ubuntu-24.04
+    timeout-minutes: ${{ inputs.timeout }}
     steps:
     - name: Generate github app token for renovate
       uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
       id: app-token
       with:
-        app-id: ${{ secrets.RENOVATE_APP_ID }}
-        private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+        app-id: ${{ secrets.renovate_app_id }}
+        private-key: ${{ secrets.renovate_app_private_key }}
         owner: ${{ github.repository_owner }}
 
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         persist-credentials: false
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.git_ref }}
         token: "${{ steps.app-token.outputs.token }}"
 
-    - name: Self-hosted Renovate
+    - name: Renovate
       uses: renovatebot/github-action@13da59cf7cfbd3bfea72ce26752ed22edf747ce9 # v43.0.2
       with:
         token: ${{ steps.app-token.outputs.token }}
         # renovate: datasource=github-releases depName=renovatebot/renovate
-        renovate-version: "41.30.4"
+        renovate-version: "41.35.1"
       env:
-        LOG_LEVEL: 'debug'
-        RENOVATE_DRY_RUN: "${{ github.event_name	== 'pull_request' && 'extract' || '' }}"
+        LOG_LEVEL: ${{ inputs.log_level }}
+        RENOVATE_DRY_RUN: "${{ inputs.dry_run	== true && 'extract' || '' }}"
         RENOVATE_GIT_IGNORED_AUTHORS: "182250461+homelab-workflows-bot[bot]@users.noreply.github.com"
         # yamllint disable-line rule:indentation
         RENOVATE_HOST_RULES: >-
           [
             {
               "hostType": "docker",
-              "username": "${{ secrets.DOCKERHUB_USERNAME }}",
-              "password": "${{ secrets.DOCKERHUB_TOKEN }}"
+              "username": "${{ secrets.dockerhub_username }}",
+              "password": "${{ secrets.dockerhub_token }}"
             },
             {
               "hostType": "docker",
@@ -62,7 +81,7 @@ jobs:
           ]
         RENOVATE_PLATFORM: 'github'
         RENOVATE_PLATFORM_COMMIT: 'true'
-        RENOVATE_REPOSITORIES: "${{ github.repository }}"
+        RENOVATE_REPOSITORIES: "${{ inputs.repository }}"
         RENOVATE_REQUIRE_CONFIG: 'required'
         GIT_AUTHOR_NAME: ""
         GIT_AUTHOR_EMAIL: ""
