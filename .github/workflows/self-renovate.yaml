@@ -23,6 +23,7 @@ jobs:
     with:
       dry_run: "${{ github.event_name	== 'pull_request' }}"
       git_ref: ${{ github.head_ref || github.ref }}
+      log_level: debug
       repository: ${{ github.repository }}
     secrets:
       renovate_app_id: ${{ secrets.RENOVATE_APP_ID }}
