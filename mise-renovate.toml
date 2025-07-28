@@ -1,5 +1,5 @@
 [tools]
-bun            = "1.2.17"
+bun            = "1.2.19"
 node           = "22.16.0"
 "npm:renovate" = "40.57.1"
 
