@@ -20,7 +20,13 @@ on:
         type: number
         default: 10
     secrets:
-      renovate_token:
+      renovate_app_id:
+        required: true
+      renovate_app_private_key:
+        required: true
+      dockerhub_username:
+        required: true
+      dockerhub_token:
         required: true
 
 jobs:
@@ -28,13 +34,21 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
+    - name: Generate github app token for renovate
+      uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+      id: app-token
+      with:
+        app-id: ${{ secrets.renovate_app_id }}
+        private-key: ${{ secrets.renovate_app_private_key }}
+        owner: ${{ github.repository_owner }}
+
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         persist-credentials: false
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.git_ref }}
-        token: "${{ secrets.renovate_token }}"
+        token: "${{ steps.app-token.outputs.token }}"
 
     - name: Renovate
       uses: renovatebot/github-action@13da59cf7cfbd3bfea72ce26752ed22edf747ce9 # v43.0.2
@@ -46,19 +60,19 @@ jobs:
         LOG_LEVEL: 'debug'
         RENOVATE_DRY_RUN: "${{ inputs.dry_run	== true && 'extract' || '' }}"
         RENOVATE_GIT_IGNORED_AUTHORS: "182250461+homelab-workflows-bot[bot]@users.noreply.github.com"
-            # {
-            #   "hostType": "docker",
-            #   "username": "${{ secrets.DOCKERHUB_USERNAME }}",
-            #   "password": "${{ secrets.DOCKERHUB_TOKEN }}"
-            # },
         # yamllint disable-line rule:indentation
         RENOVATE_HOST_RULES: >-
           [
             {
               "hostType": "docker",
+              "username": "${{ secrets.dockerhub_username }}",
+              "password": "${{ secrets.dockerhub_token }}"
+            },
+            {
+              "hostType": "docker",
               "matchHost": "ghcr.io",
               "username": "${{ github.repository_owner }}",
-              "password": "${{ secrets.renovate_token }}"
+              "password": "${{ steps.app-token.outputs.token }}"
             }
           ]
         RENOVATE_PLATFORM: 'github'
