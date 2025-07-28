@@ -18,9 +18,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  renovate-app-token:
+    runs-on: ubuntu-24.04
+    environment: renovate
+    outputs:
+      app-token: ${{ steps.app-token.outputs.token }}
+    timeout-minutes: 5
+    steps:
+    - name: Generate github app token for renovate
+      uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+      id: app-token
+      with:
+        app-id: ${{ secrets.RENOVATE_APP_ID }}
+        private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+        repositories: ${{ inputs.repository }}
+
   renovate:
+    needs: [renovate-app-token]
     uses: ./.github/workflows/renovate.yaml
     with:
       dry_run: "${{ github.event_name	== 'pull_request' }}"
       git_ref: ${{ github.head_ref || github.ref }}
       repository: ${{ github.repository }}
+      renovate_token: ${{ needs.renovate-app-token.outputs.app-token }}
