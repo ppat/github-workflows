@@ -12,6 +12,10 @@ on:
       git_ref:
         required: true
         type: string
+      log_level:
+        required: false
+        type: string
+        default: info
       repository:
         required: true
         type: string
@@ -41,6 +45,7 @@ jobs:
         app-id: ${{ secrets.renovate_app_id }}
         private-key: ${{ secrets.renovate_app_private_key }}
         owner: ${{ github.repository_owner }}
+        repositories: ${{ inputs.repository }}
 
     - name: Checkout repository
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -57,7 +62,7 @@ jobs:
         # renovate: datasource=github-releases depName=renovatebot/renovate
         renovate-version: "41.35.1"
       env:
-        LOG_LEVEL: 'debug'
+        LOG_LEVEL: ${{ inputs.log_level }}
         RENOVATE_DRY_RUN: "${{ inputs.dry_run	== true && 'extract' || '' }}"
         RENOVATE_GIT_IGNORED_AUTHORS: "182250461+homelab-workflows-bot[bot]@users.noreply.github.com"
         # yamllint disable-line rule:indentation
