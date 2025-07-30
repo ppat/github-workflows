@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.2](https://github.com/ppat/github-workflows/compare/v1.1.1...v1.1.2) (2025-07-30)
+
+
+### Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.7.27 -&gt; v2025.7.29) ([#158](https://github.com/ppat/github-workflows/issues/158)) ([53fee2e](https://github.com/ppat/github-workflows/commit/53fee2e5adb1bf0c9f3b00fe7a45c160918a3a70))
+* **dev-tools:** update renovate (41.43.2 -&gt; 41.43.5) ([#159](https://github.com/ppat/github-workflows/issues/159)) ([d6193c2](https://github.com/ppat/github-workflows/commit/d6193c2c1e695a1332fd38bee4b95a5894351044))
+* **github-actions:** update actions/create-github-app-token (v1 -&gt; v2) ([#88](https://github.com/ppat/github-workflows/issues/88)) ([e69e408](https://github.com/ppat/github-workflows/commit/e69e408507ba76b68c7c844af5f88918f62b07d4))
+* **github-actions:** update digest peter-evans/dockerhub-description (e98e4d1 -&gt; 432a30c) ([#69](https://github.com/ppat/github-workflows/issues/69)) ([a46ed34](https://github.com/ppat/github-workflows/commit/a46ed34fe981f23fb7286838916e07091c1999dd))
+* **github-actions:** update digest tj-actions/changed-files (2f7c5bf -&gt; ed68ef8) ([#70](https://github.com/ppat/github-workflows/issues/70)) ([b4ec431](https://github.com/ppat/github-workflows/commit/b4ec431a247e7185f47b53c4c6e35b7c78140ce6))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* fix docker image build workflow for builds triggered from branches w/ non-alphanumeric characters in their name ([#161](https://github.com/ppat/github-workflows/issues/161)) ([c4a0277](https://github.com/ppat/github-workflows/commit/c4a0277a9de4574e4a185561eb6d52b961c6b0be))
+
 ## [1.1.1](https://github.com/ppat/github-workflows/compare/v1.1.0...v1.1.1) (2025-07-28)
 
 
