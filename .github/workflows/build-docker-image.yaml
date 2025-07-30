@@ -111,7 +111,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         # use the git ref segment after the final slash (as branch can contain a slash)
-        VERSION_RAW="$(echo $SOURCE_GIT_REF | grep -oE '[^/]+$')"
+        VERSION_RAW="$(echo $SOURCE_GIT_REF | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
         VERSION_SHA="$(git rev-parse --short HEAD)"
 
         set -x
