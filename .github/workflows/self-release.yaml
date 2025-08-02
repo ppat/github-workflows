@@ -18,6 +18,7 @@ jobs:
     uses: ./.github/workflows/release.yaml
     with:
       repository: ${{ github.repository }}
+      release_type: release-please
     secrets:
-      renovate_app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
-      renovate_app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
+      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
