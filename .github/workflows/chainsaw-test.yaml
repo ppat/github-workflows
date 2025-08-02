@@ -101,7 +101,7 @@ jobs:
           --name=${CLUSTER_NAME} \
           --wait=${WAIT} \
           --image=${CLUSTER_NODE_IMAGE} \
-          --config=${CONFIG} \
+          --config=${CONFIG}
         kubectl version
 
     - name: Install flux in kind cluster
