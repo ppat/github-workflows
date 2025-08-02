@@ -9,9 +9,9 @@ on:
     - '.github/workflows/lint-hadolint.yaml'
     - '.github/workflows/self-test-docker.yaml'
     - 'test/docker/**'
-  workflow_dispatch:
   schedule:
-  - cron: '0 5 * * 1'
+  - cron: '0 4 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
