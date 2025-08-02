@@ -1,13 +1,16 @@
+# tflint-ignore: terraform_required_providers
 terraform {
   required_version = "1.6.6"
 
   required_providers {
-    authentik = {
-      # tflint-ignore: terraform_required_providers
-      source = "goauthentik/authentik"
+    bitwarden = {
+      source = "maxlaverse/bitwarden"
     }
   }
 }
 
-provider "authentik" {
+provider "bitwarden" {
+  experimental {
+    embedded_client = true
+  }
 }
