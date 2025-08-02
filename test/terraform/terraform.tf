@@ -3,6 +3,7 @@ terraform {
 
   required_providers {
     authentik = {
+      # tflint-ignore: terraform_required_providers
       source = "goauthentik/authentik"
     }
   }
