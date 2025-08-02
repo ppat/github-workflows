@@ -1,0 +1,40 @@
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: sample-test
+spec:
+  steps:
+  - try:
+    - description: Create git source
+      apply:
+        resource:
+          apiVersion: source.toolkit.fluxcd.io/v1
+          kind: GitRepository
+          metadata:
+            name: test-source
+            namespace: flux-system
+          spec:
+            interval: 1m0s
+            ref:
+              branch: ($values.git.branch)
+            url: ($values.git.url)
+    - description: Assert git source
+      assert:
+        resource:
+          apiVersion: source.toolkit.fluxcd.io/v1
+          kind: GitRepository
+          metadata:
+            name: test-source
+            namespace: flux-system
+          status:
+            (conditions[?type == 'Ready']):
+            - status: 'True'
+    catch:
+    - describe:
+        apiVersion: source.toolkit.fluxcd.io/v1
+        kind: GitRepository
+        name: test-source
+        namespace: flux-system
+    - events:
+        namespace: flux-system
