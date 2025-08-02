@@ -1,0 +1,30 @@
+---
+# yamllint disable rule:line-length
+name: self-test-chainsaw
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/chainsaw-test.yaml'
+    - '.github/workflows/self-test-chainsaw.yaml'
+    - 'test/chainsaw/**'
+  workflow_dispatch:
+  schedule:
+  - cron: '0 5 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-chainsaw:
+    uses: ./.github/workflows/chainsaw-test.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      repository: ${{ github.repository }}
+      test_path: test/chainsaw
+      chainsaw_config: test/chainsaw/config.yaml
+      kind_config: test/chainsaw/kind-cluster.yaml

@@ -41,7 +41,7 @@ jobs:
       uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
       with:
         cluster_name: dev
-        config: "${{ inputs.kind_config }}"
+        config: ${{ inputs.kind_config }}
         # renovate: datasource=github-releases depName=kubernetes-sigs/kind
         version: "v0.29.0"
         # renovate: datasource=github-releases depName=kubernetes/kubernetes
