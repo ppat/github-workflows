@@ -4,14 +4,6 @@ kind: Configuration
 metadata:
   name: chainsaw
 spec:
-  timeouts:
-    apply: 1m
-    assert: 1m
-    cleanup: 30s
-    delete: 15s
-    error: 30s
-    exec: 5s
-
   execution:
     failFast: true
 
