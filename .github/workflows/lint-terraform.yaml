@@ -144,6 +144,7 @@ jobs:
           source .ci.env
           set +o allexport
         fi
+        terraform version
         terraform validate
 
   terraform-lint:

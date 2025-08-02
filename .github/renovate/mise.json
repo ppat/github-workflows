@@ -3,10 +3,6 @@
   "packageRules": [
     {
       "groupName": "mise packages",
-      "matchFileNames": [
-        "mise-renovate.toml",
-        "mise.toml"
-      ],
       "matchManagers": [
         "mise"
       ],
@@ -18,10 +14,6 @@
       "separateMultipleMinor": false
     },
     {
-      "matchFileNames": [
-        "mise-renovate.toml",
-        "mise.toml"
-      ],
       "matchManagers": [
         "mise"
       ],
@@ -35,10 +27,6 @@
       "minimumReleaseAge": "30 days"
     },
     {
-      "matchFileNames": [
-        "mise-renovate.toml",
-        "mise.toml"
-      ],
       "matchManagers": [
         "mise"
       ],

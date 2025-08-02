@@ -74,16 +74,6 @@ jobs:
         log_level: ${{ inputs.mise_log_level }}
         working_directory: ${{ github.workspace }}/current
 
-    - name: Install markdownlint-cli2
-      env:
-        # renovate: datasource=npm depName=markdownlint-cli2
-        MARKDOWNLINT_VERSION: "0.18.1"
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        mise use npm:markdownlint-cli2@${MARKDOWNLINT_VERSION} --global
-
     - name: Lint markdown files
       env:
         MARKDOWN_FILES: ${{ inputs.files }}
