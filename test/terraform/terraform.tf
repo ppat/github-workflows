@@ -1,5 +1,12 @@
 terraform {
   required_version = "1.6.6"
 
-  required_providers {}
+  required_providers {
+    authentik = {
+      source = "goauthentik/authentik"
+    }
+  }
+}
+
+provider "authentik" {
 }
