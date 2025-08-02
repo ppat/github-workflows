@@ -4,9 +4,9 @@ name: self-lint
 
 on:
   pull_request:
-  workflow_dispatch:
   schedule:
-  - cron: '0 5 * * 1'
+  - cron: '0 4 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -23,15 +23,11 @@ jobs:
       files_yaml: |
         actions:
         - .github/workflows/**
-        docker:
-        - '**/Dockerfile'
         markdown:
         - '**.md'
         renovate:
         - .github/renovate.json
         - .github/renovate/**
-        shellscripts:
-        - '**.sh'
         yaml:
         - '**.yaml'
       git_ref: ${{ github.head_ref || github.ref }}
@@ -53,14 +49,6 @@ jobs:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).actions_all_changed_files }}
 
-  docker-files:
-    needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).docker_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-hadolint.yaml
-    with:
-      git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).docker_all_changed_files }}
-
   markdown:
     needs: [detect-changes]
     if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).markdown_any_changed == 'true' }}
@@ -81,14 +69,6 @@ jobs:
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).renovate_all_changed_files }}
-
-  shellcheck:
-    needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).shellscripts_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-shellcheck.yaml
-    with:
-      git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).shellscripts_all_changed_files }}
 
   yaml:
     needs: [detect-changes]
