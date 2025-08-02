@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.3](https://github.com/ppat/github-workflows/compare/v1.1.2...v1.1.3) (2025-08-02)
+
+
+### Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.7.29 -&gt; v2025.7.32) ([#162](https://github.com/ppat/github-workflows/issues/162)) ([ce75b55](https://github.com/ppat/github-workflows/commit/ce75b5599baccc696b5f0e0f2f0aadde6b0b4a64))
+* **dev-tools:** update renovate (41.43.5 -&gt; 41.45.0) ([#163](https://github.com/ppat/github-workflows/issues/163)) ([346407f](https://github.com/ppat/github-workflows/commit/346407f41a2a74a127635a40860b5b79320d3e08))
+* **dev-tools:** update tailscale/tailscale (v1.84.0 -&gt; v1.86.0) ([#165](https://github.com/ppat/github-workflows/issues/165)) ([e189b2d](https://github.com/ppat/github-workflows/commit/e189b2d08bbf90e8cb378efae2daa2ce8ea869a2))
+
 ## [1.1.2](https://github.com/ppat/github-workflows/compare/v1.1.1...v1.1.2) (2025-07-30)
 
 
