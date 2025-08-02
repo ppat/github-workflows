@@ -1,0 +1,46 @@
+---
+# yamllint disable rule:line-length
+name: self-lint
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/build-docker-image.yaml'
+    - '.github/workflows/lint-hadolint.yaml'
+    - '.github/workflows/self-test-docker.yaml'
+    - 'test/docker/**'
+  workflow_dispatch:
+  schedule:
+  - cron: '0 5 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-docker:
+    uses: ./.github/workflows/lint-hadolint.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      files: 'ALL'
+
+  build-docker-image:
+    uses: ./.github/workflows/build-docker-image.yaml
+    with:
+      source_git_ref: ${{ github.head_ref || github.ref }}
+      image_context_path: test/docker
+      label_title: "Test Docker Build"
+      label_description: "Test Docker Build"
+      platforms: linux/amd64,linux/arm64
+      private_registry_repository: ${{ vars.CONTAINER_REGISTRY_PATH }}/test-docker-build
+      private_registry_build_cache: ${{ vars.CONTAINER_REGISTRY_CACHE_PATH }}/test-docker-build
+      timeout_minutes: 10
+    secrets:
+      private_registry_username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+      private_registry_token: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+      private_registry: ${{ secrets.CONTAINER_REGISTRY }}
+      tailscale_oauth_client_id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+      tailscale_oauth_secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}

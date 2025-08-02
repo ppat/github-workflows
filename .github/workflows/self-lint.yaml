@@ -23,8 +23,6 @@ jobs:
       files_yaml: |
         actions:
         - .github/workflows/**
-        docker:
-        - '**/Dockerfile'
         markdown:
         - '**.md'
         renovate:
@@ -52,14 +50,6 @@ jobs:
     with:
       git_ref: ${{ github.head_ref || github.ref }}
       files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).actions_all_changed_files }}
-
-  docker-files:
-    needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).docker_any_changed == 'true' }}
-    uses: ./.github/workflows/lint-hadolint.yaml
-    with:
-      git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).docker_all_changed_files }}
 
   markdown:
     needs: [detect-changes]
