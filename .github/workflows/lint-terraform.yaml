@@ -22,6 +22,7 @@ on:
         default: "info"
 
 env:
+  CHECKPOINT_DISABLE: "true"
   MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
 
 jobs:
@@ -144,6 +145,7 @@ jobs:
           source .ci.env
           set +o allexport
         fi
+        terraform version
         terraform validate
 
   terraform-lint:

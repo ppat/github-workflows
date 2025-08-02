@@ -1,3 +1,3 @@
 # github-workflows
 
-Shared reusable workflows.
+Reusable workflows.
