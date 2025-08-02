@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: self-lint
+name: self-test-docker
 
 on:
   pull_request:
