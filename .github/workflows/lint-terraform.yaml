@@ -76,7 +76,7 @@ jobs:
 
     - name: terraform-fmt
       working-directory: ./current
-      run: pre-commit run --all-files --color=always terraform-fmt
+      run: terraform fmt -check -recursive
 
   terraform-validate:
     runs-on: ubuntu-24.04
