@@ -24,6 +24,10 @@ on:
         required: false
         type: boolean
         default: false
+      verbose:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   detect-dockerfiles:
@@ -74,9 +78,10 @@ jobs:
       uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
       with:
         dockerfile: ${{ matrix.dockerfile }}
-        recursive: ${{ inputs.recursive }}
-        failure-threshold: ${{ inputs.failure_threshold }}
         config: ${{ inputs.hadolint_config }}
+        failure-threshold: ${{ inputs.failure_threshold }}
+        recursive: ${{ inputs.recursive }}
+        verbose: ${{ inputs.verbose }}
 
   # Summarize matrix https://github.community/t/status-check-for-a-matrix-jobs/127354/7
   hadolint-success:
