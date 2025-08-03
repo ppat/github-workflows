@@ -20,80 +20,100 @@ on:
         required: false
         type: string
         default: ''
-      recursive:
-        required: false
-        type: boolean
-        default: false
       verbose:
         required: false
         type: boolean
         default: false
 
 jobs:
-  detect-dockerfiles:
-    outputs:
-      dockerfiles: ${{ steps.select-dockerfiles.outputs.files }}
+  hadolint:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Checkout
+    - name: Checkout tools
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
         fetch-depth: 1
+        path: tools
+        repository: ppat/github-workflows
+        persist-credentials: false
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 1
+        path: current
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
         persist-credentials: false
 
-    - name: Select dockerfiles
-      id: select-dockerfiles
-      env:
-        FILES: ${{ inputs.files }}
-      shell: bash
+    - name: Cache mise
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
+        restore-keys: |
+          mise-${{hashFiles('tools/mise.toml')}}
+          mise-
+
+    - name: Setup default mise configuration
       # yamllint disable-line rule:indentation
       run: |
-        if [[ "$FILES" == "ALL" ]]; then
-          echo files=$(jq -c -n -s --arg f "$(find . -type f -name Dockerfile)" '$f | split("\n")') >> "$GITHUB_OUTPUT"
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+
+    - name: Setup mise
+      uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
+      env:
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.7.32"
+        install: true
+        cache: false
+        experimental: true
+        log_level: ${{ inputs.mise_log_level }}
+        working_directory: ${{ github.workspace }}/current
+
+    - name: Lint docker files
+      env:
+        DOCKER_FILES: ${{ inputs.files }}
+        CONFIG: "${{ inputs.hadolint_config != '' && format('--config={0}', inputs.hadolint_config) || '' }}"
+        FAILURE_THRESHOLD: "--failure-threshold ${{ inputs.failure_threshold }}"
+        VERBOSITY: "${{ inputs.verbose == 'true' && '--verbose' || '' }}"
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        HADOLINT_ARGS=$( "${CONFIG}" "${FAILURE_THRESHOLD}" "${VERBOSITY}" )
+        FILE_LIST=$(mktemp)
+        if [[ "${DOCKER_FILES}" == "ALL" ]]; then
+          find . -type f -name Dockerfile > ${FILE_LIST}
         else
-          echo files=$(jq -c -n -s --arg f "$(echo ${FILES} | tr ' ' ',')" '$f | split(",")') >> "$GITHUB_OUTPUT"
+          echo ${DOCKER_FILES} | tr ' ' '\n' > ${FILE_LIST}
         fi
 
-  hadolint:
-    if: ${{ needs.detect-dockerfiles.outputs.dockerfiles != '[]' }}
-    needs: [detect-dockerfiles]
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        dockerfile: ${{fromJSON(needs.detect-dockerfiles.outputs.dockerfiles)}}
-    timeout-minutes: 5
-    steps:
-    - name: Checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      with:
-        fetch-depth: 1
-        repository: ${{ github.repository }}
-        ref: ${{ inputs.git_ref }}
-        persist-credentials: false
+        lint_dockerfile() {
+          local file="$1"
+          set -x
+          if hadolint ${HADOLINT_ARGS[*]} ${file}; then
+            return 0
+          else
+            return 1
+          }
+          set +x
+        }
 
-    - name: Lint specific dockerfiles
-      uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
-      with:
-        dockerfile: ${{ matrix.dockerfile }}
-        config: ${{ inputs.hadolint_config }}
-        failure-threshold: ${{ inputs.failure_threshold }}
-        recursive: ${{ inputs.recursive }}
-        verbose: ${{ inputs.verbose }}
+        local error_count=0
+        while IFS= read -r file; do
+          if lint_dockerfile ${file} | pr -t -o 4; then
+            echo "✅ ${file}"
+          else
+            echo "❌ ${file}"
+            error_count=$((error_count + 1))
+          fi
+        done < ${FILE_LIST}
 
-  # Summarize matrix https://github.community/t/status-check-for-a-matrix-jobs/127354/7
-  hadolint-success:
-    if: ${{ always() }}
-    needs: [hadolint]
-    runs-on: ubuntu-24.04
-    steps:
-    # yamllint disable-line rule:indentation
-    - run: |
-        result="${{ needs.hadolint.result }}"
-        if [[ $result == "success" || $result == "skipped" ]]; then
-          exit 0
-        else
+        if (( ${error_count} > 0 )); then
           exit 1
         fi
