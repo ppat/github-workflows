@@ -98,7 +98,7 @@ jobs:
         git status
 
     - name: Commit and push updated checksums
-      uses: ppat/github-workflows/actions/create-signed-commit@main # x-release-please-version
+      uses: ppat/homelab-ops-actions/actions/create-signed-commit@main
       with:
         branch: ${{ inputs.git_ref }}
         commit_message: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
