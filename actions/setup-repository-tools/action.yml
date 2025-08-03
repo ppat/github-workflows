@@ -58,6 +58,7 @@ runs:
         mise-
 
   - name: Setup default mise configuration
+    shell: bash
     # yamllint disable-line rule:indentation
     run: |
       mkdir -p ~/.config/mise
