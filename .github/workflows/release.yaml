@@ -9,9 +9,6 @@ on:
         required: false
         type: string
         default: release-please
-      repository:
-        required: true
-        type: string
       timeout:
         required: false
         type: number
@@ -40,7 +37,7 @@ jobs:
       uses: googleapis/release-please-action@a02a34c4d625f9be7cb89156071d8567266a2445 # v4
       id: release
       with:
-        repo-url: ${{ inputs.repository }}
+        repo-url: ${{ github.repository }}
         token: ${{ steps.app-token.outputs.token }}
         config-file: release-please-config.json
         manifest-file: .release-please-manifest.json
