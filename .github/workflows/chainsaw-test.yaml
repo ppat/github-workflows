@@ -17,6 +17,14 @@ on:
       kind_config:
         required: true
         type: string
+      mise_ignore_cfg:
+        required: false
+        type: string
+        default: ""
+      mise_log_level:
+        required: false
+        type: string
+        default: "info"
       repository:
         required: true
         type: string
@@ -25,48 +33,87 @@ on:
         type: number
         default: 15
 
+env:
+  MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
+
 jobs:
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
-    - name: Checkout
+    - name: Checkout tools
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
       with:
+        fetch-depth: 1
+        path: tools
+        persist-credentials: false
+        repository: ppat/github-workflows
+
+    - name: Checkout current
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      with:
+        fetch-depth: 1
+        path: current
+        persist-credentials: false
         repository: ${{ github.repository }}
         ref: ${{ inputs.git_ref }}
-        persist-credentials: false
+
+    - name: Cache mise
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+      with:
+        path: ~/.local/share/mise
+        key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
+        restore-keys: |
+          mise-${{hashFiles('tools/mise.toml')}}
+          mise-
+
+    - name: Setup default mise configuration
+      # yamllint disable-line rule:indentation
+      run: |
+        mkdir -p ~/.config/mise
+        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+
+    - name: Setup mise
+      uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
+      env:
+        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # renovate: datasource=github-releases depName=jdx/mise
+        version: "v2025.7.32"
+        install: true
+        cache: false
+        experimental: true
+        log_level: ${{ inputs.mise_log_level }}
+        working_directory: ${{ github.workspace }}/current
 
     - name: Setup kind cluster
-      uses: helm/kind-action@a1b0e391336a6ee6713a0583f8c6240d70863de3 # v1.12.0
-      with:
-        cluster_name: dev
-        config: ${{ inputs.kind_config }}
-        # renovate: datasource=github-releases depName=kubernetes-sigs/kind
-        version: "v0.29.0"
-        # renovate: datasource=github-releases depName=kubernetes/kubernetes
-        kubectl_version: "v1.33.3"
+      env:
+        CLUSTER_NAME: dev
         # renovate-kind-image: datasource=docker versioning=docker
-        node_image: "kindest/node:v1.33.2@sha256:c55080dc5be4f2cc242e6966fdf97bb62282e1cd818a28223cf536db8b0fddf4"
-
-    - name: Setup flux
-      uses: fluxcd/flux2/action@6bf37f6a560fd84982d67f853162e4b3c2235edb # v2.6.4
-      with:
-        # renovate: datasource=github-releases depName=fluxcd/flux2
-        version: "v2.6.4"
-
-    - name: Setup Chainsaw
-      uses: kyverno/action-install-chainsaw@f2b47b97dc889c12702113753d713f01ec268de5 # v0.2.12
-      with:
-        # renovate: datasource=github-releases depName=kyverno/chainsaw
-        release: v0.2.12
+        CLUSTER_NODE_IMAGE: "kindest/node:v1.33.2@sha256:c55080dc5be4f2cc242e6966fdf97bb62282e1cd818a28223cf536db8b0fddf4"
+        CONFIG: ${{ inputs.kind_config }}
+        WAIT: 60s
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo 'Creating kind cluster...'
+        kind version
+        kind create cluster \
+          --name=${CLUSTER_NAME} \
+          --wait=${WAIT} \
+          --image=${CLUSTER_NODE_IMAGE} \
+          --config=${CONFIG}
+        kubectl version
 
     - name: Install flux in kind cluster
       env:
         # renovate: datasource=github-releases depName=fluxcd/flux2
         FLUX_VERSION: "v2.6.4"
+      shell: bash
       run: |
         flux install --version ${FLUX_VERSION} --log-level debug
+        flux version
 
     - name: Run Chainsaw Tests
       env:
@@ -74,6 +121,8 @@ jobs:
         GIT_REF: ${{ inputs.git_ref }}
         CHAINSAW_CONFIG: ${{ inputs.chainsaw_config }}
         TEST_PATH: ${{ inputs.test_path }}
+      shell: bash
+      working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
         if [[ "${GIT_REF}" == "refs/heads/main" ]]; then
