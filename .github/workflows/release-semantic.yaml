@@ -1,0 +1,108 @@
+---
+# yamllint disable rule:line-length
+name: release-semantic
+
+on:
+  workflow_call:
+    inputs:
+      dry_run:
+        required: false
+        type: boolean
+        default: false
+      mise_ignore_cfg:
+        required: false
+        type: string
+        default: ""
+      mise_log_level:
+        required: false
+        type: string
+        default: "info"
+      release_branch:
+        required: false
+        type: string
+        default: "main"
+    secrets:
+      app_id:
+        required: true
+      app_private_key:
+        required: true
+    outputs:
+      released_sha:
+        value: ${{ jobs.semantic-release.outputs.released_sha }}
+      released_version:
+        value: ${{ jobs.semantic-release.outputs.released_version }}
+      released_gitref:
+        value: ${{ jobs.semantic-release.outputs.released_gitref }}
+
+jobs:
+  semantic-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      released_sha: ${{ steps.release_info.outputs.sha }}
+      released_version: ${{ steps.release_info.outputs.version }}
+      released_gitref: ${{ steps.release_info.outputs.gitref }}
+    steps:
+    - name: Generate github app token
+      uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2
+      id: app-token
+      with:
+        app-id: ${{ secrets.app_id }}
+        private-key: ${{ secrets.app_private_key }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Setup repository and tools
+      uses: ppat/github-workflows/actions/setup-repository-tools@main # x-release-please-version
+      with:
+        enable_commits: true
+        fetch_depth: 0
+        git_ref: ${{ inputs.release_branch }}
+        mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
+        mise_log_level: ${{ inputs.mise_log_level }}
+        token: ${{ steps.app-token.outputs.token }}
+
+    - name: Install node packages
+      shell: bash
+      working-directory: ./current
+      run: bun install --frozen-lockfile
+
+    - name: Release (Dry Run)
+      if: (github.event_name == 'pull_request' || inputs.dry_run == 'true')
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        CURRENT_BRANCH: ${{ inputs.release_branch }}
+      shell: bash
+      working-directory: ./current
+      run: |
+        echo
+        GITHUB_REF=$CURRENT_BRANCH
+        set -x
+        bunx semantic-release --dry-run --no-ci --branches $CURRENT_BRANCH
+
+    - name: Release
+      if: (github.event_name == 'workflow_dispatch' && inputs.dry_run == 'false')
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      shell: bash
+      working-directory: ./current
+      run: bunx semantic-release
+
+    - name: Output release info
+      id: release_info
+      env:
+        TRIGGER_EVENT: ${{ github.event_name }}
+        CURRENT_BRANCH: ${{ inputs.release_branch }}
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ "${TRIGGER_EVENT}" == "workflow_dispatch" && -f /tmp/released.version ]]; then
+          # an actual release has been triggered.
+          echo "version=v$(cat /tmp/released.version)" >> "$GITHUB_OUTPUT"
+          echo "gitref=refs/tags/v$(cat /tmp/released.version)" >> "$GITHUB_OUTPUT"
+        else
+          # a dry-run has been triggered.
+          echo "version=v0.0.0" >> "$GITHUB_OUTPUT"
+          echo "gitref=refs/heads/$CURRENT_BRANCH" >> "$GITHUB_OUTPUT"
+        fi
+        echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"

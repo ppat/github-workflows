@@ -1,0 +1,44 @@
+---
+# yamllint disable rule:line-length
+name: self-test-semantic-release
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/release-semantic.yaml'
+    - '.github/workflows/self-test-semantic-release.yaml'
+    - '.releaserc.js'
+    - 'package.json'
+    - 'bun.lock'
+  schedule:
+  - cron: '0 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+
+jobs:
+  release:
+    uses: ./.github/workflows/release-semantic.yaml
+    with:
+      dry_run: true
+      release_branch: ${{ github.head_ref || github.ref_name }}
+    secrets:
+      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
+
+  show-release:
+    needs: [release]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+    - name: Show
+      shell: bash
+      run: |
+        echo "released_sha=${{ needs.release.outputs.released_sha }}"
+        echo "released_version=${{ needs.release.outputs.released_version }}"
+        echo "released_gitref=${{ needs.release.outputs.released_gitref }}"

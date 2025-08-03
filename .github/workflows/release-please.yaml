@@ -1,18 +1,9 @@
 ---
 # yamllint disable rule:line-length
-name: release
+name: release-please
 
 on:
   workflow_call:
-    inputs:
-      release_type:
-        required: false
-        type: string
-        default: release-please
-      timeout:
-        required: false
-        type: number
-        default: 10
     secrets:
       app_id:
         required: true
@@ -21,9 +12,9 @@ on:
 
 jobs:
   release-please:
-    if: ${{ inputs.release_type == 'release-please' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: ${{ inputs.timeout }}
+    timeout-minutes: 10
     steps:
     - name: Generate github app token
       uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2
