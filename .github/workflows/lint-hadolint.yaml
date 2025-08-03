@@ -90,9 +90,12 @@ jobs:
         FILE_LIST=$(mktemp)
         if [[ "${DOCKER_FILES}" == "ALL" ]]; then
           find . -type f -name Dockerfile > ${FILE_LIST}
+          echo 1
         else
           echo ${DOCKER_FILES} | tr ' ' '\n' > ${FILE_LIST}
         fi
+        echo 2
+        cat ${FILE_LIST}
 
         lint_dockerfile() {
           local file="$1"
