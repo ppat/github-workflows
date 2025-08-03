@@ -15,18 +15,54 @@
   ],
   "draft": false,
   "extra-files": [
-    ".github/workflows/chainsaw-test.yaml",
-    ".github/workflows/lint-commit-messages.yaml",
-    ".github/workflows/lint-github-actions.yaml",
-    ".github/workflows/lint-hadolint.yaml",
-    ".github/workflows/lint-markdown.yaml",
-    ".github/workflows/lint-pre-commit.yaml",
-    ".github/workflows/lint-renovate-config-check.yaml",
-    ".github/workflows/lint-shellcheck.yaml",
-    ".github/workflows/lint-terraform.yaml",
-    ".github/workflows/lint-yaml.yaml",
-    ".github/workflows/release.yaml",
-    ".github/workflows/update-aqua-checksums.yaml"
+    {
+      "type": "generic",
+      "path": ".github/workflows/chainsaw-test.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-commit-messages.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-github-actions.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-hadolint.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-markdown.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-pre-commit.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-renovate-config-check.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-shellcheck.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-terraform.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/lint-yaml.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/release.yaml"
+    },
+    {
+      "type": "generic",
+      "path": ".github/workflows/update-aqua-checksums.yaml"
+    }
   ],
   "packages": {
     ".": {
