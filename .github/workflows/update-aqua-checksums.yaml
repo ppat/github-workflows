@@ -51,7 +51,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@refactor-setup-tools
+      uses: ppat/github-workflows/actions/setup-repository-tools@refactor-setup-tools # x-release-please-version
       with:
         fetch_depth: 0
         git_ref: ${{ inputs.git_ref }}

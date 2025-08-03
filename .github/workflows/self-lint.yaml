@@ -22,6 +22,7 @@ jobs:
       # yamllint disable-line rule:indentation
       files_yaml: |
         actions:
+        - actions/**
         - .github/workflows/**
         markdown:
         - '**.md'
@@ -30,6 +31,7 @@ jobs:
         - .github/renovate/**
         yaml:
         - '**.yaml'
+        - '*.yml'
       git_ref: ${{ github.head_ref || github.ref }}
 
   commit-messages:
