@@ -22,7 +22,6 @@ jobs:
       # yamllint disable-line rule:indentation
       files_yaml: |
         actions:
-        - actions/**
         - .github/workflows/**
         markdown:
         - '**.md'
