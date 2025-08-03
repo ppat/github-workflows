@@ -36,4 +36,7 @@ jobs:
     steps:
     - name: Show
       shell: bash
-      run: echo "${{ needs.release.outputs }}"
+      run: |
+        echo "released_sha=${{ needs.release.outputs.released_sha }}"
+        echo "released_version=${{ needs.release.outputs.released_version }}"
+        echo "released_gitref=${{ needs.release.outputs.released_gitref }}"
