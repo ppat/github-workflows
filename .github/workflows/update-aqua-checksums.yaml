@@ -149,30 +149,28 @@ jobs:
 
         i=0
         while (( i < ${#status[@]} )); do
-          code="${status[$i]}"; ((i++))
+          code="${status[$i]}"; (( ++i ))
           case "$code" in
             A|M)
-              path="${status[$i]}"; ((i++))
+              path="${status[$i]}"; (( ++i ))
               b64=$(base64 -w 0 -- "$path")
               additions_json=$(jq -c --arg p "$path" --arg c "$b64" \
                 '. + [{path:$p, contents:$c}]' <<<"$additions_json")
               ;;
             D)
-              path="${status[$i]}"; ((i++))
+              path="${status[$i]}"; (( ++i ))
               deletions_json=$(jq -c --arg p "$path" '. + [{path:$p}]' <<<"$deletions_json")
               ;;
             R*)
-              # rename entry is: "R100" oldpath newpath
-              old="${status[$i]}"; ((i++))
-              new="${status[$i]}"; ((i++))
+              old="${status[$i]}"; (( ++i ))
+              new="${status[$i]}"; (( ++i ))
               deletions_json=$(jq -c --arg p "$old" '. + [{path:$p}]' <<<"$deletions_json")
               b64=$(base64 -w 0 -- "$new")
               additions_json=$(jq -c --arg p "$new" --arg c "$b64" \
                 '. + [{path:$p, contents:$c}]' <<<"$additions_json")
               ;;
             *)
-              # Unexpected (e.g., mode-only change) - skip
-              path="${status[$i]}"; ((i++))
+              path="${status[$i]}"; (( ++i ))
               echo "Skipping change type '$code' for '$path'"
               ;;
           esac
