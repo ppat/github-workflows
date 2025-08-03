@@ -102,7 +102,6 @@ jobs:
           fi
         }
 
-        set -x
         error_count=0
         while IFS= read -r file; do
           if lint_dockerfile ${file} | pr -t -o 4; then
