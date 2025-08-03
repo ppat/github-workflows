@@ -1,0 +1,79 @@
+---
+name: Setup Repository and Tools
+description: Fetch repository and set up tools (via mise) needed for running reusable workflows.
+author: homelab-ops@homelab-ops.com
+
+inputs:
+  git_ref:
+    required: true
+    type: string
+  enable_commits:
+    required: false
+    type: boolean
+    default: false
+  fetch_depth:
+    required: false
+    type: number
+    default: 1
+  mise_ignore_cfg:
+    required: false
+    type: string
+    default: ""
+  mise_log_level:
+    required: false
+    type: string
+    default: "info"
+  token:
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+  - name: Checkout tools
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+    with:
+      fetch-depth: 1
+      path: tools
+      repository: ppat/github-workflows
+      persist-credentials: false
+
+  - name: Checkout current
+    uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+    with:
+      fetch-depth: ${{ inputs.fetch_depth }}
+      path: current
+      repository: ${{ github.repository }}
+      ref: ${{ inputs.git_ref }}
+      persist-credentials: ${{ inputs.enable_commits }}
+      token: ${{ inputs.token }}
+
+  - name: Cache mise
+    uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+    with:
+      path: ~/.local/share/mise
+      key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
+      restore-keys: |
+        mise-${{hashFiles('tools/mise.toml')}}
+        mise-
+
+  - name: Setup default mise configuration
+    # yamllint disable-line rule:indentation
+    run: |
+      mkdir -p ~/.config/mise
+      ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
+
+  - name: Setup mise
+    uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
+    env:
+      MISE_GITHUB_TOKEN: ${{ inputs.token }}
+      # yamllint disable-line rule:line-length
+      MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
+    with:
+      # renovate: datasource=github-releases depName=jdx/mise
+      version: "v2025.7.32"
+      install: true
+      cache: false
+      experimental: true
+      log_level: ${{ inputs.mise_log_level }}
+      working_directory: ${{ github.workspace }}/current
