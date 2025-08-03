@@ -40,7 +40,6 @@ jobs:
     steps:
     - name: tree
       shell: bash
-      working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
         tree
