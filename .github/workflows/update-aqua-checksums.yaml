@@ -124,26 +124,76 @@ jobs:
           echo
         done < ${DIR_LIST} | pr -t -o 4
 
-    - name: Commit and push updates
+    - name: Commit and push updated checksums
       env:
-        GIT_REF: ${{ inputs.git_ref }}
-        GIT_AUTHOR_NAME: "${{ steps.app-token.outputs.app-slug }}[bot]"
-        GIT_AUTHOR_EMAIL: "${{ steps.app-token.outputs.installation-id }}+homelab-workflows-bot[bot]@users.noreply.github.com"
-        SEMANTIC_COMMIT_PREFIX: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }})"
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        git config user.name "${GIT_AUTHOR_NAME}"
-        git config user.email "${GIT_AUTHOR_EMAIL}"
+        set -euo pipefail
 
-        git add -A
-        if git diff --cached --quiet; then
+        # 1) Collect changes
+        mapfile -t add_or_mod < <(git status --porcelain | awk '/^[AM] /{print $2}')
+        mapfile -t deleted    < <(git status --porcelain | awk '/^ D /{print $2}')
+
+        if [[ ${#add_or_mod[@]} -eq 0 && ${#deleted[@]} -eq 0 ]]; then
           echo "No changes to commit."
           exit 0
         fi
-        git commit -m "${SEMANTIC_COMMIT_PREFIX}: update aqua checksums"
-        git push origin "$GIT_REF"
+
+        # 2) Build additions array: [{path, contents(base64)}...]
+        additions_json="[]"
+        for f in "${add_or_mod[@]}"; do
+          # Base64 RFC 4648 (GNU coreutils: -w 0 = single line)
+          b64=$(base64 -w 0 "$f")
+          additions_json=$(jq -c --arg p "$f" --arg c "$b64" \
+            '. + [{path:$p, contents:$c}]' <<<"$additions_json")
+        done
+
+        # 3) Build deletions array: [{path}...]
+        deletions_json="[]"
+        for f in "${deleted[@]}"; do
+          deletions_json=$(jq -c --arg p "$f" '. + [{path:$p}]' <<<"$deletions_json")
+        done
+
+        # 4) Resolve expectedHeadOid for optimistic concurrency
+        head_oid=$(
+          gh api graphql -f query='
+            query($repo:String!, $qref:String!) {
+              repository(nameWithOwner:$repo) {
+                ref(qualifiedName:$qref) { target { ... on Commit { oid } } }
+              }
+            }' \
+            -f repo="$REPO" -f qref="refs/heads/$BRANCH" \
+            --jq '.data.repository.ref.target.oid'
+        )
+
+        # 5) Create single verified commit
+        vars=$(jq -c --null-input \
+          --arg repo "$REPO" \
+          --arg branch "$BRANCH" \
+          --arg msg "$MSG" \
+          --arg head "$head_oid" \
+          --argjson adds "$additions_json" \
+          --argjson dels "$deletions_json" \
+          '{ repo: $repo, branch: $branch, msg: $msg, head: $head,
+             additions: $adds, deletions: $dels }')
+
+        read -r -d '' GQL <<'EOF'
+        mutation($repo:String!, $branch:String!, $msg:String!,
+                 $head:GitObjectID!, $additions:[FileAddition!]!, $deletions:[FileDeletion!]!) {
+          createCommitOnBranch(input:{
+            branch:{ repositoryNameWithOwner:$repo, branchName:$branch },
+            message:{ headline:$msg },
+            expectedHeadOid:$head,
+            fileChanges:{ additions:$additions, deletions:$deletions }
+          }) {
+            commit { oid url }
+          }
+        }
+        EOF
+
+        gh api graphql -f query="$GQL" -f variables="$vars" --jq '.data.createCommitOnBranch.commit' | jq
 
         # exit w/ error code as the push should trigger another run of this workflow (which should result in no further commits)
         exit 1
