@@ -1,7 +1,7 @@
 {
   "changelog-sections": [
     { "type": "build", "section": "🏗️ Build System", "hidden": true },
-    { "type": "chore", "section": "🧹Miscellaneous", "hidden": false },
+    { "type": "chore", "section": "🧹 Miscellaneous", "hidden": false },
     { "type": "ci", "section": "🚦 Continuous Integration", "hidden": true },
     { "type": "docs", "section": "🛠 Improvements" },
     { "type": "feat", "section": "✨ Features" },
@@ -25,6 +25,7 @@
     ".github/workflows/lint-shellcheck.yaml",
     ".github/workflows/lint-terraform.yaml",
     ".github/workflows/lint-yaml.yaml",
+    ".github/workflows/release.yaml",
     ".github/workflows/update-aqua-checksums.yaml"
   ],
   "packages": {

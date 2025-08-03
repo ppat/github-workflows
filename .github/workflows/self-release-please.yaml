@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: self-release
+name: self-release-please
 
 on:
   push:
@@ -15,9 +15,7 @@ permissions: {}
 
 jobs:
   release:
-    uses: ./.github/workflows/release.yaml
-    with:
-      release_type: release-please
+    uses: ./.github/workflows/release-please.yaml
     secrets:
       app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
