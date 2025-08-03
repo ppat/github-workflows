@@ -66,6 +66,7 @@ jobs:
       if: (github.event_name == 'pull_request' || inputs.dry_run == 'true')
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
         GITHUB_REF: ${{ github.head_ref || github.ref_name }}
       shell: bash
       working-directory: ./current
