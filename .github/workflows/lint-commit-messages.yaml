@@ -40,7 +40,7 @@ jobs:
         echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
 
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@v1.1.2 # x-release-please-version
+      uses: ppat/github-workflows/actions/setup-repository-tools@main # x-release-please-version
       with:
         fetch_depth: ${{ env.FETCH_DEPTH }}
         git_ref: ${{ inputs.git_ref }}

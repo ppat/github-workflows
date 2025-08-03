@@ -39,7 +39,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@v1.1.2 # x-release-please-version
+      uses: ppat/github-workflows/actions/setup-repository-tools@main # x-release-please-version
       with:
         git_ref: ${{ inputs.git_ref }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
