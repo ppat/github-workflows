@@ -85,6 +85,7 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        set -x
         HADOLINT_ARGS=$( "${CONFIG}" "${FAILURE_THRESHOLD}" "${VERBOSITY}" )
         FILE_LIST=$(mktemp)
         if [[ "${DOCKER_FILES}" == "ALL" ]]; then
@@ -95,13 +96,11 @@ jobs:
 
         lint_dockerfile() {
           local file="$1"
-          set -x
           if hadolint ${HADOLINT_ARGS[*]} ${file}; then
             return 0
           else
             return 1
           }
-          set +x
         }
 
         local error_count=0
