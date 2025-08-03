@@ -135,44 +135,78 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -euo pipefail
-        git add -A
-        # 1) Collect changes
-        mapfile -t add_or_mod < <(git status --porcelain | awk '/^[AM] /{print $2}')
-        mapfile -t deleted    < <(git status --porcelain | awk '/^ D /{print $2}')
 
-        if [[ ${#add_or_mod[@]} -eq 0 && ${#deleted[@]} -eq 0 ]]; then
-          echo "No changes to commit."
+        command -v jq >/dev/null || (sudo apt-get update && sudo apt-get install -y jq)
+
+        # 0) Stage everything
+        git add -A
+
+        # 1) Collect staged changes (handles spaces via -z)
+        mapfile -d '' status < <(git diff --cached --name-status -z)
+
+        additions_json='[]'
+        deletions_json='[]'
+
+        i=0
+        while (( i < ${#status[@]} )); do
+          code="${status[$i]}"; ((i++))
+          case "$code" in
+            A|M)
+              path="${status[$i]}"; ((i++))
+              b64=$(base64 -w 0 -- "$path")
+              additions_json=$(jq -c --arg p "$path" --arg c "$b64" \
+                '. + [{path:$p, contents:$c}]' <<<"$additions_json")
+              ;;
+            D)
+              path="${status[$i]}"; ((i++))
+              deletions_json=$(jq -c --arg p "$path" '. + [{path:$p}]' <<<"$deletions_json")
+              ;;
+            R*)
+              # rename entry is: "R100" oldpath newpath
+              old="${status[$i]}"; ((i++))
+              new="${status[$i]}"; ((i++))
+              deletions_json=$(jq -c --arg p "$old" '. + [{path:$p}]' <<<"$deletions_json")
+              b64=$(base64 -w 0 -- "$new")
+              additions_json=$(jq -c --arg p "$new" --arg c "$b64" \
+                '. + [{path:$p, contents:$c}]' <<<"$additions_json")
+              ;;
+            *)
+              # Unexpected (e.g., mode-only change) - skip
+              path="${status[$i]}"; ((i++))
+              echo "Skipping change type '$code' for '$path'"
+              ;;
+          esac
+        done
+
+        if [[ "$(jq 'length' <<<"$additions_json")" -eq 0 && "$(jq 'length' <<<"$deletions_json")" -eq 0 ]]; then
+          echo "No staged changes; nothing to commit."
           exit 0
         fi
 
-        # 2) Build additions array: [{path, contents(base64)}...]
-        additions_json="[]"
-        for f in "${add_or_mod[@]}"; do
-          # Base64 RFC 4648 (GNU coreutils: -w 0 = single line)
-          b64=$(base64 -w 0 "$f")
-          additions_json=$(jq -c --arg p "$f" --arg c "$b64" \
-            '. + [{path:$p, contents:$c}]' <<<"$additions_json")
-        done
-
-        # 3) Build deletions array: [{path}...]
-        deletions_json="[]"
-        for f in "${deleted[@]}"; do
-          deletions_json=$(jq -c --arg p "$f" '. + [{path:$p}]' <<<"$deletions_json")
-        done
-
-        # 4) Resolve expectedHeadOid for optimistic concurrency
+        # 2) Resolve expectedHeadOid
+        OWNER="${REPO%%/*}"
+        NAME="${REPO#*/}"
         head_oid=$(
-          gh api graphql -f query='
-            query($repo:String!, $qref:String!) {
-              repository(nameWithOwner:$repo) {
-                ref(qualifiedName:$qref) { target { ... on Commit { oid } } }
-              }
-            }' \
-            -f repo="$REPO" -f qref="refs/heads/$BRANCH" \
-            --jq '.data.repository.ref.target.oid'
+          gh api graphql \
+            -f query='
+              query($owner:String!, $name:String!, $qref:String!) {
+                repository(owner:$owner, name:$name) {
+                  ref(qualifiedName:$qref) { target { __typename ... on Commit { oid } } }
+                }
+              }' \
+            -f owner="$OWNER" -f name="$NAME" -f qref="refs/heads/$BRANCH" \
+            --jq '.data.repository.ref.target.oid' \
+          || true
         )
+        if [[ -z "${head_oid:-}" || "${head_oid}" == "null" ]]; then
+          echo "ERROR: could not resolve expectedHeadOid for refs/heads/$BRANCH"
+          gh api graphql -f query='query($o:String!,$n:String!,$r:String!){
+            repository(owner:$o,name:$n){ ref(qualifiedName:$r){ target{ __typename } } }
+          }' -f o="$OWNER" -f n="$NAME" -f r="refs/heads/$BRANCH" || true
+          exit 1
+        fi
 
-        # 5) Create single verified commit
+        # 3) Create a single verified commit
         vars=$(jq -c --null-input \
           --arg repo "$REPO" \
           --arg branch "$BRANCH" \
@@ -180,24 +214,29 @@ jobs:
           --arg head "$head_oid" \
           --argjson adds "$additions_json" \
           --argjson dels "$deletions_json" \
-          '{ repo: $repo, branch: $branch, msg: $msg, head: $head,
-             additions: $adds, deletions: $dels }')
+          '{ input:{
+              branch:{ repositoryNameWithOwner:$repo, branchName:$branch },
+              message:{ headline:$msg },
+              expectedHeadOid:$head,
+              fileChanges:{ additions:$adds, deletions:$dels }
+            }}')
 
         read -r -d '' GQL <<'EOF'
-        mutation($repo:String!, $branch:String!, $msg:String!,
-                 $head:GitObjectID!, $additions:[FileAddition!]!, $deletions:[FileDeletion!]!) {
-          createCommitOnBranch(input:{
-            branch:{ repositoryNameWithOwner:$repo, branchName:$branch },
-            message:{ headline:$msg },
-            expectedHeadOid:$head,
-            fileChanges:{ additions:$additions, deletions:$deletions }
-          }) {
+        mutation($input: CreateCommitOnBranchInput!) {
+          createCommitOnBranch(input:$input) {
             commit { oid url }
           }
         }
         EOF
 
-        gh api graphql -f query="$GQL" -f variables="$vars" --jq '.data.createCommitOnBranch.commit' | jq
+        if ! out=$(gh api graphql -f query="$GQL" -f variables="$vars" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
+          echo "GraphQL commit failed:"
+          cat err.log
+          echo "Variables (redacted contents):"
+          jq '(.input.fileChanges.additions[]?.contents)="<base64-redacted>"' <<<"$vars"
+          exit 1
+        fi
+        echo "$out" | jq
 
         # exit w/ error code as the push should trigger another run of this workflow (which should result in no further commits)
         exit 1
