@@ -229,7 +229,13 @@ jobs:
         EOF
         )
 
-        if ! out=$(gh api graphql -f query="$GQL" -f variables="$vars" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
+        BODY=$(jq -c --null-input \
+          --arg q "$GQL" \
+          --argjson v "$vars" \
+          '{query:$q, variables:$v}')
+
+        # Execute mutation with a real JSON body (not form fields)
+        if ! out=$(gh api graphql --input - <<<"$BODY" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
           echo "GraphQL commit failed:"
           cat err.log
           echo "Variables (redacted contents):"
