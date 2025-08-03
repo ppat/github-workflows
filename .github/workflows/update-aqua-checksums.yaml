@@ -51,7 +51,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@refactor-setup-tools # x-release-please-version
+      uses: ppat/github-workflows/actions/setup-repository-tools@v1.1.2 # x-release-please-version
       with:
         fetch_depth: 0
         git_ref: ${{ inputs.git_ref }}
@@ -89,7 +89,7 @@ jobs:
         git status
 
     - name: Commit and push updated checksums
-      uses: ppat/github-workflows/actions/create-signed-commit@refactor-setup-tools # x-release-please-version
+      uses: ppat/github-workflows/actions/create-signed-commit@v1.1.2 # x-release-please-version
       with:
         branch: ${{ inputs.git_ref }}
         commit_message: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
