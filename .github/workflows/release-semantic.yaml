@@ -60,28 +60,35 @@ jobs:
     - name: Install node packages
       shell: bash
       working-directory: ./tools
-      run: bun install --global --frozen-lockfile
+      run: |
+        pwd
+        ls -al
+        bun install --global --frozen-lockfile
 
     - name: Release (Dry Run)
       if: ${{ inputs.dry_run == 'true' }}
-      shell: bash
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         GITHUB_REF: ${{ github.head_ref || github.ref_name }}
+      shell: bash
+      working-directory: ./current
       run: bunx semantic-release --dry-run --no-ci --branches $GITHUB_REF
 
     - name: Release
       if: ${{ inputs.dry_run == 'false' && github.event_name == 'workflow_dispatch' }}
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      shell: bash
+      working-directory: ./current
       run: bunx semantic-release
 
     - name: Output release info
       id: release_info
-      shell: bash
       env:
         TRIGGER_EVENT: ${{ github.event_name }}
         CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
+      shell: bash
+      working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
         if [[ "${TRIGGER_EVENT}" == "workflow_dispatch" && -f /tmp/released.version ]]; then
