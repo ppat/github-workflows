@@ -142,35 +142,36 @@ jobs:
         git add -A
 
         # 1) Collect staged changes (handles spaces via -z)
-        mapfile -d '' status < <(git diff --cached --name-status -z)
+        status=()
+        mapfile -d '' status < <(git diff --cached --name-status -z) || true
 
         additions_json='[]'
         deletions_json='[]'
 
         i=0
         while (( i < ${#status[@]} )); do
-          code="${status[$i]}"; (( ++i ))
+          code="${status[$i]}"; i=$(( i + 1 ))
           case "$code" in
             A|M)
-              path="${status[$i]}"; (( ++i ))
+              path="${status[$i]}"; i=$(( i + 1 ))
               b64=$(base64 -w 0 -- "$path")
               additions_json=$(jq -c --arg p "$path" --arg c "$b64" \
                 '. + [{path:$p, contents:$c}]' <<<"$additions_json")
               ;;
             D)
-              path="${status[$i]}"; (( ++i ))
+              path="${status[$i]}"; i=$(( i + 1 ))
               deletions_json=$(jq -c --arg p "$path" '. + [{path:$p}]' <<<"$deletions_json")
               ;;
             R*)
-              old="${status[$i]}"; (( ++i ))
-              new="${status[$i]}"; (( ++i ))
+              old="${status[$i]}"; i=$(( i + 1 ))
+              new="${status[$i]}"; i=$(( i + 1 ))
               deletions_json=$(jq -c --arg p "$old" '. + [{path:$p}]' <<<"$deletions_json")
               b64=$(base64 -w 0 -- "$new")
               additions_json=$(jq -c --arg p "$new" --arg c "$b64" \
                 '. + [{path:$p, contents:$c}]' <<<"$additions_json")
               ;;
             *)
-              path="${status[$i]}"; (( ++i ))
+              path="${status[$i]}"; i=$(( i + 1 ))
               echo "Skipping change type '$code' for '$path'"
               ;;
           esac
@@ -219,13 +220,14 @@ jobs:
               fileChanges:{ additions:$adds, deletions:$dels }
             }}')
 
-        read -r -d '' GQL <<'EOF'
+        GQL=$(cat <<'EOF'
         mutation($input: CreateCommitOnBranchInput!) {
           createCommitOnBranch(input:$input) {
             commit { oid url }
           }
         }
         EOF
+        )
 
         if ! out=$(gh api graphql -f query="$GQL" -f variables="$vars" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
           echo "GraphQL commit failed:"
