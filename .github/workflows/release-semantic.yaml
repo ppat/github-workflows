@@ -70,7 +70,9 @@ jobs:
         GITHUB_REF: ${{ github.head_ref || github.ref_name }}
       shell: bash
       working-directory: ./current
-      run: bunx semantic-release --dry-run --no-ci --branches $GITHUB_REF
+      run: |
+        set -x
+        bunx semantic-release --dry-run --no-ci --branches $GITHUB_REF
 
     - name: Release
       if: (github.event_name == 'workflow_dispatch' && inputs.dry_run == 'false')
