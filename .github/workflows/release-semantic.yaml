@@ -67,12 +67,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
-        GITHUB_REF: ${{ github.head_ref || github.ref_name }}
       shell: bash
       working-directory: ./current
       run: |
+        echo
+        GITHUB_REF=$CURRENT_BRANCH
         set -x
-        bunx semantic-release --dry-run --no-ci --branches $GITHUB_REF
+        bunx semantic-release --dry-run --no-ci --branches $CURRENT_BRANCH
 
     - name: Release
       if: (github.event_name == 'workflow_dispatch' && inputs.dry_run == 'false')
