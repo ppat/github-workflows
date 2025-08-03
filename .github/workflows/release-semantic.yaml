@@ -59,7 +59,7 @@ jobs:
 
     - name: Install node packages
       shell: bash
-      working-directory: ./tools
+      working-directory: ./current
       run: bun install --frozen-lockfile
 
     - name: Release (Dry Run)
