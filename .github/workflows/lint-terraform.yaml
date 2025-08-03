@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@main
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v0.0.1
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -55,12 +55,17 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@main
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v0.0.1
       with:
-        git_ref: ${{ inputs.git_ref }}
+        current_git_ref: ${{ inputs.git_ref }}
+        current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
+        # renovate: datasource=github-releases depName=jdx/mise
+        mise_version: "v2025.7.32"
         token: ${{ secrets.GITHUB_TOKEN }}
+        tools_git_ref: main
+        tools_repository: ppat/github-workflows
 
     - name: terraform-init
       working-directory: ./current/${{ matrix.dir }}
@@ -87,12 +92,17 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@main
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v0.0.1
       with:
-        git_ref: ${{ inputs.git_ref }}
+        current_git_ref: ${{ inputs.git_ref }}
+        current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
+        # renovate: datasource=github-releases depName=jdx/mise
+        mise_version: "v2025.7.32"
         token: ${{ secrets.GITHUB_TOKEN }}
+        tools_git_ref: main
+        tools_repository: ppat/github-workflows
 
     - name: tflint
       working-directory: ./current/${{ matrix.dir }}
