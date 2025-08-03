@@ -176,8 +176,8 @@ jobs:
           esac
         done
 
-        echo "Additions:\n$additions_json" | pr -t -o 4
-        echo "Deletions:\n$deletions_json" | pr -t -o 4
+        echo -e "Additions:\n$additions_json" | pr -t -o 4
+        echo -e "Deletions:\n$deletions_json" | pr -t -o 4
         if [[ "$(jq 'length' <<<"$additions_json")" -eq 0 && "$(jq 'length' <<<"$deletions_json")" -eq 0 ]]; then
           echo "No staged changes; nothing to commit."
           exit 0
@@ -245,5 +245,6 @@ jobs:
         fi
         echo "$out" | jq | pr -t -o 4
 
+        echo "GraphQL commit successful. Exiting w/ error code as the commit itself should trigger the follow up re-run that will succeed."
         # exit w/ error code as the push should trigger another run of this workflow (which should result in no further commits)
         exit 1
