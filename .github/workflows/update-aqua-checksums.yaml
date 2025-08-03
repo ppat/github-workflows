@@ -135,7 +135,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -euo pipefail
-
+        git st
         # 1) Collect changes
         mapfile -t add_or_mod < <(git status --porcelain | awk '/^[AM] /{print $2}')
         mapfile -t deleted    < <(git status --porcelain | awk '/^ D /{print $2}')
