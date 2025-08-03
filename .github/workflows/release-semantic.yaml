@@ -52,14 +52,19 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/github-workflows/actions/setup-repository-tools@main # x-release-please-version
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@main
       with:
-        enable_commits: true
-        fetch_depth: 0
-        git_ref: ${{ inputs.release_branch }}
+        current_fetch_depth: 0
+        current_git_ref: ${{ inputs.release_branch }}
+        current_persist_credentials: true
+        current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
+        # renovate: datasource=github-releases depName=jdx/mise
+        mise_version: "v2025.7.32"
         token: ${{ steps.app-token.outputs.token }}
+        tools_git_ref: main
+        tools_repository: ppat/github-workflows
 
     - name: Install node packages
       shell: bash
