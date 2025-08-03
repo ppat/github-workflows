@@ -126,6 +126,10 @@ jobs:
 
     - name: Commit and push updated checksums
       env:
+        BRANCH: ${{ inputs.git_ref }}
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        MSG: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
+        REPO: ${{ github.repository }}
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation
