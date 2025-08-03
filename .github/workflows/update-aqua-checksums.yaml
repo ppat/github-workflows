@@ -137,10 +137,10 @@ jobs:
         set -euo pipefail
         command -v jq >/dev/null || (sudo apt-get update && sudo apt-get install -y jq)
 
-        # 0) Stage everything
+        echo "Staging changes..."
         git add -A
 
-        # 1) Collect staged changes (handles spaces via -z)
+        echo "Collecting staged changes..."
         status=()
         mapfile -d '' status < <(git diff --cached --name-status -z) || true
 
@@ -176,12 +176,15 @@ jobs:
           esac
         done
 
+        echo "Additions:\n$additions_json" | pr -t -o 4
+        echo "Deletions:\n$deletions_json" | pr -t -o 4
         if [[ "$(jq 'length' <<<"$additions_json")" -eq 0 && "$(jq 'length' <<<"$deletions_json")" -eq 0 ]]; then
           echo "No staged changes; nothing to commit."
           exit 0
         fi
+        echo
 
-        # 2) Resolve expectedHeadOid
+        echo "Resolving expected Head Oid..."
         OWNER="${REPO%%/*}"
         NAME="${REPO#*/}"
         head_oid=$(
@@ -204,7 +207,7 @@ jobs:
           exit 1
         fi
 
-        # 3) Create a single verified commit
+        echo "Create a git commit w/ these changes..."
         vars=$(jq -c --null-input \
           --arg repo "$REPO" \
           --arg branch "$BRANCH" \
@@ -233,15 +236,14 @@ jobs:
           --argjson v "$vars" \
           '{query:$q, variables:$v}')
 
-        # Execute mutation with a real JSON body (not form fields)
         if ! out=$(gh api graphql --input - <<<"$BODY" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
           echo "GraphQL commit failed:"
-          cat err.log
+          cat err.log | pr -t -o 4
           echo "Variables (redacted contents):"
-          jq '(.input.fileChanges.additions[]?.contents)="<base64-redacted>"' <<<"$vars"
+          jq '(.input.fileChanges.additions[]?.contents)="<base64-redacted>"' <<<"$vars" | pr -t -o 4
           exit 1
         fi
-        echo "$out" | jq
+        echo "$out" | jq | pr -t -o 4
 
         # exit w/ error code as the push should trigger another run of this workflow (which should result in no further commits)
         exit 1
