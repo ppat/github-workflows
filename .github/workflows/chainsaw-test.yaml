@@ -38,8 +38,15 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
+    - name: tree
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        tree
+
     - name: Setup repository and tools
-      uses: ./actions/setup-repository-tools
+      uses: ./actions/setup-repository-tools/
       with:
         git_ref: ${{ inputs.git_ref }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
