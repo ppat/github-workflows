@@ -60,10 +60,7 @@ jobs:
     - name: Install node packages
       shell: bash
       working-directory: ./tools
-      run: |
-        pwd
-        ls -al
-        bun install --global --frozen-lockfile
+      run: bun install --frozen-lockfile
 
     - name: Release (Dry Run)
       if: ${{ inputs.dry_run == 'true' }}
