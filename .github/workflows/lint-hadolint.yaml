@@ -86,7 +86,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -x
-        HADOLINT_ARGS=$( "${CONFIG}" "${FAILURE_THRESHOLD}" "${VERBOSITY}" )
+        HADOLINT_ARGS=( "${CONFIG}" "${FAILURE_THRESHOLD}" "${VERBOSITY}" )
         FILE_LIST=$(mktemp)
         if [[ "${DOCKER_FILES}" == "ALL" ]]; then
           find . -type f -name Dockerfile > ${FILE_LIST}
