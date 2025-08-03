@@ -11,6 +11,18 @@ inputs:
     required: false
     type: boolean
     default: false
+  extra_cache_path:
+    required: false
+    type: string
+    default: ""
+  extra_cache_key:
+    required: false
+    type: string
+    default: ""
+  extra_cache_restore_keys:
+    required: false
+    type: string
+    default: ""
   fetch_depth:
     required: false
     type: number
@@ -48,7 +60,7 @@ runs:
       persist-credentials: ${{ inputs.enable_commits }}
       token: ${{ inputs.token }}
 
-  - name: Cache mise
+  - name: Cache - mise
     uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
     with:
       path: ~/.local/share/mise
@@ -56,6 +68,14 @@ runs:
       restore-keys: |
         mise-${{hashFiles('tools/mise.toml')}}
         mise-
+
+  - name: Cache - extra
+    if: ${{ inputs.extra_cache_path != '' }}
+    uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+    with:
+      path: ${{ inputs.extra_cache_path }}
+      key: ${{ inputs.extra_cache_key }}
+      restore-keys: ${{ inputs.extra_cache_restore_keys }}
 
   - name: Setup default mise configuration
     shell: bash
