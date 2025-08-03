@@ -37,9 +37,6 @@ on:
       app_private_key:
         required: true
 
-env:
-  MISE_IGNORED_CONFIG_PATHS: ${{ inputs.mise_ignore_cfg != '' && format('{0}/current/{1}', github.workspace, inputs.mise_ignore_cfg) || '' }}
-
 jobs:
   update-aqua-checksums:
     runs-on: ubuntu-24.04
@@ -53,51 +50,14 @@ jobs:
         private-key: ${{ secrets.app_private_key }}
         owner: ${{ github.repository_owner }}
 
-    - name: Checkout tools
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+    - name: Setup repository and tools
+      uses: ppat/github-workflows/actions/setup-repository-tools@v1.1.2 # x-release-please-version
       with:
-        fetch-depth: 1
-        path: tools
-        repository: ppat/github-workflows
-        persist-credentials: false
-
-    - name: Checkout current
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      with:
-        path: current
-        repository: ${{ github.repository }}
-        ref: ${{ inputs.git_ref }}
-        persist-credentials: true
-        fetch-depth: 0
+        fetch_depth: 0
+        git_ref: ${{ inputs.git_ref }}
+        mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
+        mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ steps.app-token.outputs.token }}
-
-    - name: Cache mise
-      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-      with:
-        path: ~/.local/share/mise
-        key: mise-${{hashFiles('tools/mise.toml')}}-${{hashFiles('current/mise.toml')}}
-        restore-keys: |
-          mise-${{hashFiles('tools/mise.toml')}}
-          mise-
-
-    - name: Setup default mise configuration
-      # yamllint disable-line rule:indentation
-      run: |
-        mkdir -p ~/.config/mise
-        ln -s $GITHUB_WORKSPACE/tools/mise.toml ~/.config/mise/config.toml
-
-    - name: Setup mise
-      uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2.4.4
-      env:
-        MISE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        # renovate: datasource=github-releases depName=jdx/mise
-        version: "v2025.7.32"
-        install: true
-        cache: false
-        experimental: true
-        log_level: ${{ inputs.mise_log_level }}
-        working_directory: ${{ github.workspace }}/current
 
     - name: Update aqua-checksums.json
       env:
@@ -124,127 +84,15 @@ jobs:
           echo
         done < ${DIR_LIST} | pr -t -o 4
 
-    - name: Commit and push updated checksums
-      env:
-        BRANCH: ${{ inputs.git_ref }}
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        MSG: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
-        REPO: ${{ github.repository }}
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        set -euo pipefail
-        command -v jq >/dev/null || (sudo apt-get update && sudo apt-get install -y jq)
-
         echo "Staging changes..."
         git add -A
+        git status
 
-        echo "Collecting staged changes..."
-        status=()
-        mapfile -d '' status < <(git diff --cached --name-status -z) || true
-
-        additions_json='[]'
-        deletions_json='[]'
-
-        i=0
-        while (( i < ${#status[@]} )); do
-          code="${status[$i]}"; i=$(( i + 1 ))
-          case "$code" in
-            A|M)
-              path="${status[$i]}"; i=$(( i + 1 ))
-              b64=$(base64 -w 0 -- "$path")
-              additions_json=$(jq -c --arg p "$path" --arg c "$b64" \
-                '. + [{path:$p, contents:$c}]' <<<"$additions_json")
-              ;;
-            D)
-              path="${status[$i]}"; i=$(( i + 1 ))
-              deletions_json=$(jq -c --arg p "$path" '. + [{path:$p}]' <<<"$deletions_json")
-              ;;
-            R*)
-              old="${status[$i]}"; i=$(( i + 1 ))
-              new="${status[$i]}"; i=$(( i + 1 ))
-              deletions_json=$(jq -c --arg p "$old" '. + [{path:$p}]' <<<"$deletions_json")
-              b64=$(base64 -w 0 -- "$new")
-              additions_json=$(jq -c --arg p "$new" --arg c "$b64" \
-                '. + [{path:$p, contents:$c}]' <<<"$additions_json")
-              ;;
-            *)
-              path="${status[$i]}"; i=$(( i + 1 ))
-              echo "Skipping change type '$code' for '$path'"
-              ;;
-          esac
-        done
-
-        echo -e "Additions:\n$additions_json" | pr -t -o 4
-        echo -e "Deletions:\n$deletions_json" | pr -t -o 4
-        if [[ "$(jq 'length' <<<"$additions_json")" -eq 0 && "$(jq 'length' <<<"$deletions_json")" -eq 0 ]]; then
-          echo "No staged changes; nothing to commit."
-          exit 0
-        fi
-        echo
-
-        echo "Resolving expected Head Oid..."
-        OWNER="${REPO%%/*}"
-        NAME="${REPO#*/}"
-        head_oid=$(
-          gh api graphql \
-            -f query='
-              query($owner:String!, $name:String!, $qref:String!) {
-                repository(owner:$owner, name:$name) {
-                  ref(qualifiedName:$qref) { target { __typename ... on Commit { oid } } }
-                }
-              }' \
-            -f owner="$OWNER" -f name="$NAME" -f qref="refs/heads/$BRANCH" \
-            --jq '.data.repository.ref.target.oid' \
-          || true
-        )
-        if [[ -z "${head_oid:-}" || "${head_oid}" == "null" ]]; then
-          echo "ERROR: could not resolve expectedHeadOid for refs/heads/$BRANCH"
-          gh api graphql -f query='query($o:String!,$n:String!,$r:String!){
-            repository(owner:$o,name:$n){ ref(qualifiedName:$r){ target{ __typename } } }
-          }' -f o="$OWNER" -f n="$NAME" -f r="refs/heads/$BRANCH" || true
-          exit 1
-        fi
-
-        echo "Create a git commit w/ these changes..."
-        vars=$(jq -c --null-input \
-          --arg repo "$REPO" \
-          --arg branch "$BRANCH" \
-          --arg msg "$MSG" \
-          --arg head "$head_oid" \
-          --argjson adds "$additions_json" \
-          --argjson dels "$deletions_json" \
-          '{ input:{
-              branch:{ repositoryNameWithOwner:$repo, branchName:$branch },
-              message:{ headline:$msg },
-              expectedHeadOid:$head,
-              fileChanges:{ additions:$adds, deletions:$dels }
-            }}')
-
-        GQL=$(cat <<'EOF'
-        mutation($input: CreateCommitOnBranchInput!) {
-          createCommitOnBranch(input:$input) {
-            commit { oid url }
-          }
-        }
-        EOF
-        )
-
-        BODY=$(jq -c --null-input \
-          --arg q "$GQL" \
-          --argjson v "$vars" \
-          '{query:$q, variables:$v}')
-
-        if ! out=$(gh api graphql --input - <<<"$BODY" --jq '.data.createCommitOnBranch.commit' 2>err.log); then
-          echo "GraphQL commit failed:"
-          cat err.log | pr -t -o 4
-          echo "Variables (redacted contents):"
-          jq '(.input.fileChanges.additions[]?.contents)="<base64-redacted>"' <<<"$vars" | pr -t -o 4
-          exit 1
-        fi
-        echo "$out" | jq | pr -t -o 4
-
-        echo "GraphQL commit successful. Exiting w/ error code as the commit itself should trigger the follow up re-run that will succeed."
-        # exit w/ error code as the push should trigger another run of this workflow (which should result in no further commits)
-        exit 1
+    - name: Commit and push updated checksums
+      uses: ppat/github-workflows/actions/create-signed-commit@v1.1.2 # x-release-please-version
+      with:
+        branch: ${{ inputs.git_ref }}
+        commit_message: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
+        repository: ${{ github.repository }}
+        token: ${{ steps.app-token.outputs.token }}
+        working_directory:  ./current
