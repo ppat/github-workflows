@@ -1,0 +1,31 @@
+---
+# yamllint disable rule:line-length
+name: self-test-aqua
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/update-aqua-checksums.yaml'
+    - '.github/workflows/self-test-aqua.yaml'
+    - 'test/aqua/**'
+  schedule:
+  - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  update-aqua-checksums:
+    uses: ./.github/workflows/update-aqua-checksums.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref_name }}
+      aqua_dirs: |
+        test/aqua
+    secrets:
+      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}

@@ -12,14 +12,14 @@ on:
         required: false
         type: string
         default: ""
-      tf_dirs:
-        description: 'JSON array of Terraform directories to validate'
-        required: true
-        type: string
       mise_log_level:
         required: false
         type: string
         default: "info"
+      tf_dirs:
+        description: 'JSON array of Terraform directories to validate'
+        required: true
+        type: string
 
 env:
   CHECKPOINT_DISABLE: "true"

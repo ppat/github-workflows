@@ -17,7 +17,6 @@ jobs:
   release:
     uses: ./.github/workflows/release.yaml
     with:
-      repository: ${{ github.repository }}
       release_type: release-please
     secrets:
       app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
