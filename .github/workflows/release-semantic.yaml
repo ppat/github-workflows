@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: "info"
+      release_branch:
+        required: false
+        type: string
+        default: "main"
     secrets:
       app_id:
         required: true
@@ -52,7 +56,7 @@ jobs:
       with:
         enable_commits: true
         fetch_depth: 0
-        git_ref: ${{ inputs.git_ref }}
+        git_ref: ${{ inputs.release_branch }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ steps.app-token.outputs.token }}
@@ -66,7 +70,7 @@ jobs:
       if: (github.event_name == 'pull_request' || inputs.dry_run == 'true')
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        CURRENT_BRANCH: ${{ inputs.release_branch }}
       shell: bash
       working-directory: ./current
       run: |
@@ -87,7 +91,7 @@ jobs:
       id: release_info
       env:
         TRIGGER_EVENT: ${{ github.event_name }}
-        CURRENT_BRANCH: ${{ github.head_ref || github.ref_name }}
+        CURRENT_BRANCH: ${{ inputs.release_branch }}
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation
@@ -97,7 +101,7 @@ jobs:
           echo "version=v$(cat /tmp/released.version)" >> "$GITHUB_OUTPUT"
           echo "gitref=refs/tags/v$(cat /tmp/released.version)" >> "$GITHUB_OUTPUT"
         else
-          # a dry-run during CI or a test-publish for manual testing has been triggered.
+          # a dry-run has been triggered.
           echo "version=v0.0.0" >> "$GITHUB_OUTPUT"
           echo "gitref=refs/heads/$CURRENT_BRANCH" >> "$GITHUB_OUTPUT"
         fi
