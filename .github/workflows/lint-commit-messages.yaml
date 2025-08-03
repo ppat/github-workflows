@@ -40,7 +40,7 @@ jobs:
         echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@setup-repository-tools
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@main
       with:
         current_fetch_depth: ${{ env.FETCH_DEPTH }}
         current_git_ref: ${{ inputs.git_ref }}
