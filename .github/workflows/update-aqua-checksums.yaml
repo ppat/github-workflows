@@ -79,7 +79,7 @@ jobs:
       run: |
         DIR_LIST=$(mktemp)
         if [[ "${AQUA_DIRS}" == "ALL" ]]; then
-           find . -type f -name aqua.yaml -exec dirname {} \; | sort | uniq > ${DIR_LIST}
+          find . -type f -name aqua.yaml -exec dirname {} \; | sort | uniq > ${DIR_LIST}
         else
           echo ${AQUA_DIRS} | tr ' ' '\n' > ${DIR_LIST}
         fi

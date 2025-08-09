@@ -25,9 +25,6 @@ on:
         required: false
         type: string
         default: "info"
-      repository:
-        required: true
-        type: string
       timeout:
         required: false
         type: number
@@ -82,7 +79,7 @@ jobs:
 
     - name: Run Chainsaw Tests
       env:
-        GIT_URL: https://github.com/${{ inputs.repository }}.git
+        GIT_URL: https://github.com/${{ github.repository }}.git
         GIT_REF: ${{ inputs.git_ref }}
         CHAINSAW_CONFIG: ${{ inputs.chainsaw_config }}
         TEST_PATH: ${{ inputs.test_path }}
