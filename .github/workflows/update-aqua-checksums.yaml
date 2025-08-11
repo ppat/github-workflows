@@ -22,7 +22,6 @@ on:
       prune:
         required: false
         type: boolean
-        default: true
       semantic_commit_type:
         required: false
         type: string
@@ -55,11 +54,7 @@ jobs:
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.git_ref }}
-        current_persist_credentials:
         current_repository: ${{ github.repository }}
-        extra_cache_path:
-        extra_cache_key:
-        extra_cache_restore_keys:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         # renovate: datasource=github-releases depName=jdx/mise
@@ -72,7 +67,7 @@ jobs:
       env:
         AQUA_DIRS: ${{ inputs.aqua_dirs }}
         AQUA_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        PRUNE: "${{ inputs.prune == 'true' && '-prune' || '' }}"
+        PRUNE: "${{ inputs.prune && '-prune' || '' }}"
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation

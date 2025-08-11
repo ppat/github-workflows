@@ -285,5 +285,5 @@ jobs:
         enable-url-completion: true
 
     - name: Tailscale Disconnect
-      if: ${{ (success() || failure()) && env.CONNECT_TAILSCALE == 'true' }}
+      if: ${{ (success() || failure()) && (env.CONNECT_TAILSCALE == 'true') }}
       run: sudo -E tailscale logout
