@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.1](https://github.com/ppat/github-workflows/compare/v2.0.0...v2.0.1) (2025-08-11)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.7.32 -&gt; v2025.8.1) ([#185](https://github.com/ppat/github-workflows/issues/185)) ([271b604](https://github.com/ppat/github-workflows/commit/271b604a93f983b1d8f1e0185a31991e43389653))
+* **dev-tools:** update jdx/mise (v2025.8.1 -&gt; v2025.8.7) ([#187](https://github.com/ppat/github-workflows/issues/187)) ([be90f4b](https://github.com/ppat/github-workflows/commit/be90f4b7b4ce82794c1c3c34d539e48786d585d1))
+* **dev-tools:** update renovate (non-major) ([#183](https://github.com/ppat/github-workflows/issues/183)) ([762d6cb](https://github.com/ppat/github-workflows/commit/762d6cb7736e58ba181a027c184356c3073e0bbd))
+* **dev-tools:** update tailscale/tailscale (v1.84.0 -&gt; v1.86.2) ([#181](https://github.com/ppat/github-workflows/issues/181)) ([62fa8f3](https://github.com/ppat/github-workflows/commit/62fa8f3fd832807d8fda24610b9303cd137bc384))
+* **github-actions:** update ppat/homelab-ops-actions (v0.0.1 -&gt; v0.0.2) ([#184](https://github.com/ppat/github-workflows/issues/184)) ([9fadbbe](https://github.com/ppat/github-workflows/commit/9fadbbe559b11b655ab5fa9455ad7a2855beb656))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** handle booleans correctly in reusable workflow inputs ([#188](https://github.com/ppat/github-workflows/issues/188)) ([b395222](https://github.com/ppat/github-workflows/commit/b39522271aaf296d3be472996939b57dc4eb49a5))
+
 ## [2.0.0](https://github.com/ppat/github-workflows/compare/v1.1.2...v2.0.0) (2025-08-03)
 
 
