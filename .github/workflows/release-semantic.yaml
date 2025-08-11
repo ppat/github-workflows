@@ -8,7 +8,6 @@ on:
       dry_run:
         required: false
         type: boolean
-        default: false
       mise_ignore_cfg:
         required: false
         type: string
@@ -72,7 +71,7 @@ jobs:
       run: bun install --frozen-lockfile
 
     - name: Release (Dry Run)
-      if: (github.event_name == 'pull_request' || inputs.dry_run == 'true')
+      if: ${{ (github.event_name == 'pull_request') || inputs.dry_run }}
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         CURRENT_BRANCH: ${{ inputs.release_branch }}
@@ -85,7 +84,7 @@ jobs:
         bunx semantic-release --dry-run --no-ci --branches $CURRENT_BRANCH
 
     - name: Release
-      if: (github.event_name == 'workflow_dispatch' && inputs.dry_run == 'false')
+      if: ${{ (github.event_name == 'workflow_dispatch') && (!inputs.dry_run) }}
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       shell: bash

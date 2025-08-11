@@ -21,7 +21,7 @@ jobs:
   renovate:
     uses: ./.github/workflows/renovate.yaml
     with:
-      dry_run: "${{ github.event_name	== 'pull_request' }}"
+      dry_run: ${{ github.event_name == 'pull_request' }}
       git_ref: ${{ github.head_ref || github.ref }}
       log_level: debug
     secrets:

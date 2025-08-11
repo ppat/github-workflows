@@ -8,7 +8,6 @@ on:
       dry_run:
         required: false
         type: boolean
-        default: true
       git_ref:
         required: true
         type: string
@@ -59,7 +58,7 @@ jobs:
         renovate-version: "41.52.3"
       env:
         LOG_LEVEL: ${{ inputs.log_level }}
-        RENOVATE_DRY_RUN: "${{ inputs.dry_run	== true && 'extract' || '' }}"
+        RENOVATE_DRY_RUN: "${{ inputs.dry_run && 'extract' || '' }}"
         RENOVATE_GIT_IGNORED_AUTHORS: "182250461+homelab-workflows-bot[bot]@users.noreply.github.com"
         # yamllint disable-line rule:indentation
         RENOVATE_HOST_RULES: >-

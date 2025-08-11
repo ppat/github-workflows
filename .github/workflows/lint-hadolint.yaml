@@ -31,7 +31,6 @@ on:
       verbose:
         required: false
         type: boolean
-        default: false
 
 jobs:
   hadolint:
@@ -56,7 +55,7 @@ jobs:
         DOCKER_FILES: ${{ inputs.files }}
         CONFIG: "${{ inputs.hadolint_config != '' && format('--config={0}', inputs.hadolint_config) || '' }}"
         FAILURE_THRESHOLD: "--failure-threshold ${{ inputs.failure_threshold }}"
-        VERBOSITY: "${{ inputs.verbose == 'true' && '--verbose' || '' }}"
+        VERBOSITY: "${{ inputs.verbose && '--verbose' || '' }}"
       shell: bash
       working-directory: ./current
       # yamllint disable-line rule:indentation
