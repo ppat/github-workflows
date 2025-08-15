@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.0.2](https://github.com/ppat/github-workflows/compare/v2.0.1...v2.0.2) (2025-08-15)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.8.7 -&gt; v2025.8.9) ([#191](https://github.com/ppat/github-workflows/issues/191)) ([de960f4](https://github.com/ppat/github-workflows/commit/de960f42f479066e5930fac4756302fc2a64745a))
+* **dev-tools:** update mise packages (non-major) ([#193](https://github.com/ppat/github-workflows/issues/193)) ([e155cd4](https://github.com/ppat/github-workflows/commit/e155cd4592b899a4a2d003abaced4678e7931322))
+* **dev-tools:** update renovate (non-major) ([#194](https://github.com/ppat/github-workflows/issues/194)) ([676442a](https://github.com/ppat/github-workflows/commit/676442adb5b7555eddb1cd49dcabf215bd88587f))
+* **github-actions:** update digest trusted github-actions ([#192](https://github.com/ppat/github-workflows/issues/192)) ([47431b1](https://github.com/ppat/github-workflows/commit/47431b173ffe7f779b98ec86497cfd3934c834c2))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update @semantic-release/github (11.0.3 -&gt; 11.0.4) ([#189](https://github.com/ppat/github-workflows/issues/189)) ([6826292](https://github.com/ppat/github-workflows/commit/6826292c5b377f5ccbf99714a54fec8a31362d65))
+
 ## [2.0.1](https://github.com/ppat/github-workflows/compare/v2.0.0...v2.0.1) (2025-08-11)
 
 
