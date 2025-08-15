@@ -80,7 +80,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
       with:
         fetch-depth: 1
         persist-credentials: false
@@ -180,7 +180,7 @@ jobs:
 
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
       with:
         images: |-
           ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
@@ -214,14 +214,14 @@ jobs:
 
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
-      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
       with:
         username: ${{ secrets.dockerhub_username }}
         password: ${{ secrets.dockerhub_token }}
 
     - name: Login to Private Registry
       if: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' }}
-      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
+      uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
       with:
         registry: ${{ secrets.private_registry }}
         username: ${{ secrets.private_registry_username }}
