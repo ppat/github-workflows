@@ -17,7 +17,7 @@ tflint                  = "0.58.1"
 uv                      = "0.8.6"
 yamllint                = "1.37.1"
 "aqua:kyverno/chainsaw" = "0.2.12"
-"npm:renovate"          = "41.62.4"
+"npm:renovate"          = "41.81.2"
 
 [settings]
 disable_backends = ["asdf", "dotnet", "gem", "spm", "vfox"]
