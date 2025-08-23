@@ -22,6 +22,7 @@
         "astral-sh/uv"
       ],
       "matchUpdateTypes": [
+        "major",
         "minor"
       ],
       "minimumReleaseAge": "30 days"
@@ -35,6 +36,7 @@
         "hashicorp/terraform"
       ],
       "matchUpdateTypes": [
+        "major",
         "minor"
       ],
       "minimumReleaseAge": "90 days"
