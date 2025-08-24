@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.0.2](https://github.com/ppat/github-workflows/compare/v2.0.1...v2.0.2) (2025-08-24)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.8.10 -&gt; v2025.8.13) ([#196](https://github.com/ppat/github-workflows/issues/196)) ([4f99efa](https://github.com/ppat/github-workflows/commit/4f99efa6b3703bb68d9cb8f24ecace6de4bdfdde))
+* **dev-tools:** update jdx/mise (v2025.8.13 -&gt; v2025.8.16) ([#197](https://github.com/ppat/github-workflows/issues/197)) ([7a825e3](https://github.com/ppat/github-workflows/commit/7a825e3c65cad093a54cfb5b504c8931a5e27d85))
+* **dev-tools:** update jdx/mise (v2025.8.16 -&gt; v2025.8.20) ([#201](https://github.com/ppat/github-workflows/issues/201)) ([477b1bd](https://github.com/ppat/github-workflows/commit/477b1bda845852b6437f72c467768194686478ea))
+* **dev-tools:** update jdx/mise (v2025.8.7 -&gt; v2025.8.9) ([#191](https://github.com/ppat/github-workflows/issues/191)) ([de960f4](https://github.com/ppat/github-workflows/commit/de960f42f479066e5930fac4756302fc2a64745a))
+* **dev-tools:** update jdx/mise (v2025.8.9 -&gt; v2025.8.10) ([#195](https://github.com/ppat/github-workflows/issues/195)) ([920cb32](https://github.com/ppat/github-workflows/commit/920cb3244e26ede57f994420c06c97799dda7f3d))
+* **dev-tools:** update mise packages (non-major) ([#193](https://github.com/ppat/github-workflows/issues/193)) ([e155cd4](https://github.com/ppat/github-workflows/commit/e155cd4592b899a4a2d003abaced4678e7931322))
+* **dev-tools:** update renovate (non-major) ([#194](https://github.com/ppat/github-workflows/issues/194)) ([676442a](https://github.com/ppat/github-workflows/commit/676442adb5b7555eddb1cd49dcabf215bd88587f))
+* **dev-tools:** update renovate (non-major) ([#198](https://github.com/ppat/github-workflows/issues/198)) ([0bc0c7c](https://github.com/ppat/github-workflows/commit/0bc0c7cf45be8f8d20a1455d4da7431eae04b271))
+* **github-actions:** update digest trusted github-actions ([#192](https://github.com/ppat/github-workflows/issues/192)) ([47431b1](https://github.com/ppat/github-workflows/commit/47431b173ffe7f779b98ec86497cfd3934c834c2))
+* **github-actions:** update ppat/homelab-ops-actions (v0.0.2 -&gt; v0.0.3) ([#204](https://github.com/ppat/github-workflows/issues/204)) ([c0f906f](https://github.com/ppat/github-workflows/commit/c0f906f94bca42e8393314b83641f8e338606590))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* do not require callers to specify semantic-release dependencies in caller repo ([#199](https://github.com/ppat/github-workflows/issues/199)) ([4abfa2b](https://github.com/ppat/github-workflows/commit/4abfa2bf0321b8d5752ad6280e27181376249a95))
+* update @semantic-release/github (11.0.3 -&gt; 11.0.4) ([#189](https://github.com/ppat/github-workflows/issues/189)) ([6826292](https://github.com/ppat/github-workflows/commit/6826292c5b377f5ccbf99714a54fec8a31362d65))
+
 ## [2.0.1](https://github.com/ppat/github-workflows/compare/v2.0.0...v2.0.1) (2025-08-11)
 
 
