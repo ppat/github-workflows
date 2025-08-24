@@ -7,8 +7,6 @@ on:
     paths:
     - '.github/workflows/renovate.yaml'
     - '.github/workflows/self-renovate.yaml'
-    - '.github/renovate.json'
-    - '.github/renovate/*.json'
   schedule:
   - cron: '0 8 * * *'
   workflow_dispatch:
