@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/ppat/github-workflows/compare/v2.0.2...v2.0.3) (2025-08-24)
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* fix pre-commit workflow ([7ed088a](https://github.com/ppat/github-workflows/commit/7ed088aa1a3429bc61f3eec5243b23a976b14cae))
+
 ## [2.0.2](https://github.com/ppat/github-workflows/compare/v2.0.1...v2.0.2) (2025-08-24)
 
 
