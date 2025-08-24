@@ -22,6 +22,21 @@
       "schedule": [
         "every 7 day"
       ]
+    },
+    {
+      "description": "update ppat github actions",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "/^ppat\//"
+      ],
+      "matchUpdateTypes": [
+        "digest",
+        "minor",
+        "patch"
+      ],
+      "minimumReleaseAge": ""
     }
   ]
 }
