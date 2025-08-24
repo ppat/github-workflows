@@ -73,7 +73,6 @@ jobs:
         if [[ ! -e bun.lock ]]; then
           cp $GITHUB_WORKSPACE/tools/package.json .
           cp $GITHUB_WORKSPACE/tools/bun.lock .
-          git update-index --assume-unchanged package.json bun.lock
         fi
         bun install --frozen-lockfile
 
