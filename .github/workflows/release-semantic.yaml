@@ -51,7 +51,8 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@380637e3498d26db0a3f2940c363d9d178854dc3 # v0.0.2
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-cache-key
+      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@380637e3498d26db0a3f2940c363d9d178854dc3 # v0.0.2
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.release_branch }}
