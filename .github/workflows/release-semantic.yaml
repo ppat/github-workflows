@@ -68,7 +68,13 @@ jobs:
     - name: Install node packages
       shell: bash
       working-directory: ./current
-      run: bun install --frozen-lockfile
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ ! -e bun.lock ]]; then
+          cp $GITHUB_WORKSPACE/tools/package.json .
+          cp $GITHUB_WORKSPACE/tools/bun.lock .
+        fi
+        bun install --frozen-lockfile
 
     - name: Release (Dry Run)
       if: ${{ (github.event_name == 'pull_request') || inputs.dry_run }}
