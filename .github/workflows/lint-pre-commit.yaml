@@ -28,10 +28,7 @@ jobs:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
         extra_cache_path: ~/.cache/pre-commit/
-        extra_cache_key: pre-commit-${{hashFiles('tools/.pre-commit-config.yaml')}}-${{hashFiles('current/.pre-commit-config.yaml')}}
-        extra_cache_restore_keys: |
-          pre-commit-${{hashFiles('tools/.pre-commit-config.yaml')}}-
-          pre-commit-
+        extra_cache_key: pre-commit
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         # renovate: datasource=github-releases depName=jdx/mise
