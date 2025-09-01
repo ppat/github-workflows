@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.4](https://github.com/ppat/github-workflows/compare/v2.0.3...v2.0.4) (2025-09-01)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.8.20 -&gt; v2025.8.21) ([#207](https://github.com/ppat/github-workflows/issues/207)) ([0b6d002](https://github.com/ppat/github-workflows/commit/0b6d002a4bdb19f73f6a1621e71b1d4b969666f5))
+* **dev-tools:** update kindest/node (v1.33.2 -&gt; v1.33.4) ([#208](https://github.com/ppat/github-workflows/issues/208)) ([c93b89a](https://github.com/ppat/github-workflows/commit/c93b89a3aea9c2db0615a77dc2a3d215ebbf43f9))
+* **dev-tools:** update mise packages (non-major) ([#209](https://github.com/ppat/github-workflows/issues/209)) ([c98cb4a](https://github.com/ppat/github-workflows/commit/c98cb4a159638d9b507b7f3cd154eeafce22eee5))
+* **dev-tools:** update renovatebot/renovate (41.81.2 -&gt; 41.84.0) ([#210](https://github.com/ppat/github-workflows/issues/210)) ([d101178](https://github.com/ppat/github-workflows/commit/d10117833c4a82d15f9a529b2a1c2f71a3656695))
+* **github-actions:** update digest googleapis/release-please-action (a02a34c -&gt; c2a5a2b) ([#206](https://github.com/ppat/github-workflows/issues/206)) ([bc2913e](https://github.com/ppat/github-workflows/commit/bc2913e5f4b5659ebf51031df5c2e899678286b1))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update @semantic-release/github (11.0.4 -&gt; 11.0.5) ([#212](https://github.com/ppat/github-workflows/issues/212)) ([35e4c70](https://github.com/ppat/github-workflows/commit/35e4c7039bbceea424751e246eab57c6470ec149))
+
 ## [2.0.3](https://github.com/ppat/github-workflows/compare/v2.0.2...v2.0.3) (2025-08-24)
 
 
