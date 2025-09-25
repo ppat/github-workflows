@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/ppat/github-workflows/compare/v2.1.0...v2.1.1) (2025-09-25)
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* remove cosign/slsa-verifier as verification is now builtin into mise ([#232](https://github.com/ppat/github-workflows/issues/232)) ([08c1d9a](https://github.com/ppat/github-workflows/commit/08c1d9a1462e42349983aae141f6221534bbaadb))
+
 ## [2.1.0](https://github.com/ppat/github-workflows/compare/v2.0.3...v2.1.0) (2025-09-25)
 
 
