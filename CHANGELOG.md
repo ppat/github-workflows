@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.1.2](https://github.com/ppat/github-workflows/compare/v2.1.1...v2.1.2) (2025-10-04)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update jdx/mise (v2025.9.16 -&gt; v2025.9.21) ([#234](https://github.com/ppat/github-workflows/issues/234)) ([02761ab](https://github.com/ppat/github-workflows/commit/02761abadad6a5d48786e4a39b20c6209091c951))
+* **dev-tools:** update jdx/mise (v2025.9.21 -&gt; v2025.9.23) ([#241](https://github.com/ppat/github-workflows/issues/241)) ([b37c6bc](https://github.com/ppat/github-workflows/commit/b37c6bc3fa8bce8d35c8efe47de3d19687363767))
+* **dev-tools:** update jdx/mise (v2025.9.23 -&gt; v2025.9.25) ([#242](https://github.com/ppat/github-workflows/issues/242)) ([d7e0178](https://github.com/ppat/github-workflows/commit/d7e0178d71d8f0ca5e677b92daddcab3b18cb326))
+* **dev-tools:** update mise packages (non-major) ([#238](https://github.com/ppat/github-workflows/issues/238)) ([d7773e6](https://github.com/ppat/github-workflows/commit/d7773e67be8f21f0f77758573a8e5a327a57482b))
+* **dev-tools:** update mise packages (non-major) ([#244](https://github.com/ppat/github-workflows/issues/244)) ([1898d11](https://github.com/ppat/github-workflows/commit/1898d11d11ab945ef8f284f1860c6084f2cfeaff))
+* **dev-tools:** update renovatebot/renovate (41.122.3 -&gt; 41.131.2) ([#240](https://github.com/ppat/github-workflows/issues/240)) ([33a0d91](https://github.com/ppat/github-workflows/commit/33a0d918d43c6fc09db2ff2e52dd088254e487e9))
+* **dev-tools:** update renovatebot/renovate (41.131.2 -&gt; 41.131.8) ([#243](https://github.com/ppat/github-workflows/issues/243)) ([ee3265a](https://github.com/ppat/github-workflows/commit/ee3265a561f4f476ae245f89bd6144bb9e28efe0))
+* **dev-tools:** update tailscale/tailscale (v1.88.1 -&gt; v1.88.3) ([#235](https://github.com/ppat/github-workflows/issues/235)) ([4599cb1](https://github.com/ppat/github-workflows/commit/4599cb1b63cbe5e4efba18a208fcb18522abca3c))
+* **github-actions:** update digest trusted github-actions ([#237](https://github.com/ppat/github-workflows/issues/237)) ([fdb6672](https://github.com/ppat/github-workflows/commit/fdb667280156072010f1c6a91a5dc08a837b8842))
+* **github-actions:** update renovatebot/github-action (v43.0.7 -&gt; v43.0.9) ([#239](https://github.com/ppat/github-workflows/issues/239)) ([d242efa](https://github.com/ppat/github-workflows/commit/d242efa782377bc81b1c7f3048fa98a6876ecde5))
+
 ## [2.1.1](https://github.com/ppat/github-workflows/compare/v2.1.0...v2.1.1) (2025-09-25)
 
 
