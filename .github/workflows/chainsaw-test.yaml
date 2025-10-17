@@ -47,12 +47,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
-    - run: |
-        echo "inputs.git_ref=${{ inputs.git_ref }}"
-        echo "github.repository=${{ github.repository }}"
-        echo "env.GITHUB_WORKFLOWS_VERSION=${{ env.GITHUB_WORKFLOWS_VERSION }}"
-        echo "formula=${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}"
-
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
       with:
