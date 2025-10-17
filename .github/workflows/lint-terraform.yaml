@@ -23,8 +23,6 @@ on:
 
 env:
   CHECKPOINT_DISABLE: "true"
-  # renovate: datasource=github-releases depName=ppat/github-workflows
-  GITHUB_WORKFLOWS_VERSION: v2.2.0
   # renovate: datasource=github-releases depName=hashicorp/terraform
   TERRAFORM_VERSION: "v1.6.6"
   # renovate: datasource=github-releases depName=terraform-linters/tflint
@@ -35,6 +33,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+    - name: Load reusable workflow version
+      run: |
+        set -o allexport; source .version; set +o allexport
+        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
+        echo
+        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
+
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
       with:
@@ -68,6 +73,13 @@ jobs:
       fail-fast: false
     timeout-minutes: 5
     steps:
+    - name: Load reusable workflow version
+      run: |
+        set -o allexport; source .version; set +o allexport
+        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
+        echo
+        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
+
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
       with:
@@ -112,6 +124,13 @@ jobs:
       fail-fast: false
     timeout-minutes: 5
     steps:
+    - name: Load reusable workflow version
+      run: |
+        set -o allexport; source .version; set +o allexport
+        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
+        echo
+        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
+
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
       with:

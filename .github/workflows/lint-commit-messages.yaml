@@ -26,15 +26,18 @@ on:
         type: string
         default: "info"
 
-env:
-  # renovate: datasource=github-releases depName=ppat/github-workflows
-  GITHUB_WORKFLOWS_VERSION: v2.2.0 # x-release-please-version
-
 jobs:
   commit-messages:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
+    - name: Load reusable workflow version
+      run: |
+        set -o allexport; source .version; set +o allexport
+        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
+        echo
+        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
+
     - name: Set fetch depth
       env:
         DEPTH: ${{ inputs.fetch_depth }}

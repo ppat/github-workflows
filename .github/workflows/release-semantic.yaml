@@ -33,10 +33,6 @@ on:
       released_gitref:
         value: ${{ jobs.semantic-release.outputs.released_gitref }}
 
-env:
-  # renovate: datasource=github-releases depName=ppat/github-workflows
-  GITHUB_WORKFLOWS_VERSION: v2.2.0
-
 jobs:
   semantic-release:
     runs-on: ubuntu-24.04
@@ -46,6 +42,13 @@ jobs:
       released_version: ${{ steps.release_info.outputs.version }}
       released_gitref: ${{ steps.release_info.outputs.gitref }}
     steps:
+    - name: Load reusable workflow version
+      run: |
+        set -o allexport; source .version; set +o allexport
+        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
+        echo
+        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
+
     - name: Generate github app token
       uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
       id: app-token
