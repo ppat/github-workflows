@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.2.0](https://github.com/ppat/github-workflows/compare/v2.1.1...v2.2.0) (2025-10-17)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update alessandrojcm/commitlint-pre-commit-hook (non-major) ([#250](https://github.com/ppat/github-workflows/issues/250)) ([8d71512](https://github.com/ppat/github-workflows/commit/8d715125731bc88976c1f5be7b0920d520b4b58a))
+* **dev-tools:** update jdx/mise (v2025.9.16 -&gt; v2025.9.21) ([#234](https://github.com/ppat/github-workflows/issues/234)) ([02761ab](https://github.com/ppat/github-workflows/commit/02761abadad6a5d48786e4a39b20c6209091c951))
+* **dev-tools:** update jdx/mise (v2025.9.21 -&gt; v2025.9.23) ([#241](https://github.com/ppat/github-workflows/issues/241)) ([b37c6bc](https://github.com/ppat/github-workflows/commit/b37c6bc3fa8bce8d35c8efe47de3d19687363767))
+* **dev-tools:** update jdx/mise (v2025.9.23 -&gt; v2025.9.25) ([#242](https://github.com/ppat/github-workflows/issues/242)) ([d7e0178](https://github.com/ppat/github-workflows/commit/d7e0178d71d8f0ca5e677b92daddcab3b18cb326))
+* **dev-tools:** update jdx/mise (v2025.9.25 -&gt; v2025.10.7) ([#247](https://github.com/ppat/github-workflows/issues/247)) ([6ed4461](https://github.com/ppat/github-workflows/commit/6ed4461ea0f4a3e0d33772607ce5387d3634a99e))
+* **dev-tools:** update mise packages (non-major) ([#238](https://github.com/ppat/github-workflows/issues/238)) ([d7773e6](https://github.com/ppat/github-workflows/commit/d7773e67be8f21f0f77758573a8e5a327a57482b))
+* **dev-tools:** update mise packages (non-major) ([#244](https://github.com/ppat/github-workflows/issues/244)) ([1898d11](https://github.com/ppat/github-workflows/commit/1898d11d11ab945ef8f284f1860c6084f2cfeaff))
+* **dev-tools:** update mise packages (non-major) ([#248](https://github.com/ppat/github-workflows/issues/248)) ([d870cc8](https://github.com/ppat/github-workflows/commit/d870cc87c115116015e3e9bf4ef2556d85fff378))
+* **dev-tools:** update renovatebot/renovate (41.122.3 -&gt; 41.131.2) ([#240](https://github.com/ppat/github-workflows/issues/240)) ([33a0d91](https://github.com/ppat/github-workflows/commit/33a0d918d43c6fc09db2ff2e52dd088254e487e9))
+* **dev-tools:** update renovatebot/renovate (41.131.2 -&gt; 41.131.8) ([#243](https://github.com/ppat/github-workflows/issues/243)) ([ee3265a](https://github.com/ppat/github-workflows/commit/ee3265a561f4f476ae245f89bd6144bb9e28efe0))
+* **dev-tools:** update renovatebot/renovate (41.131.8 -&gt; 41.143.1) ([#246](https://github.com/ppat/github-workflows/issues/246)) ([fd664b8](https://github.com/ppat/github-workflows/commit/fd664b80c77b21d21aba90a2743331d36f275d1c))
+* **dev-tools:** update renovatebot/renovate (41.143.1 -&gt; 41.148.1) ([#251](https://github.com/ppat/github-workflows/issues/251)) ([9a54160](https://github.com/ppat/github-workflows/commit/9a54160fac5cc6bbec4321f270aff3d4c4d74edd))
+* **dev-tools:** update tailscale/tailscale (v1.88.1 -&gt; v1.88.3) ([#235](https://github.com/ppat/github-workflows/issues/235)) ([4599cb1](https://github.com/ppat/github-workflows/commit/4599cb1b63cbe5e4efba18a208fcb18522abca3c))
+* **github-actions:** update digest trusted github-actions ([#237](https://github.com/ppat/github-workflows/issues/237)) ([fdb6672](https://github.com/ppat/github-workflows/commit/fdb667280156072010f1c6a91a5dc08a837b8842))
+* **github-actions:** update renovatebot/github-action (v43.0.7 -&gt; v43.0.9) ([#239](https://github.com/ppat/github-workflows/issues/239)) ([d242efa](https://github.com/ppat/github-workflows/commit/d242efa782377bc81b1c7f3048fa98a6876ecde5))
+* **github-actions:** update renovatebot/github-action (v43.0.9 -&gt; v43.0.12) ([#249](https://github.com/ppat/github-workflows/issues/249)) ([91d00a0](https://github.com/ppat/github-workflows/commit/91d00a06f49c5982b1071fa747501cb227fba5c7))
+
+
+### ✨ Features
+
+* update commitlint-plugin-function-rules (4.0.2 -&gt; 4.1.0) ([#245](https://github.com/ppat/github-workflows/issues/245)) ([f5f5248](https://github.com/ppat/github-workflows/commit/f5f524883f60e052a90c9fb3b6d48e6caa038039))
+
 ## [2.1.1](https://github.com/ppat/github-workflows/compare/v2.1.0...v2.1.1) (2025-09-25)
 
 
