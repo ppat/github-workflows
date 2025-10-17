@@ -38,7 +38,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=ppat/github-workflows
-  GITHUB_WORKFLOWS_VERSION: "v2.2.0" # x-release-please-version
+  GITHUB_WORKFLOWS_VERSION: "v2.2.0"
 
 jobs:
   update-aqua-checksums:
