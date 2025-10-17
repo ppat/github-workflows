@@ -15,66 +15,18 @@
   ],
   "draft": false,
   "extra-files": [
-    {
-      "type": "yaml",
-      "path": ".github/workflows/chainsaw-test.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-commit-messages.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-github-actions.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-hadolint.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-markdown.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-pre-commit.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-renovate-config-check.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-shellcheck.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-terraform.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-yaml.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/release-semantic.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/update-aqua-checksums.yaml",
-      "jsonpath": "$..env.GITHUB_WORKFLOWS_VERSION"
-    }
+    ".github/workflows/chainsaw-test.yaml",
+    ".github/workflows/lint-commit-messages.yaml",
+    ".github/workflows/lint-github-actions.yaml",
+    ".github/workflows/lint-hadolint.yaml",
+    ".github/workflows/lint-markdown.yaml",
+    ".github/workflows/lint-pre-commit.yaml",
+    ".github/workflows/lint-renovate-config-check.yaml",
+    ".github/workflows/lint-shellcheck.yaml",
+    ".github/workflows/lint-terraform.yaml",
+    ".github/workflows/lint-yaml.yaml",
+    ".github/workflows/release-semantic.yaml",
+    ".github/workflows/update-aqua-checksums.yaml"
   ],
   "packages": {
     ".": {
