@@ -58,7 +58,7 @@ jobs:
 
     - name: terraform-fmt
       working-directory: ./current
-      run: terraform fmt -check -recursive
+      run: mise x terraform@${TERRAFORM_VERSION} -- terraform fmt -check -recursive
 
   terraform-validate:
     runs-on: ubuntu-24.04
@@ -132,6 +132,7 @@ jobs:
       run: |
         echo "Installing required tools..."
         mise x terraform@${TERRAFORM_VERSION} -- terraform version
+        echo
         mise x tflint@${TFLINT_VERSION} -- tflint --version
 
     - name: tflint

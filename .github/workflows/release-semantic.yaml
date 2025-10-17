@@ -66,7 +66,7 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ steps.app-token.outputs.token }}
-        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.release_branch || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
 
     - name: Install node packages
