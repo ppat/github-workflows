@@ -25,7 +25,7 @@
     ".github/workflows/lint-shellcheck.yaml",
     ".github/workflows/lint-terraform.yaml",
     ".github/workflows/lint-yaml.yaml",
-    ".github/workflows/release.yaml",
+    ".github/workflows/release-semantic.yaml",
     ".github/workflows/update-aqua-checksums.yaml"
   ],
   "packages": {
