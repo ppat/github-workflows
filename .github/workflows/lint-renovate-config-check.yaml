@@ -25,7 +25,7 @@ env:
   # renovate: datasource=github-releases depName=ppat/github-workflows
   GITHUB_WORKFLOWS_VERSION: "v2.2.0" # x-release-please-version
   # renovate: datasource=github-releases depName=renovatebot/renovate
-  RENOVATE_VERSION: "41.148.1"
+  RENOVATE_VERSION: "41.148.6"
 
 jobs:
   renovate-config-check:
