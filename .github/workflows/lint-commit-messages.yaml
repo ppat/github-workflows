@@ -26,6 +26,10 @@ on:
         type: string
         default: "info"
 
+env:
+  # renovate: datasource=github-releases depName=ppat/github-workflows
+  GITHUB_WORKFLOWS_VERSION: "v2.2.0" # x-release-please-version
+
 jobs:
   commit-messages:
     runs-on: ubuntu-24.04
@@ -50,7 +54,7 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: main
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
 
     - name: Install node packages

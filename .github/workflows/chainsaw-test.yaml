@@ -30,6 +30,18 @@ on:
         type: number
         default: 15
 
+env:
+  # renovate: datasource=github-releases depName=ppat/github-workflows
+  GITHUB_WORKFLOWS_VERSION: "v2.2.0" # x-release-please-version
+  # renovate: datasource=github-releases depName=kyverno/chainsaw
+  CHAINSAW_VERSION: "v0.2.13"
+  # renovate: datasource=github-releases depName=fluxcd/flux2
+  FLUX_VERSION: "v2.6.4"
+  # renovate: datasource=github-releases depName=kubernetes-sigs/kind
+  KIND_VERSION: "0.30.0"
+  # renovate: datasource=github-releases depName=kubernetes/kubectl
+  KUBERNETES_VERSION: "v1.33.5"
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -45,8 +57,22 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: main
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version --client --client
+        echo
+        mise x flux2@${FLUX_VERSION} -- flux version --client
+        echo
+        mise x kind@${KIND_VERSION} -- kind version
+        echo
+        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw version
 
     - name: Setup kind cluster
       env:
@@ -60,22 +86,18 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         echo 'Creating kind cluster...'
-        kind version
-        kind create cluster \
+        mise x kind@${KIND_VERSION} -- kind create cluster \
           --name=${CLUSTER_NAME} \
           --wait=${WAIT} \
           --image=${CLUSTER_NODE_IMAGE} \
           --config=${CONFIG}
-        kubectl version
+        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version
 
     - name: Install flux in kind cluster
-      env:
-        # renovate: datasource=github-releases depName=fluxcd/flux2
-        FLUX_VERSION: "v2.6.4"
       shell: bash
       run: |
-        flux install --version ${FLUX_VERSION} --log-level debug
-        flux version
+        mise x flux2@${FLUX_VERSION} -- flux install --version ${FLUX_VERSION} --log-level debug
+        mise x flux2@${FLUX_VERSION} -- flux version
 
     - name: Run Chainsaw Tests
       env:
@@ -103,7 +125,7 @@ jobs:
 
         # Run tests with combined values
         set -x
-        chainsaw test ${TEST_PATH} \
+        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw test ${TEST_PATH} \
           --config ${CHAINSAW_CONFIG} \
           --values /tmp/values-ci.yaml \
           --fail-fast

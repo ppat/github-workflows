@@ -23,6 +23,12 @@ on:
 
 env:
   CHECKPOINT_DISABLE: "true"
+  # renovate: datasource=github-releases depName=ppat/github-workflows
+  GITHUB_WORKFLOWS_VERSION: "v2.2.0" # x-release-please-version
+  # renovate: datasource=github-releases depName=hashicorp/terraform
+  TERRAFORM_VERSION: "v1.6.6"
+  # renovate: datasource=github-releases depName=terraform-linters/tflint
+  TFLINT_VERSION: "v0.59.1"
 
 jobs:
   terraform-fmt:
@@ -39,12 +45,20 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: main
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
 
     - name: terraform-fmt
       working-directory: ./current
-      run: terraform fmt -check -recursive
+      run: mise x terraform@${TERRAFORM_VERSION} -- terraform fmt -check -recursive
 
   terraform-validate:
     runs-on: ubuntu-24.04
@@ -64,12 +78,20 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: main
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
 
     - name: terraform-init
       working-directory: ./current/${{ matrix.dir }}
-      run: terraform init -backend=false
+      run: mise x terraform@${TERRAFORM_VERSION} -- terraform init -backend=false
 
     - name: terraform-validate
       working-directory: ./current/${{ matrix.dir }}
@@ -80,8 +102,7 @@ jobs:
           source .ci.env
           set +o allexport
         fi
-        terraform version
-        terraform validate
+        mise x terraform@${TERRAFORM_VERSION} -- terraform validate
 
   terraform-lint:
     runs-on: ubuntu-24.04
@@ -101,8 +122,18 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.7"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: main
+        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
+        echo
+        mise x tflint@${TFLINT_VERSION} -- tflint --version
 
     - name: tflint
       working-directory: ./current/${{ matrix.dir }}
@@ -113,4 +144,4 @@ jobs:
           source .ci.env
           set +o allexport
         fi
-        tflint --config=${{ github.workspace }}/current/.tflint.hcl --color
+        mise x tflint@${TFLINT_VERSION} -- tflint --config=${{ github.workspace }}/current/.tflint.hcl --color
