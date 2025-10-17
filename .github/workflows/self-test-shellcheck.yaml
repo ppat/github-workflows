@@ -8,6 +8,7 @@ on:
     - '.github/workflows/lint-shellcheck.yaml'
     - '.github/workflows/self-test-shellcheck.yaml'
     - 'test/shellcheck/**'
+    - 'mise.toml'
   schedule:
   - cron: '0 4 * * 1'
   workflow_dispatch:
