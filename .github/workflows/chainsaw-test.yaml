@@ -34,6 +34,15 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
+    env:
+      # renovate: datasource=github-releases depName=kyverno/chainsaw
+      CHAINSAW_VERSION: "v0.2.13"
+      # renovate: datasource=github-releases depName=fluxcd/flux2
+      FLUX_VERSION: "v2.6.4"
+      # renovate: datasource=github-releases depName=kubernetes-sigs/kind
+      KIND_VERSION: "0.30.0"
+      # renovate: datasource=github-releases depName=kubernetes/kubectl
+      KUBERNETES_VERSION: "v1.33.5"
     steps:
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
@@ -48,6 +57,17 @@ jobs:
         tools_git_ref: main
         tools_repository: ppat/github-workflows
 
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version --client --client
+        mise x flux2@${FLUX_VERSION} -- flux version --client
+        mise x kind@${KIND_VERSION} -- kind version
+        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw version
+
     - name: Setup kind cluster
       env:
         CLUSTER_NAME: dev
@@ -60,22 +80,18 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         echo 'Creating kind cluster...'
-        kind version
-        kind create cluster \
+        mise x kind@${KIND_VERSION} -- kind create cluster \
           --name=${CLUSTER_NAME} \
           --wait=${WAIT} \
           --image=${CLUSTER_NODE_IMAGE} \
           --config=${CONFIG}
-        kubectl version
+        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version
 
     - name: Install flux in kind cluster
-      env:
-        # renovate: datasource=github-releases depName=fluxcd/flux2
-        FLUX_VERSION: "v2.6.4"
       shell: bash
       run: |
-        flux install --version ${FLUX_VERSION} --log-level debug
-        flux version
+        mise x flux2@${FLUX_VERSION} -- flux install --version ${FLUX_VERSION} --log-level debug
+        mise x flux2@${FLUX_VERSION} -- flux version
 
     - name: Run Chainsaw Tests
       env:
@@ -103,7 +119,7 @@ jobs:
 
         # Run tests with combined values
         set -x
-        chainsaw test ${TEST_PATH} \
+        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw test ${TEST_PATH} \
           --config ${CHAINSAW_CONFIG} \
           --values /tmp/values-ci.yaml \
           --fail-fast

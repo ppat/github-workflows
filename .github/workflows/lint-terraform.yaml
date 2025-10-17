@@ -23,6 +23,10 @@ on:
 
 env:
   CHECKPOINT_DISABLE: "true"
+  # renovate: datasource=github-releases depName=hashicorp/terraform
+  TERRAFORM_VERSION: "v1.6.6"
+  # renovate: datasource=github-releases depName=terraform-linters/tflint
+  TFLINT_VERSION: "v0.59.1"
 
 jobs:
   terraform-fmt:
@@ -41,6 +45,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tools_git_ref: main
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
 
     - name: terraform-fmt
       working-directory: ./current
@@ -66,6 +78,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tools_git_ref: main
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
 
     - name: terraform-init
       working-directory: ./current/${{ matrix.dir }}
@@ -103,6 +123,15 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tools_git_ref: main
         tools_repository: ppat/github-workflows
+
+    - name: Setup additional tools
+      shell: bash
+      working-directory: ./current
+      # yamllint disable-line rule:indentation
+      run: |
+        echo "Installing required tools..."
+        mise x terraform@${TERRAFORM_VERSION} -- terraform version
+        mise x tflint@${TFLINT_VERSION} -- tflint version
 
     - name: tflint
       working-directory: ./current/${{ matrix.dir }}
