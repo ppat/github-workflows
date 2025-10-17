@@ -14,68 +14,6 @@
     { "type": "test", "section": "🛠 Improvements" }
   ],
   "draft": false,
-  "extra-files": [
-    {
-      "type": "yaml",
-      "path": ".github/workflows/chainsaw-test.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-commit-messages.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-github-actions.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-hadolint.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-markdown.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-pre-commit.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-renovate-config-check.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-shellcheck.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-terraform.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/lint-yaml.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/release-semantic.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    },
-    {
-      "type": "yaml",
-      "path": ".github/workflows/update-aqua-checksums.yaml",
-      "jsonpath": "$.env.GITHUB_WORKFLOWS_VERSION"
-    }
-  ],
   "packages": {
     ".": {
       "extra-label": "pr-type:release"
