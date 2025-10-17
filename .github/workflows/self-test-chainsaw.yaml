@@ -8,6 +8,7 @@ on:
     - '.github/workflows/chainsaw-test.yaml'
     - '.github/workflows/self-test-chainsaw.yaml'
     - 'test/chainsaw/**'
+    - 'mise.toml'
   schedule:
   - cron: '0 4 * * 1'
   workflow_dispatch:

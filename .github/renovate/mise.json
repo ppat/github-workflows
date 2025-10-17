@@ -33,6 +33,7 @@
       ],
       "matchPackageNames": [
         "nodejs",
+        "terraform",
         "hashicorp/terraform"
       ],
       "matchUpdateTypes": [
