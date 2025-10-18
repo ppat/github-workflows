@@ -24,20 +24,19 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "info"
+        default: "warn"
+
+env:
+  # renovate: datasource=npm depName=bun
+  BUN_VERSION: "1.3.0"
+  # renovate: datasource=node-version
+  NODE_VERSION: "22.20.0"
 
 jobs:
   commit-messages:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Load reusable workflow version
-      run: |
-        set -o allexport; source .version; set +o allexport
-        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
-        echo
-        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
-
     - name: Set fetch depth
       env:
         DEPTH: ${{ inputs.fetch_depth }}
@@ -47,7 +46,7 @@ jobs:
         echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_fetch_depth: ${{ env.FETCH_DEPTH }}
         current_git_ref: ${{ inputs.git_ref }}
@@ -57,8 +56,21 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
-        tools_repository: ppat/github-workflows
+        mise_toml: |
+          [tools]
+          bun               = "${{ env.BUN_VERSION }}"
+          node              = "${{ env.NODE_VERSION }}"
+          [settings.npm]
+          bun               = true
+
+    - name: Checkout github-workflows
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      with:
+        fetch-depth: 1
+        path: tools
+        repository: ppat/github-workflows
+        ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || 'main' }}
+        persist-credentials: false
 
     - name: Install node packages
       shell: bash

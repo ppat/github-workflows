@@ -18,7 +18,7 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "info"
+        default: "warn"
       prune:
         required: false
         type: boolean
@@ -36,18 +36,15 @@ on:
       app_private_key:
         required: true
 
+env:
+  # renovate: datasource=github-releases depName=aquaproj/aqua
+  AQUA_VERSION: "2.53.9"
+
 jobs:
   update-aqua-checksums:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Load reusable workflow version
-      run: |
-        set -o allexport; source .version; set +o allexport
-        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
-        echo
-        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
-
     - name: Generate github app token
       uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
       id: app-token
@@ -57,7 +54,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.git_ref }}
@@ -67,8 +64,9 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ steps.app-token.outputs.token }}
-        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
-        tools_repository: ppat/github-workflows
+        mise_toml: |
+          [tools]
+          aqua = "${{ env.AQUA_VERSION }}"
 
     - name: Update aqua-checksums.json
       env:

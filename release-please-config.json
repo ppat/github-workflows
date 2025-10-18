@@ -14,9 +14,6 @@
     { "type": "test", "section": "🛠 Improvements" }
   ],
   "draft": false,
-  "extra-files": [
-    ".version"
-  ],
   "packages": {
     ".": {
       "extra-label": "pr-type:release"

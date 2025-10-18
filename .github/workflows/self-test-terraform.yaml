@@ -8,7 +8,6 @@ on:
     - '.github/workflows/lint-terraform.yaml'
     - '.github/workflows/self-test-terraform.yaml'
     - 'test/terraform/**'
-    - 'mise.toml'
   workflow_dispatch:
   schedule:
   - cron: '0 5 * * 1'
