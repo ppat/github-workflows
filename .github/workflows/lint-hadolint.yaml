@@ -32,20 +32,18 @@ on:
         required: false
         type: boolean
 
+env:
+  # renovate: datasource=github-releases depName=hadolint/hadolint
+  HADOLINT_VERSION: "v2.14.0"
+
 jobs:
   hadolint:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-    - name: Load reusable workflow version
-      run: |
-        set -o allexport; source .version; set +o allexport
-        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
-        echo
-        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
-
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -54,8 +52,6 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
-        tools_repository: ppat/github-workflows
 
     - name: Lint docker files
       env:
@@ -77,7 +73,7 @@ jobs:
 
         lint_dockerfile() {
           local file="$1"
-          if hadolint ${HADOLINT_ARGS[*]} ${file}; then
+          if mise x hadolint@${HADOLINT_VERSION} -- hadolint ${HADOLINT_ARGS[*]} ${file}; then
             return 0
           else
             return 1

@@ -8,7 +8,6 @@ on:
     - '.github/workflows/update-aqua-checksums.yaml'
     - '.github/workflows/self-test-aqua.yaml'
     - 'test/aqua/**'
-    - 'mise.toml'
   schedule:
   - cron: '0 4 * * 1'
   workflow_dispatch:

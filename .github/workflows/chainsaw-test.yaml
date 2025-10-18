@@ -45,15 +45,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: ${{ inputs.timeout }}
     steps:
-    - name: Load reusable workflow version
-      run: |
-        set -o allexport; source .version; set +o allexport
-        echo "Current reusable workflow version: $GITHUB_WORKFLOWS_VERSION"
-        echo
-        echo "GITHUB_WORKFLOWS_VERSION=${GITHUB_WORKFLOWS_VERSION}" >> $GITHUB_ENV
-
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -62,8 +56,6 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-        tools_git_ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || env.GITHUB_WORKFLOWS_VERSION }}
-        tools_repository: ppat/github-workflows
 
     - name: Setup additional tools
       shell: bash
@@ -71,7 +63,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         echo "Installing required tools..."
-        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version --client --client
+        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version --client
         echo
         mise x flux2@${FLUX_VERSION} -- flux version --client
         echo
@@ -130,7 +122,7 @@ jobs:
 
         # Run tests with combined values
         set -x
-        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw test ${TEST_PATH} \
+        chainsaw test ${TEST_PATH} \
           --config ${CHAINSAW_CONFIG} \
           --values /tmp/values-ci.yaml \
           --fail-fast

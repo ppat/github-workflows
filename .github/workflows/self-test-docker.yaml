@@ -9,7 +9,6 @@ on:
     - '.github/workflows/lint-hadolint.yaml'
     - '.github/workflows/self-test-docker.yaml'
     - 'test/docker/**'
-    - 'mise.toml'
   schedule:
   - cron: '0 4 * * 1'
   workflow_dispatch:
