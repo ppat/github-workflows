@@ -54,7 +54,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@fd71749d22d741c6e54c65b0aa08a8aff7e9e0f5 # v1.0.0
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.git_ref }}
