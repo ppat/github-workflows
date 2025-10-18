@@ -27,7 +27,7 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "info"
+        default: "warn"
       verbose:
         required: false
         type: boolean

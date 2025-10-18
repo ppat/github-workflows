@@ -19,7 +19,7 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "info"
+        default: "warn"
 
 env:
   # renovate: datasource=github-releases depName=rhysd/actionlint
