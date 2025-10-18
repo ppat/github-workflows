@@ -19,9 +19,13 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "warn"
+        default: "info"
 
 env:
+  # renovate: datasource=npm depName=bun
+  BUN_VERSION: "1.3.0"
+  # renovate: datasource=node-version
+  NODE_VERSION: "v22.20.0"
   # renovate: datasource=github-releases depName=renovatebot/renovate
   RENOVATE_VERSION: "41.148.6"
 
@@ -31,8 +35,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -41,14 +44,13 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup additional tools
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        echo "Installing required tools..."
-        mise use npm:renovate@${RENOVATE_VERSION}
+        mise_toml: |
+          [tools]
+          bun               = "${{ env.BUN_VERSION }}"
+          node              = "${{ env.NODE_VERSION }}"
+          npm:renovate      = "${{ env.RENOVATE_VERSION }}"
+          [settings.npm]
+          bun               = true
 
     - name: Validate renovate config files
       env:
@@ -60,16 +62,16 @@ jobs:
         if [[ "${RENOVATE_CONFIG_FILES}" == "ALL" ]]; then
           echo "Validating main configuration..."
           echo ".github/renovate.json:"
-          mise x npm:renovate@${RENOVATE_VERSION} -- renovate-config-validator .github/renovate.json | pr -t -o 4
+          renovate-config-validator .github/renovate.json | pr -t -o 4
           echo "Validating all 'extends' configuration files..."
           for rc in $(find .github/renovate -type f -name '*.json' | sort); do
             echo "${rc}:"
-            mise x npm:renovate@${RENOVATE_VERSION} -- renovate-config-validator ${rc} | pr -t -o 4
+            renovate-config-validator ${rc} | pr -t -o 4
           done
         else
           echo "Validating changed configuration files..."
           for rc in ${RENOVATE_CONFIG_FILES}; do
             echo "${rc}:"
-            mise x npm:renovate@${RENOVATE_VERSION} -- renovate-config-validator ${rc} | pr -t -o 4
+            renovate-config-validator ${rc} | pr -t -o 4
           done
         fi

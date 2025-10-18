@@ -19,7 +19,15 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "warn"
+        default: "info"
+
+env:
+  # renovate: datasource=npm depName=bun
+  BUN_VERSION: "1.3.0"
+  # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
+  MARKDOWNLINT_CLIV2_VERSION: "v0.18.1"
+  # renovate: datasource=node-version
+  NODE_VERSION: "v22.20.0"
 
 jobs:
   markdownlint:
@@ -27,8 +35,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -37,6 +44,13 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          bun               = "${{ env.BUN_VERSION }}"
+          markdownlint-cli2 = "${{ env.MARKDOWNLINT_CLIV2_VERSION }}"
+          node              = "${{ env.NODE_VERSION }}"
+          [settings.npm]
+          bun               = true
 
     - name: Lint markdown files
       env:

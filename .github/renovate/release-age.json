@@ -2,21 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "groupName": "mise packages",
-      "matchManagers": [
-        "mise"
-      ],
-      "minimumReleaseAge": "7 days",
-      "semanticCommitScope": "dev-tools",
-      "separateMajorMinor": true,
-      "separateMinorPatch": false,
-      "separateMultipleMajor": true,
-      "separateMultipleMinor": false
-    },
-    {
-      "matchManagers": [
-        "mise"
-      ],
       "matchPackageNames": [
         "oven-sh/bun",
         "astral-sh/uv"
@@ -28,12 +13,8 @@
       "minimumReleaseAge": "30 days"
     },
     {
-      "matchManagers": [
-        "mise"
-      ],
       "matchPackageNames": [
         "nodejs",
-        "terraform",
         "hashicorp/terraform"
       ],
       "matchUpdateTypes": [

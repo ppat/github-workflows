@@ -15,7 +15,13 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "warn"
+        default: "info"
+
+env:
+  # renovate: datasource=github-releases depName=pre-commit/pre-commit
+  PRECOMMIT_VERSION: "v4.3.0"
+  # renovate: datasource=github-releases depName=astral-sh/uv
+  UV_VERSION: "0.9.3"
 
 jobs:
   pre-commit:
@@ -23,8 +29,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -37,13 +42,10 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
-          # renovate: datasource=github-releases depName=pre-commit/pre-commit
-          pre-commit = "v4.3.0"
-          # renovate: datasource=github-releases depName=astral-sh/uv
-          uv = "0.9.3"
-
+          pre-commit  = "${{ env.PRECOMMIT_VERSION }}"
+          uv          = "${{ env.UV_VERSION }}"
           [settings.pipx]
-          uvx = true
+          uvx         = true
 
     - name: Install pre-commit hooks
       working-directory: ./current

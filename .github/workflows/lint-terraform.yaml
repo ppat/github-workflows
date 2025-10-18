@@ -34,8 +34,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -66,8 +65,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
@@ -109,8 +107,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      # uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9ddd555bfe032fe96a292eb81d3a7dd81b675099 # v0.0.3
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@mise-toml
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@v1.0.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
