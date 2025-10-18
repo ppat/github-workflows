@@ -42,7 +42,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
-          shellcheck = "{{ env.SHELLCHECK_VERSION }}"
+          shellcheck = "${{ env.SHELLCHECK_VERSION }}"
 
     - name: Lint shell scripts
       env:
