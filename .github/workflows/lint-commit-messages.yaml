@@ -69,7 +69,7 @@ jobs:
         fetch-depth: 1
         path: tools
         repository: ppat/github-workflows
-        ref: ${{ github.repository == 'ppat/github-workflows' && inputs.current_git_ref || 'main' }}
+        ref: ${{ github.repository == 'ppat/github-workflows' && inputs.git_ref || 'main' }}
         persist-credentials: false
 
     - name: Install node packages
