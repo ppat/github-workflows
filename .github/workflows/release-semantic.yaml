@@ -75,6 +75,15 @@ jobs:
           [settings.npm]
           bun               = true
 
+    - name: Checkout github-workflows
+      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      with:
+        fetch-depth: 1
+        path: tools
+        repository: ppat/github-workflows
+        ref: ${{ github.repository == 'ppat/github-workflows' && inputs.current_git_ref || 'main' }}
+        persist-credentials: false
+
     - name: Install node packages
       shell: bash
       working-directory: ./current
