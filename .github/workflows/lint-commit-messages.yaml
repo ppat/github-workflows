@@ -24,7 +24,7 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "info"
+        default: "warn"
 
 env:
   # renovate: datasource=npm depName=bun
