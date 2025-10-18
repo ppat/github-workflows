@@ -43,18 +43,14 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup additional tools
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        echo "Installing required tools..."
-        mise x terraform@${TERRAFORM_VERSION} -- terraform version
+        mise_toml: |
+          [tools]
+          terraform = "${{ env.TERRAFORM_VERSION }}"
+          tflint    = "${{ env.TFLINT_VERSION }}"
 
     - name: terraform-fmt
       working-directory: ./current
-      run: mise x terraform@${TERRAFORM_VERSION} -- terraform fmt -check -recursive
+      run: terraform fmt -check -recursive
 
   terraform-validate:
     runs-on: ubuntu-24.04
@@ -74,18 +70,14 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup additional tools
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        echo "Installing required tools..."
-        mise x terraform@${TERRAFORM_VERSION} -- terraform version
+        mise_toml: |
+          [tools]
+          terraform = "${{ env.TERRAFORM_VERSION }}"
+          tflint    = "${{ env.TFLINT_VERSION }}"
 
     - name: terraform-init
       working-directory: ./current/${{ matrix.dir }}
-      run: mise x terraform@${TERRAFORM_VERSION} -- terraform init -backend=false
+      run: terraform init -backend=false
 
     - name: terraform-validate
       working-directory: ./current/${{ matrix.dir }}
@@ -96,7 +88,7 @@ jobs:
           source .ci.env
           set +o allexport
         fi
-        mise x terraform@${TERRAFORM_VERSION} -- terraform validate
+        terraform validate
 
   terraform-lint:
     runs-on: ubuntu-24.04
@@ -116,16 +108,10 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup additional tools
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        echo "Installing required tools..."
-        mise x terraform@${TERRAFORM_VERSION} -- terraform version
-        echo
-        mise x tflint@${TFLINT_VERSION} -- tflint --version
+        mise_toml: |
+          [tools]
+          terraform = "${{ env.TERRAFORM_VERSION }}"
+          tflint    = "${{ env.TFLINT_VERSION }}"
 
     - name: tflint
       working-directory: ./current/${{ matrix.dir }}
@@ -136,4 +122,4 @@ jobs:
           source .ci.env
           set +o allexport
         fi
-        mise x tflint@${TFLINT_VERSION} -- tflint --config=${{ github.workspace }}/current/.tflint.hcl --color
+        tflint --config=${{ github.workspace }}/current/.tflint.hcl --color

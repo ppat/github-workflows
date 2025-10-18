@@ -40,6 +40,9 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          actionlint = "${{ env.ACTIONLINT_VERSION }}"
 
     - name: Lint github actions
       env:
@@ -50,10 +53,10 @@ jobs:
       run: |
         if [[ "${ACTIONS_FILES}" == "ALL" ]]; then
           set -x
-          mise x actionlint@${ACTIONLINT_VERSION} -- actionlint -shellcheck "shellcheck --rcfile .shellcheckrc"
+          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc"
           set +x
         else
           set -x
-          mise x actionlint@${ACTIONLINT_VERSION} -- actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $ACTIONS_FILES
+          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $ACTIONS_FILES
           set +x
         fi

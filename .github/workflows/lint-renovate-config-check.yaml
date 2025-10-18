@@ -48,7 +48,7 @@ jobs:
           [tools]
           bun               = "${{ env.BUN_VERSION }}"
           node              = "${{ env.NODE_VERSION }}"
-          npm:renovate      = "${{ env.RENOVATE_VERSION }}"
+          "npm:renovate"    = "${{ env.RENOVATE_VERSION }}"
           [settings.npm]
           bun               = true
 

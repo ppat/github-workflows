@@ -55,20 +55,12 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup additional tools
-      shell: bash
-      working-directory: ./current
-      # yamllint disable-line rule:indentation
-      run: |
-        echo "Installing required tools..."
-        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version --client
-        echo
-        mise x flux2@${FLUX_VERSION} -- flux version --client
-        echo
-        mise x kind@${KIND_VERSION} -- kind version
-        echo
-        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw version
+        mise_toml: |
+          [tools]
+          flux2                   = "${{ env.FLUX_VERSION }}"
+          kind                    = "${{ env.KIND_VERSION }}"
+          kubectl                 = "${{ env.KUBERNETES_VERSION }}"
+          "aqua:kyverno/chainsaw" = "${{ env.CHAINSAW_VERSION }}"
 
     - name: Setup kind cluster
       env:
@@ -82,18 +74,18 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         echo 'Creating kind cluster...'
-        mise x kind@${KIND_VERSION} -- kind create cluster \
+        kind create cluster \
           --name=${CLUSTER_NAME} \
           --wait=${WAIT} \
           --image=${CLUSTER_NODE_IMAGE} \
           --config=${CONFIG}
-        mise x kubectl@${KUBERNETES_VERSION} -- kubectl version
+        kubectl version
 
     - name: Install flux in kind cluster
       shell: bash
       run: |
-        mise x flux2@${FLUX_VERSION} -- flux install --version ${FLUX_VERSION} --log-level debug
-        mise x flux2@${FLUX_VERSION} -- flux version
+        flux install --version ${FLUX_VERSION} --log-level debug
+        flux version
 
     - name: Run Chainsaw Tests
       env:
@@ -121,7 +113,7 @@ jobs:
 
         # Run tests with combined values
         set -x
-        mise x aqua:kyverno/chainsaw@${CHAINSAW_VERSION} -- chainsaw test ${TEST_PATH} \
+        chainsaw test ${TEST_PATH} \
           --config ${CHAINSAW_CONFIG} \
           --values /tmp/values-ci.yaml \
           --fail-fast

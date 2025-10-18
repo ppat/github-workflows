@@ -24,6 +24,8 @@ on:
 env:
   # renovate: datasource=github-releases depName=adrienverge/yamllint
   YAMLLINT_VERSION: "1.37.1"
+  # renovate: datasource=github-releases depName=astral-sh/uv
+  UV_VERSION: "0.9.3"
 
 jobs:
   yamllint:
@@ -40,6 +42,12 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          yamllint    = "${{ env.YAMLLINT_VERSION }}"
+          uv          = "${{ env.UV_VERSION }}"
+          [settings.pipx]
+          uvx         = true
 
     - name: Lint yaml files
       env:
@@ -49,7 +57,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         if [[ "${YAML_FILES}" == "ALL" ]]; then
-          mise x yamllint@${YAMLLINT_VERSION} -- yamllint -c .yamllint --list-files --strict --format github .
+          yamllint -c .yamllint --list-files --strict --format github .
         else
-          mise x yamllint@${YAMLLINT_VERSION} -- yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
+          yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
         fi

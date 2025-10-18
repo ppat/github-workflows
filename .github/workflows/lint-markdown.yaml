@@ -27,7 +27,7 @@ env:
   # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
   MARKDOWNLINT_CLIV2_VERSION: "v0.18.1"
   # renovate: datasource=node-version
-  NODE_VERSION: "v22.20.0"
+  NODE_VERSION: "22.20.0"
 
 jobs:
   markdownlint:

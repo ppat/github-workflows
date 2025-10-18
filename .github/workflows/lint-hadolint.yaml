@@ -51,6 +51,9 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          hadolint = "${{ env.HADOLINT_VERSION }}"
 
     - name: Lint docker files
       env:
@@ -72,7 +75,7 @@ jobs:
 
         lint_dockerfile() {
           local file="$1"
-          if mise x hadolint@${HADOLINT_VERSION} -- hadolint ${HADOLINT_ARGS[*]} ${file}; then
+          if hadolint ${HADOLINT_ARGS[*]} ${file}; then
             return 0
           else
             return 1
