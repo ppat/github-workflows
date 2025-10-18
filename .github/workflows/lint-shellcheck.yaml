@@ -37,7 +37,7 @@ jobs:
         # renovate: datasource=github-releases depName=jdx/mise
         mise_version: "v2025.10.10"
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise-toml: |
+        mise_toml: |
           [tools]
           # renovate: datasource=github-releases depName=koalaman/shellcheck
           shellcheck = "v0.11.0"
