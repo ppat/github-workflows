@@ -1,5 +1,41 @@
 # Changelog
 
+## [3.0.0](https://github.com/ppat/github-workflows/compare/v2.2.0...v3.0.0) (2025-10-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* update all reusable workflows to define tool dependencies  inline ([#261](https://github.com/ppat/github-workflows/issues/261))
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update aquaproj/aqua (v2.53.9 -&gt; v2.55.0) ([#262](https://github.com/ppat/github-workflows/issues/262)) ([307bdfb](https://github.com/ppat/github-workflows/commit/307bdfbda7086e9cab427ec837801a62886c361d))
+* **dev-tools:** update jdx/mise (v2025.10.7 -&gt; v2025.10.10) ([#253](https://github.com/ppat/github-workflows/issues/253)) ([87867e3](https://github.com/ppat/github-workflows/commit/87867e3266d1f060c875cda601f3879691d93b9d))
+* **dev-tools:** update mise packages (non-major) ([#258](https://github.com/ppat/github-workflows/issues/258)) ([318efcd](https://github.com/ppat/github-workflows/commit/318efcd5aa42516044a552d0815476428fb62df3))
+* **dev-tools:** update renovatebot/renovate (41.148.1 -&gt; 41.148.6) ([#256](https://github.com/ppat/github-workflows/issues/256)) ([755044d](https://github.com/ppat/github-workflows/commit/755044ddfa14e37f0080520dce92a0684c3476bf))
+* **dev-tools:** update renovatebot/renovate (41.148.6 -&gt; 41.152.0) ([#263](https://github.com/ppat/github-workflows/issues/263)) ([ca9b4a6](https://github.com/ppat/github-workflows/commit/ca9b4a6a98441c952234284159129caa30c777c7))
+* **github-actions:** pin ppat/homelab-ops-actions ([#264](https://github.com/ppat/github-workflows/issues/264)) ([5ab035e](https://github.com/ppat/github-workflows/commit/5ab035e438c566d46285d84c6dfe0f72b626fb44))
+* **github-actions:** update ppat/homelab-ops-actions (v0.0.3 -&gt; v1.0.0) ([#265](https://github.com/ppat/github-workflows/issues/265)) ([71c14b4](https://github.com/ppat/github-workflows/commit/71c14b43981254d4a5cc6cc87a4885dbb40c2c2e))
+* **github-actions:** update renovatebot/github-action (v43.0.12 -&gt; v43.0.17) ([#257](https://github.com/ppat/github-workflows/issues/257)) ([f46debf](https://github.com/ppat/github-workflows/commit/f46debfa4c1ac8264aaa25564bef96fea254d290))
+
+
+### ✨ Features
+
+* **renovate:** update ppat/renovate-presets (v0.0.4 -&gt; v0.1.0) ([#259](https://github.com/ppat/github-workflows/issues/259)) ([3629942](https://github.com/ppat/github-workflows/commit/362994209c75e4691c66915728d858b4c7f4603c))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **dev-tools:** fix release please cfg ([d699559](https://github.com/ppat/github-workflows/commit/d6995598d3d0699abd07fc32cb556ecf3db35940))
+* **dev-tools:** fix release please cfg ([700aafe](https://github.com/ppat/github-workflows/commit/700aafeda38ca6415bc6ace993832ff593ac9162))
+* **dev-tools:** fix release please cfg ([df1fbd4](https://github.com/ppat/github-workflows/commit/df1fbd4c1026465aad1a229fc8d5407957fb8c2b))
+* **dev-tools:** fix release please cfg ([a870c9a](https://github.com/ppat/github-workflows/commit/a870c9a73cff9976388c4d6e952259d89d0ae5be))
+* **dev-tools:** fix release please cfg ([55b65e2](https://github.com/ppat/github-workflows/commit/55b65e28034bd33589061828c00d7a2c34ca4c90))
+* **dev-tools:** fix release please cfg ([58db370](https://github.com/ppat/github-workflows/commit/58db3703fb5c1bdbb3cd5d4de7a6c09ddedd1435))
+* **dev-tools:** fix release please cfg ([cf49af5](https://github.com/ppat/github-workflows/commit/cf49af5a724f68f54b7a862946d5d5987b1920b2))
+* **github-actions:** performance and correctness fixes to reusable workflows w.r.t. tool dependencies ([#255](https://github.com/ppat/github-workflows/issues/255)) ([201a9d1](https://github.com/ppat/github-workflows/commit/201a9d111e09af371903cafc96763f4249c45976))
+* update all reusable workflows to define tool dependencies  inline ([#261](https://github.com/ppat/github-workflows/issues/261)) ([bcdcaa7](https://github.com/ppat/github-workflows/commit/bcdcaa7002c30576e3928e8a5786021396d21308))
+
 ## [2.2.0](https://github.com/ppat/github-workflows/compare/v2.1.1...v2.2.0) (2025-10-17)
 
 
