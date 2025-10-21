@@ -34,7 +34,7 @@ env:
   # renovate: datasource=github-releases depName=kyverno/chainsaw
   CHAINSAW_VERSION: "v0.2.13"
   # renovate: datasource=github-releases depName=fluxcd/flux2
-  FLUX_VERSION: "v2.6.4"
+  FLUX_VERSION: "v2.7.2"
   # renovate: datasource=github-releases depName=kubernetes-sigs/kind
   KIND_VERSION: "0.30.0"
   # renovate: datasource=github-releases depName=kubernetes/kubectl
