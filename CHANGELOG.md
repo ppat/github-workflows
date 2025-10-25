@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.0.1](https://github.com/ppat/github-workflows/compare/v3.0.0...v3.0.1) (2025-10-25)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update astral-sh/uv (0.9.3 -&gt; 0.9.4) ([#266](https://github.com/ppat/github-workflows/issues/266)) ([ed99104](https://github.com/ppat/github-workflows/commit/ed99104bc8b6d40456388dfca9c03581812b77dc))
+* **dev-tools:** update astral-sh/uv (0.9.4 -&gt; 0.9.5) ([#272](https://github.com/ppat/github-workflows/issues/272)) ([f1f00df](https://github.com/ppat/github-workflows/commit/f1f00df50d4b10be34990b112d8471301b5f6060))
+* **dev-tools:** update bun (1.3.0 -&gt; 1.3.1) ([#273](https://github.com/ppat/github-workflows/issues/273)) ([16ff9ae](https://github.com/ppat/github-workflows/commit/16ff9ae6c7df7fb6553de75565085050bfe7ae2b))
+* **dev-tools:** update fluxcd/flux2 (v2.6.4 -&gt; v2.7.2) ([#268](https://github.com/ppat/github-workflows/issues/268)) ([9ef1382](https://github.com/ppat/github-workflows/commit/9ef138268ae601003d53c8744d2bb9ba2f19a70a))
+* **dev-tools:** update jdx/mise (v2025.10.10 -&gt; v2025.10.11) ([#270](https://github.com/ppat/github-workflows/issues/270)) ([c4b2c58](https://github.com/ppat/github-workflows/commit/c4b2c585cb45813fc1a741ece8382a142729a95e))
+* **github-actions:** update ppat/homelab-ops-actions (v1.0.0 -&gt; v1.0.1) ([#269](https://github.com/ppat/github-workflows/issues/269)) ([e2f2046](https://github.com/ppat/github-workflows/commit/e2f2046b88e38482af2fd05052b78c35e2ac6bca))
+
 ## [3.0.0](https://github.com/ppat/github-workflows/compare/v2.2.0...v3.0.0) (2025-10-18)
 
 
