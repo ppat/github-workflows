@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.2](https://github.com/ppat/github-workflows/compare/v3.0.1...v3.0.2) (2025-11-01)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update fluxcd/flux2 (v2.7.2 -&gt; v2.7.3) ([#282](https://github.com/ppat/github-workflows/issues/282)) ([841ebaf](https://github.com/ppat/github-workflows/commit/841ebafab13e006c8de6e33840e751a0515ab3e3))
+* **github-actions:** update digest googleapis/release-please-action (c2a5a2b -&gt; 16a9c90) ([#279](https://github.com/ppat/github-workflows/issues/279)) ([628309e](https://github.com/ppat/github-workflows/commit/628309e06c0f5b8bfd75e520fa34ed5eeab36b7c))
+
 ## [3.0.1](https://github.com/ppat/github-workflows/compare/v3.0.0...v3.0.1) (2025-10-29)
 
 
