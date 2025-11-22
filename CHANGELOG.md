@@ -1,5 +1,39 @@
 # Changelog
 
+## [3.1.0](https://github.com/ppat/github-workflows/compare/v3.0.1...v3.1.0) (2025-11-22)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update astral-sh/uv (0.9.5 -&gt; 0.9.7) ([#283](https://github.com/ppat/github-workflows/issues/283)) ([6ca6763](https://github.com/ppat/github-workflows/commit/6ca6763fbe63854ebe22d0f46664ed298aec5e3d))
+* **dev-tools:** update astral-sh/uv (0.9.7 -&gt; 0.9.8) ([#291](https://github.com/ppat/github-workflows/issues/291)) ([8c2458f](https://github.com/ppat/github-workflows/commit/8c2458f425e121e776178a1633db27ef05446219))
+* **dev-tools:** update astral-sh/uv (0.9.8 -&gt; 0.9.9) ([#293](https://github.com/ppat/github-workflows/issues/293)) ([98624ba](https://github.com/ppat/github-workflows/commit/98624bab41050322a60fdfec01b5d64f4c17c650))
+* **dev-tools:** update astral-sh/uv (0.9.9 -&gt; 0.9.10) ([#302](https://github.com/ppat/github-workflows/issues/302)) ([e55625b](https://github.com/ppat/github-workflows/commit/e55625ba4724160019c7504652742a9121bb391c))
+* **dev-tools:** update bun (1.3.1 -&gt; 1.3.2) ([#292](https://github.com/ppat/github-workflows/issues/292)) ([df995c5](https://github.com/ppat/github-workflows/commit/df995c5202699c802f1d8ecfe6fcc6533442fb04))
+* **dev-tools:** update fluxcd/flux2 (v2.7.2 -&gt; v2.7.3) ([#282](https://github.com/ppat/github-workflows/issues/282)) ([841ebaf](https://github.com/ppat/github-workflows/commit/841ebafab13e006c8de6e33840e751a0515ab3e3))
+* **dev-tools:** update jdx/mise (v2025.10.18 -&gt; v2025.11.1) ([#286](https://github.com/ppat/github-workflows/issues/286)) ([20371a0](https://github.com/ppat/github-workflows/commit/20371a0ceeeb06286b1ff5451c9240e24ba5302b))
+* **dev-tools:** update jdx/mise (v2025.11.1 -&gt; v2025.11.2) ([#289](https://github.com/ppat/github-workflows/issues/289)) ([ffda4ab](https://github.com/ppat/github-workflows/commit/ffda4abb1ca63fb9b0d612c5d3dea8700deb1ff2))
+* **dev-tools:** update jdx/mise (v2025.11.2 -&gt; v2025.11.4) ([#295](https://github.com/ppat/github-workflows/issues/295)) ([b16f1a9](https://github.com/ppat/github-workflows/commit/b16f1a97d52cb9e497121d3197b70cef298f8e26))
+* **dev-tools:** update kindest/node (v1.33.4 -&gt; v1.34.0) ([#254](https://github.com/ppat/github-workflows/issues/254)) ([75a2864](https://github.com/ppat/github-workflows/commit/75a2864cb4ee9ee1c74c14810612c47b0c5b3c05))
+* **dev-tools:** update lockfile bun ([#300](https://github.com/ppat/github-workflows/issues/300)) ([e8e448d](https://github.com/ppat/github-workflows/commit/e8e448d06bd3b34217cbdcf51ef22f39c05a2f6d))
+* **dev-tools:** update pre-commit/pre-commit (v4.3.0 -&gt; v4.4.0) ([#301](https://github.com/ppat/github-workflows/issues/301)) ([9d2c7ed](https://github.com/ppat/github-workflows/commit/9d2c7ed3265aa1cbf39225f33556ed80f5ea8717))
+* **dev-tools:** update renovatebot/renovate (41.159.4 -&gt; 41.171.4) ([#287](https://github.com/ppat/github-workflows/issues/287)) ([2a6ea40](https://github.com/ppat/github-workflows/commit/2a6ea403864c5c90b083b93eff2139f8dd2291ef))
+* **dev-tools:** update renovatebot/renovate (41.171.4 -&gt; 41.173.1) ([#296](https://github.com/ppat/github-workflows/issues/296)) ([676fa12](https://github.com/ppat/github-workflows/commit/676fa1205700d47ed0a005aea01c61529af5ebbb))
+* **dev-tools:** update tailscale/tailscale (v1.88.3 -&gt; v1.90.6) ([#285](https://github.com/ppat/github-workflows/issues/285)) ([8e7ffe2](https://github.com/ppat/github-workflows/commit/8e7ffe241cf3874b253160442e7583e7f3bfba36))
+* **dev-tools:** update tailscale/tailscale (v1.90.6 -&gt; v1.90.8) ([#303](https://github.com/ppat/github-workflows/issues/303)) ([9f41a46](https://github.com/ppat/github-workflows/commit/9f41a46b6f11e9073d9c5b46495574d170f37d37))
+* **github-actions:** update digest googleapis/release-please-action (c2a5a2b -&gt; 16a9c90) ([#279](https://github.com/ppat/github-workflows/issues/279)) ([628309e](https://github.com/ppat/github-workflows/commit/628309e06c0f5b8bfd75e520fa34ed5eeab36b7c))
+* **github-actions:** update digest trusted github-actions ([#294](https://github.com/ppat/github-workflows/issues/294)) ([9509b92](https://github.com/ppat/github-workflows/commit/9509b92f68e27de5ebac2529459e746fb39ef4b1))
+
+
+### ✨ Features
+
+* update @commitlint/cli (19.8.1 -&gt; 20.1.0) ([#274](https://github.com/ppat/github-workflows/issues/274)) ([6140693](https://github.com/ppat/github-workflows/commit/61406934fa080a32f94d593bca763d3d154d808d))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update commitlint-plugin-function-rules (4.1.0 -&gt; 4.1.1) ([#290](https://github.com/ppat/github-workflows/issues/290)) ([e49ea56](https://github.com/ppat/github-workflows/commit/e49ea56915ba47a519150235f5cebf56fa94c92f))
+
 ## [3.0.1](https://github.com/ppat/github-workflows/compare/v3.0.0...v3.0.1) (2025-10-29)
 
 
