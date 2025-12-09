@@ -25,7 +25,7 @@ env:
   # renovate: datasource=github-releases depName=adrienverge/yamllint
   YAMLLINT_VERSION: "1.37.1"
   # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.9.15"
+  UV_VERSION: "0.9.16"
 
 jobs:
   yamllint:
