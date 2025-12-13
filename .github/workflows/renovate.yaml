@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: ${{ inputs.timeout }}
     steps:
     - name: Generate github app token for renovate
-      uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2
       id: app-token
       with:
         app-id: ${{ secrets.app_id }}
@@ -43,7 +43,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Checkout repository
-      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       with:
         persist-credentials: false
         repository: ${{ github.repository }}

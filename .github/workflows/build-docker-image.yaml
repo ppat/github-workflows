@@ -80,7 +80,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       with:
         fetch-depth: 1
         persist-credentials: false
@@ -180,7 +180,7 @@ jobs:
 
     - name: Docker meta
       id: meta
-      uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893 # v5
+      uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
       with:
         images: |-
           ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
