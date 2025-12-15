@@ -2,7 +2,7 @@
   "devDependencies": {
     "@commitlint/cli": "20.2.0",
     "@commitlint/config-conventional": "19.8.1",
-    "@commitlint/ensure": "19.8.1",
+    "@commitlint/ensure": "20.0.0",
     "@commitlint/load": "19.8.1",
     "commitlint-plugin-function-rules": "4.1.1",
     "semantic-release": "24.2.9",
