@@ -1,10 +1,10 @@
 {
   "devDependencies": {
     "@commitlint/cli": "20.2.0",
-    "@commitlint/config-conventional": "20.0.0",
-    "@commitlint/ensure": "20.0.0",
-    "@commitlint/load": "20.1.0",
-    "commitlint-plugin-function-rules": "4.1.1",
+    "@commitlint/config-conventional": "20.2.0",
+    "@commitlint/ensure": "20.2.0",
+    "@commitlint/load": "20.2.0",
+    "commitlint-plugin-function-rules": "4.2.0",
     "semantic-release": "25.0.2",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/commit-analyzer": "13.0.1",
