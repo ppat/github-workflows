@@ -38,6 +38,7 @@
     "github>ppat/renovate-presets:github-actions#v0.1.0",
     "github>ppat/renovate-presets:kubernetes#v0.1.0",
     "github>ppat/github-workflows//.github/renovate/release-age",
+    "github>ppat/github-workflows//.github/renovate/group",
     "github>ppat/github-workflows//.github/renovate/exceptions"
   ],
   "internalChecksFilter": "strict",
