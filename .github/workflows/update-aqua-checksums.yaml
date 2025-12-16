@@ -54,7 +54,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@1dd141af6c82152a0c701b035200cd781a1bcf3a # v1.0.2
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@4cef70063350f88a21483c0b7b8b6c5c41eedd3e # v1.0.3
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.git_ref }}
@@ -98,7 +98,7 @@ jobs:
         git status
 
     - name: Commit and push updated checksums
-      uses: ppat/homelab-ops-actions/actions/create-signed-commit@1dd141af6c82152a0c701b035200cd781a1bcf3a # v1.0.2
+      uses: ppat/homelab-ops-actions/actions/create-signed-commit@4cef70063350f88a21483c0b7b8b6c5c41eedd3e # v1.0.3
       with:
         branch: ${{ inputs.git_ref }}
         commit_message: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"
