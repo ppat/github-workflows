@@ -27,7 +27,7 @@ env:
   # renovate: datasource=node-version
   NODE_VERSION: "24.11.1"
   # renovate: datasource=github-releases depName=renovatebot/renovate
-  RENOVATE_VERSION: "42.52.2"
+  RENOVATE_VERSION: "42.57.1"
 
 jobs:
   renovate-config-check:
