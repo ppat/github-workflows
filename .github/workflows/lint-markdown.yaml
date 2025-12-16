@@ -27,7 +27,7 @@ env:
   # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
   MARKDOWNLINT_CLIV2_VERSION: "v0.18.1"
   # renovate: datasource=node-version
-  NODE_VERSION: "22.20.0"
+  NODE_VERSION: "24.11.1"
 
 jobs:
   markdownlint:
@@ -41,8 +41,6 @@ jobs:
         current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
-        # renovate: datasource=github-releases depName=jdx/mise
-        mise_version: "v2025.12.2"
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]

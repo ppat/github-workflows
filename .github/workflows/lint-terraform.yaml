@@ -40,8 +40,6 @@ jobs:
         current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
-        # renovate: datasource=github-releases depName=jdx/mise
-        mise_version: "v2025.12.2"
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
@@ -67,8 +65,6 @@ jobs:
         current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
-        # renovate: datasource=github-releases depName=jdx/mise
-        mise_version: "v2025.12.2"
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
@@ -105,8 +101,6 @@ jobs:
         current_repository: ${{ github.repository }}
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
-        # renovate: datasource=github-releases depName=jdx/mise
-        mise_version: "v2025.12.2"
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
