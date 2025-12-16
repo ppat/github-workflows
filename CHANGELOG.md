@@ -1,5 +1,34 @@
 # Changelog
 
+## [3.2.0](https://github.com/ppat/github-workflows/compare/v3.1.0...v3.2.0) (2025-12-16)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update davidanson/markdownlint-cli2 (non-major) ([#328](https://github.com/ppat/github-workflows/issues/328)) ([c878f4a](https://github.com/ppat/github-workflows/commit/c878f4abeddc294f241f33e8d7cc7f6756d13346))
+* **dev-tools:** update jdx/mise (v2025.11.4 -&gt; v2025.12.2) ([#329](https://github.com/ppat/github-workflows/issues/329)) ([8d32991](https://github.com/ppat/github-workflows/commit/8d329916c9dd11c12c689c21be81922226e87c74))
+* **dev-tools:** update lockfile bun ([#334](https://github.com/ppat/github-workflows/issues/334)) ([0b5c416](https://github.com/ppat/github-workflows/commit/0b5c4165ff16af94db4c4ad2c5b3ed989aa7d72a))
+* **dev-tools:** update lockfile bun ([#343](https://github.com/ppat/github-workflows/issues/343)) ([f97a267](https://github.com/ppat/github-workflows/commit/f97a26794c8a127bcd898e2f93e5c855eb271ef8))
+* **dev-tools:** update renovatebot/renovate (42.42.2 -&gt; 42.48.0) ([#330](https://github.com/ppat/github-workflows/issues/330)) ([b9f889c](https://github.com/ppat/github-workflows/commit/b9f889c351b9c6891ce1b6c8a343987dd53348c1))
+* **dev-tools:** update renovatebot/renovate (42.48.0 -&gt; 42.52.2) ([#337](https://github.com/ppat/github-workflows/issues/337)) ([7bb6121](https://github.com/ppat/github-workflows/commit/7bb61214e661d268f23525f648a9b9f6bb26f856))
+* **dev-tools:** update renovatebot/renovate (42.52.2 -&gt; 42.57.1) ([#344](https://github.com/ppat/github-workflows/issues/344)) ([32e5c7b](https://github.com/ppat/github-workflows/commit/32e5c7b736c8720c76ddaa441c685017121c5ea5))
+* **github-actions:** update ppat/homelab-ops-actions (v1.0.2 -&gt; v1.0.3) ([#336](https://github.com/ppat/github-workflows/issues/336)) ([cda90fb](https://github.com/ppat/github-workflows/commit/cda90fbe3602052459346162f89187eb060c9338))
+* **github-actions:** update renovatebot/github-action (v43.0.20 -&gt; v44.0.2) ([#332](https://github.com/ppat/github-workflows/issues/332)) ([3abb096](https://github.com/ppat/github-workflows/commit/3abb096d413862246cc370a0ea96c2162f70e9fb))
+* **github-actions:** update renovatebot/github-action (v44.0.2 -&gt; v44.2.0) ([#342](https://github.com/ppat/github-workflows/issues/342)) ([3d8fc17](https://github.com/ppat/github-workflows/commit/3d8fc1762179c39137a9d300e93cf1a70d82b7fe))
+
+
+### ✨ Features
+
+* update @commitlint/cli (20.1.0 -&gt; 20.2.0) ([#325](https://github.com/ppat/github-workflows/issues/325)) ([b6f5f22](https://github.com/ppat/github-workflows/commit/b6f5f2242af67880b67f17bc5941fa41ff5fe0ba))
+* update commitlint packages ([#338](https://github.com/ppat/github-workflows/issues/338)) ([b477c1d](https://github.com/ppat/github-workflows/commit/b477c1dadb6048b84347ff1942f938460e39f8e6))
+* update commitlint packages ([#339](https://github.com/ppat/github-workflows/issues/339)) ([eccb7d2](https://github.com/ppat/github-workflows/commit/eccb7d27dc6f83838384470ef5092bf2fcef8c0a))
+* update semantic-release packages ([#340](https://github.com/ppat/github-workflows/issues/340)) ([b791396](https://github.com/ppat/github-workflows/commit/b791396308782c7949c1caf8849ddd449af7ce23))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* upgrade node from v22 -&gt; v24 ([#341](https://github.com/ppat/github-workflows/issues/341)) ([8d2bd14](https://github.com/ppat/github-workflows/commit/8d2bd1480697da8770fd0a915ac0a967599dd1c3))
+
 ## [3.1.0](https://github.com/ppat/github-workflows/compare/v3.0.1...v3.1.0) (2025-12-13)
 
 
