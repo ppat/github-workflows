@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.2.1](https://github.com/ppat/github-workflows/compare/v3.2.0...v3.2.1) (2025-12-26)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update astral-sh/uv (0.9.17 -&gt; 0.9.18) ([#345](https://github.com/ppat/github-workflows/issues/345)) ([8ae4cc7](https://github.com/ppat/github-workflows/commit/8ae4cc748e12ab43d15e984b3bc718c6bf02d695))
+* **dev-tools:** update bun (1.3.4 -&gt; 1.3.5) ([#349](https://github.com/ppat/github-workflows/issues/349)) ([a7f8375](https://github.com/ppat/github-workflows/commit/a7f8375040ffee63e9461d47d529fcd2faa91b43))
+* **dev-tools:** update kindest/node (v1.34.2 -&gt; v1.34.3) ([#346](https://github.com/ppat/github-workflows/issues/346)) ([9c3944c](https://github.com/ppat/github-workflows/commit/9c3944c03bdda104dc4842422902937325a1bbb4))
+* **dev-tools:** update kubernetes-sigs/kind (v0.30.0 -&gt; v0.31.0) ([#352](https://github.com/ppat/github-workflows/issues/352)) ([fddc843](https://github.com/ppat/github-workflows/commit/fddc843a917c03e02aea06fdadb9e324a9ad4ae9))
+* **dev-tools:** update pre-commit/pre-commit (v4.5.0 -&gt; v4.5.1) ([#347](https://github.com/ppat/github-workflows/issues/347)) ([6b56000](https://github.com/ppat/github-workflows/commit/6b56000e97e6dd3cc8a8bbd5321afbefffde1ff5))
+* **dev-tools:** update renovatebot/renovate (42.57.1 -&gt; 42.64.1) ([#351](https://github.com/ppat/github-workflows/issues/351)) ([41bf703](https://github.com/ppat/github-workflows/commit/41bf703acc721f4fffc34a3a62429d100661ca7a))
+* **dev-tools:** update tailscale/tailscale (v1.90.9 -&gt; v1.92.3) ([#348](https://github.com/ppat/github-workflows/issues/348)) ([8c5a6a7](https://github.com/ppat/github-workflows/commit/8c5a6a73105c729f7c031f6f09ac3e8db4400237))
+
 ## [3.2.0](https://github.com/ppat/github-workflows/compare/v3.1.0...v3.2.0) (2025-12-16)
 
 
