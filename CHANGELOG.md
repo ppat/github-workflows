@@ -1,5 +1,45 @@
 # Changelog
 
+## [3.3.0](https://github.com/ppat/github-workflows/compare/v3.2.0...v3.3.0) (2026-01-19)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update aquaproj/aqua (v2.55.3 -&gt; v2.56.0) ([#358](https://github.com/ppat/github-workflows/issues/358)) ([57df2f4](https://github.com/ppat/github-workflows/commit/57df2f40325ed0e14624f4313a2a9e2ec058fce7))
+* **dev-tools:** update aquaproj/aqua (v2.56.0 -&gt; v2.56.1) ([#360](https://github.com/ppat/github-workflows/issues/360)) ([1afd7f9](https://github.com/ppat/github-workflows/commit/1afd7f901dca68106e93455f15b0e4bddec21a48))
+* **dev-tools:** update aquaproj/aqua (v2.56.1 -&gt; v2.56.2) ([#366](https://github.com/ppat/github-workflows/issues/366)) ([0fa0e1a](https://github.com/ppat/github-workflows/commit/0fa0e1aed2f3d1dab394e955447aafdcc35740f3))
+* **dev-tools:** update aquaproj/aqua (v2.56.2 -&gt; v2.56.3) ([#371](https://github.com/ppat/github-workflows/issues/371)) ([1a151f3](https://github.com/ppat/github-workflows/commit/1a151f3d03a38583da47376efb58d8babb897b2c))
+* **dev-tools:** update astral-sh/uv (0.9.17 -&gt; 0.9.18) ([#345](https://github.com/ppat/github-workflows/issues/345)) ([8ae4cc7](https://github.com/ppat/github-workflows/commit/8ae4cc748e12ab43d15e984b3bc718c6bf02d695))
+* **dev-tools:** update astral-sh/uv (0.9.18 -&gt; 0.9.21) ([#357](https://github.com/ppat/github-workflows/issues/357)) ([cb93260](https://github.com/ppat/github-workflows/commit/cb932603610464153c1ff9bab9cebaf8fe58ea89))
+* **dev-tools:** update astral-sh/uv (0.9.21 -&gt; 0.9.22) ([#362](https://github.com/ppat/github-workflows/issues/362)) ([875d08d](https://github.com/ppat/github-workflows/commit/875d08d8144177f4ae856b3fa65e762bdc6eaee2))
+* **dev-tools:** update astral-sh/uv (0.9.22 -&gt; 0.9.24) ([#368](https://github.com/ppat/github-workflows/issues/368)) ([94b93fc](https://github.com/ppat/github-workflows/commit/94b93fc14597db3c19443e57af58ce035b43ba38))
+* **dev-tools:** update astral-sh/uv (0.9.24 -&gt; 0.9.26) ([#372](https://github.com/ppat/github-workflows/issues/372)) ([77022fe](https://github.com/ppat/github-workflows/commit/77022fe82b88760a0707cde4f2619e8a253585ed))
+* **dev-tools:** update bun (1.3.4 -&gt; 1.3.5) ([#349](https://github.com/ppat/github-workflows/issues/349)) ([a7f8375](https://github.com/ppat/github-workflows/commit/a7f8375040ffee63e9461d47d529fcd2faa91b43))
+* **dev-tools:** update bun (1.3.5 -&gt; 1.3.6) ([#369](https://github.com/ppat/github-workflows/issues/369)) ([cc04bba](https://github.com/ppat/github-workflows/commit/cc04bba6fbdd234f93a4b89cf67bb305bbc36751))
+* **dev-tools:** update kindest/node (v1.34.2 -&gt; v1.34.3) ([#346](https://github.com/ppat/github-workflows/issues/346)) ([9c3944c](https://github.com/ppat/github-workflows/commit/9c3944c03bdda104dc4842422902937325a1bbb4))
+* **dev-tools:** update kubernetes-sigs/kind (v0.30.0 -&gt; v0.31.0) ([#352](https://github.com/ppat/github-workflows/issues/352)) ([fddc843](https://github.com/ppat/github-workflows/commit/fddc843a917c03e02aea06fdadb9e324a9ad4ae9))
+* **dev-tools:** update lockfile bun ([#356](https://github.com/ppat/github-workflows/issues/356)) ([1961e2c](https://github.com/ppat/github-workflows/commit/1961e2cfd54b0789e57c3812b0d7ccefdc66c11e))
+* **dev-tools:** update pre-commit/pre-commit (v4.5.0 -&gt; v4.5.1) ([#347](https://github.com/ppat/github-workflows/issues/347)) ([6b56000](https://github.com/ppat/github-workflows/commit/6b56000e97e6dd3cc8a8bbd5321afbefffde1ff5))
+* **dev-tools:** update renovatebot/renovate (42.57.1 -&gt; 42.64.1) ([#351](https://github.com/ppat/github-workflows/issues/351)) ([41bf703](https://github.com/ppat/github-workflows/commit/41bf703acc721f4fffc34a3a62429d100661ca7a))
+* **dev-tools:** update renovatebot/renovate (42.64.1 -&gt; 42.66.8) ([#355](https://github.com/ppat/github-workflows/issues/355)) ([5137f9c](https://github.com/ppat/github-workflows/commit/5137f9cb9bfac4dff6f4b0ca88bb1dee8e580559))
+* **dev-tools:** update renovatebot/renovate (42.66.11 -&gt; 42.71.2) ([#364](https://github.com/ppat/github-workflows/issues/364)) ([8b8beb6](https://github.com/ppat/github-workflows/commit/8b8beb66b6d2d6546e7423e6f68cad04d52c1590))
+* **dev-tools:** update renovatebot/renovate (42.66.8 -&gt; 42.66.11) ([#359](https://github.com/ppat/github-workflows/issues/359)) ([d518f0b](https://github.com/ppat/github-workflows/commit/d518f0b8ce3d4ca872800b277b237b16b2cfed63))
+* **dev-tools:** update tailscale/tailscale (v1.90.9 -&gt; v1.92.3) ([#348](https://github.com/ppat/github-workflows/issues/348)) ([8c5a6a7](https://github.com/ppat/github-workflows/commit/8c5a6a73105c729f7c031f6f09ac3e8db4400237))
+* **dev-tools:** update tailscale/tailscale (v1.92.3 -&gt; v1.92.5) ([#363](https://github.com/ppat/github-workflows/issues/363)) ([f0602f2](https://github.com/ppat/github-workflows/commit/f0602f2b86af8d516a14e2d0968cdc9eacb95e12))
+
+
+### ✨ Features
+
+* update commitlint packages ([#370](https://github.com/ppat/github-workflows/issues/370)) ([ce175d6](https://github.com/ppat/github-workflows/commit/ce175d6ea8dc16efda7d35a63e7a9723400bdf6a))
+* update commitlint packages (20.2.0 -&gt; 20.3.0) ([#365](https://github.com/ppat/github-workflows/issues/365)) ([e7a4976](https://github.com/ppat/github-workflows/commit/e7a4976e8c291057152815ba312dead944faed78))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update commitlint packages (20.3.0 -&gt; 20.3.1) ([#367](https://github.com/ppat/github-workflows/issues/367)) ([98ce1d5](https://github.com/ppat/github-workflows/commit/98ce1d5486ed4a135b1724cccc97e3d1340f28f9))
+* update commitlint-plugin-function-rules (4.2.0 -&gt; 4.2.1) ([#353](https://github.com/ppat/github-workflows/issues/353)) ([b420225](https://github.com/ppat/github-workflows/commit/b420225646a5cea42d84734df68b285a966288d5))
+* update commitlint-plugin-function-rules (4.3.0 -&gt; 4.3.1) ([#375](https://github.com/ppat/github-workflows/issues/375)) ([a7d2fb0](https://github.com/ppat/github-workflows/commit/a7d2fb0024bec77ebc4737a358a9b5e1174657b8))
+
 ## [3.2.0](https://github.com/ppat/github-workflows/compare/v3.1.0...v3.2.0) (2025-12-16)
 
 
