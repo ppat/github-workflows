@@ -38,7 +38,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=aquaproj/aqua
-  AQUA_VERSION: "2.56.5"
+  AQUA_VERSION: "2.56.6"
 
 jobs:
   update-aqua-checksums:
