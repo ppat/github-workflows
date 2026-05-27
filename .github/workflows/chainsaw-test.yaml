@@ -37,8 +37,8 @@ env:
   FLUX_VERSION: "v2.8.8"
   # renovate: datasource=github-releases depName=kubernetes-sigs/kind
   KIND_VERSION: "0.31.0"
-  # renovate: datasource=github-releases depName=kubernetes/kubectl
-  KUBERNETES_VERSION: "v1.34.2"
+  # renovate: datasource=github-releases depName=kubernetes/kubernetes
+  KUBERNETES_VERSION: "v1.35.1"
 
 jobs:
   test:
