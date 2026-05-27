@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.3.1](https://github.com/ppat/github-workflows/compare/v3.3.0...v3.3.1) (2026-05-27)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update aquaproj/aqua (v2.58.1 -&gt; v2.59.0) ([#478](https://github.com/ppat/github-workflows/issues/478)) ([d69430c](https://github.com/ppat/github-workflows/commit/d69430cb9d568afc1aaa8db82c85e1887d755c83))
+* **dev-tools:** update astral-sh/uv (0.11.15 -&gt; 0.11.16) ([#477](https://github.com/ppat/github-workflows/issues/477)) ([8e84361](https://github.com/ppat/github-workflows/commit/8e8436196dad4d566d3efff4246bb0fac5133202))
+* **dev-tools:** update renovatebot/renovate (43.180.1 -&gt; 43.195.0) ([#476](https://github.com/ppat/github-workflows/issues/476)) ([fe26c60](https://github.com/ppat/github-workflows/commit/fe26c605fbed7c5650726692820cbd0ef05b7625))
+* **dev-tools:** update tailscale/tailscale (v1.96.4 -&gt; v1.98.2) ([#480](https://github.com/ppat/github-workflows/issues/480)) ([19941f8](https://github.com/ppat/github-workflows/commit/19941f82fe856aba6e94d6d649ec04afe4867125))
+* **dev-tools:** update tailscale/tailscale (v1.98.2 -&gt; v1.98.3) ([#481](https://github.com/ppat/github-workflows/issues/481)) ([261805d](https://github.com/ppat/github-workflows/commit/261805de28b2edba543f037e85caffc8dce9cc22))
+* **dev-tools:** upgrade kubernetes/kubectl cli to match same version as kind node version ([#482](https://github.com/ppat/github-workflows/issues/482)) ([3e3ebd0](https://github.com/ppat/github-workflows/commit/3e3ebd0ada4c055713c20373ba4ac9717106e353))
+
 ## [3.3.0](https://github.com/ppat/github-workflows/compare/v3.2.0...v3.3.0) (2026-05-21)
 
 
