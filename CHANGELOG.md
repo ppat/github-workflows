@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.3.2](https://github.com/ppat/github-workflows/compare/v3.3.1...v3.3.2) (2026-06-15)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update aquaproj/aqua (v2.59.0 -&gt; v2.59.1) ([#483](https://github.com/ppat/github-workflows/issues/483)) ([c6ebcbf](https://github.com/ppat/github-workflows/commit/c6ebcbfa92c01404f965c266e5ddc9eddb325000))
+* **dev-tools:** update astral-sh/uv (0.11.16 -&gt; 0.11.17) ([#489](https://github.com/ppat/github-workflows/issues/489)) ([db1f79a](https://github.com/ppat/github-workflows/commit/db1f79a9b9acae4f11b6b19fc987099af72f09f4))
+* **dev-tools:** update astral-sh/uv (0.11.17 -&gt; 0.11.18) ([#490](https://github.com/ppat/github-workflows/issues/490)) ([7c8f07e](https://github.com/ppat/github-workflows/commit/7c8f07eb5a77dafc6d280b3f57c9063b1f416468))
+* **dev-tools:** update astral-sh/uv (0.11.18 -&gt; 0.11.19) ([#493](https://github.com/ppat/github-workflows/issues/493)) ([e468140](https://github.com/ppat/github-workflows/commit/e46814020371c213608599ae6332cbf905c1837c))
+* **dev-tools:** update astral-sh/uv (0.11.19 -&gt; 0.11.21) ([#498](https://github.com/ppat/github-workflows/issues/498)) ([6a66cc8](https://github.com/ppat/github-workflows/commit/6a66cc85635e8f835be3a8d2d5b39a5699afd9ee))
+* **dev-tools:** update kindest/node (v1.35.1 -&gt; v1.35.5) ([#492](https://github.com/ppat/github-workflows/issues/492)) ([56675fb](https://github.com/ppat/github-workflows/commit/56675fb8a9c13cd9865d7520d9034cfac080e05e))
+* **dev-tools:** update kubernetes-sigs/kind (v0.31.0 -&gt; v0.32.0) ([#495](https://github.com/ppat/github-workflows/issues/495)) ([506c2bf](https://github.com/ppat/github-workflows/commit/506c2bf176f2f715a51a3ddfc36020d6b52cba81))
+* **dev-tools:** update kubernetes/kubernetes (v1.35.1 -&gt; v1.35.5) ([#484](https://github.com/ppat/github-workflows/issues/484)) ([75915c5](https://github.com/ppat/github-workflows/commit/75915c5f52cf6a504068f1099ca2385e3257e8be))
+* **dev-tools:** update kubernetes/kubernetes (v1.35.5 -&gt; v1.35.6) ([#499](https://github.com/ppat/github-workflows/issues/499)) ([d78fe6f](https://github.com/ppat/github-workflows/commit/d78fe6fe71c51d978290d00afae063f47a0d65ee))
+* **dev-tools:** update lockfile bun ([#488](https://github.com/ppat/github-workflows/issues/488)) ([292c6cd](https://github.com/ppat/github-workflows/commit/292c6cdb614e2b9bd4102e1a8cad9353412f2c21))
+* **dev-tools:** update terraform-linters/tflint (v0.62.1 -&gt; v0.63.1) ([#496](https://github.com/ppat/github-workflows/issues/496)) ([cf96372](https://github.com/ppat/github-workflows/commit/cf96372d43750214190300ecd7ee78242b91b0d8))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* update semantic-release (25.0.3 -&gt; 25.0.5) ([#497](https://github.com/ppat/github-workflows/issues/497)) ([b7fd1a3](https://github.com/ppat/github-workflows/commit/b7fd1a3bfb9ce07e900deee826024f9cfc9eab70))
+
 ## [3.3.1](https://github.com/ppat/github-workflows/compare/v3.3.0...v3.3.1) (2026-05-27)
 
 
