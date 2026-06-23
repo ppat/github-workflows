@@ -38,7 +38,7 @@ env:
   # renovate: datasource=github-releases depName=kubernetes-sigs/kind
   KIND_VERSION: "0.32.0"
   # renovate: datasource=github-releases depName=kubernetes/kubernetes
-  KUBERNETES_VERSION: "v1.35.6"
+  KUBERNETES_VERSION: "v1.36.0"
 
 jobs:
   test:
