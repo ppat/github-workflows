@@ -56,10 +56,15 @@
       "enabled": false
     },
     {
-      "description": "temporarily cfg to fix renovate runs",
-      "groupName": "",
-      "matchManagers": [ "!/^github-actions/" ],
+      "description": "Disable all packages across all managers",
+      "matchPackageNames": [ "*" ],
       "enabled": false
+    },
+    {
+      "description": "Enable updates only for this specific GitHub Action",
+      "matchManagers": [ "github-actions" ],
+      "matchPackageNames": [ "ppat/homelab-ops-actions" ],
+      "enabled": true
     }
   ],
   "prConcurrentLimit": 0,
