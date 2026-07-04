@@ -51,8 +51,14 @@
         "temporarily disable github-actions updates based on digest changes to fix renovate"
       ],
       "groupName": "",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["digest"],
+      "matchManagers": [ "github-actions" ],
+      "matchUpdateTypes": [ "digest" ],
+      "enabled": false
+    },
+    {
+      "description": "temporarily cfg to fix renovate runs",
+      "groupName": "",
+      "matchManagers": [ "npm" ],
       "enabled": false
     }
   ],
