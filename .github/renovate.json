@@ -58,7 +58,7 @@
     {
       "description": "temporarily cfg to fix renovate runs",
       "groupName": "",
-      "matchDatasources": [ "npm" ],
+      "matchManagers": [ "!/^github-actions/" ],
       "enabled": false
     }
   ],
