@@ -47,6 +47,24 @@
   ],
   "packageRules": [
     {
+      "description": "Disable all packages across all managers",
+      "matchPackageNames": [ "*" ],
+      "enabled": false
+    },
+    {
+      "description": "Enable updates only for this specific managers",
+      "matchManagers": [ "regex", "pre-commit", "mise", "renovate-config" ],
+      "enabled": true
+    },
+    {
+      "description": [
+        "temporarily disable specific packages"
+      ],
+      "groupName": "",
+      "matchPackageNames": [ "actions/checkout", "actions/cache", "actions/create-github-app-token", "astral-sh/uv" ],
+      "enabled": false
+    },
+    {
       "description": [
         "temporarily disable github-actions updates based on digest changes to fix renovate"
       ],
@@ -54,17 +72,6 @@
       "matchManagers": [ "github-actions" ],
       "matchUpdateTypes": [ "digest" ],
       "enabled": false
-    },
-    {
-      "description": "Disable all packages across all managers",
-      "matchPackageNames": [ "*" ],
-      "enabled": false
-    },
-    {
-      "description": "Enable updates only for this specific GitHub Action",
-      "matchManagers": [ "github-actions" ],
-      "matchPackageNames": [ "ppat/homelab-ops-actions" ],
-      "enabled": true
     }
   ],
   "prConcurrentLimit": 0,
