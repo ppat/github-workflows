@@ -87,4 +87,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -x
-        bunx commitlint --color --from ${{ inputs.from }} --to ${{ inputs.to }} --verbose
+        bunx commitlint --color --from ${INPUTS_FROM} --to ${INPUTS_TO} --verbose
+      env:
+        INPUTS_FROM: ${{ inputs.from }}
+        INPUTS_TO: ${{ inputs.to }}
