@@ -45,6 +45,7 @@
   "labels": [
     "pr-type:renovate"
   ],
+  "osvVulnerabilityAlerts": true,
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "printConfig": true,
@@ -53,5 +54,8 @@
     "prEditedNotification",
     "prIgnoreNotification"
   ],
-  "timezone": "US/Eastern"
+  "timezone": "US/Eastern",
+  "vulnerabilityAlerts": {
+    "automerge": false
+  }
 }
