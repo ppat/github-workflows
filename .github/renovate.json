@@ -45,6 +45,17 @@
   "labels": [
     "pr-type:renovate"
   ],
+  "packageRules": [
+    {
+      "description": [
+        "temporarily disable github-actions updates based on digest changes to fix renovate"
+      ],
+      "groupName": "",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest"],
+      "enabled": false
+    }
+  ],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "printConfig": true,
