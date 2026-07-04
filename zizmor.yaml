@@ -1,0 +1,26 @@
+---
+# Pre-existing findings in already-merged workflows, accepted as known/tracked
+# risk rather than fixed here, to keep the zizmor gate's introduction scoped to
+# "add the gate" (see lint-zizmor.yaml). Revisit independently.
+rules:
+  template-injection:
+    ignore:
+    # `inputs.from`/`inputs.to` are workflow_call inputs supplied by
+    # self-lint.yaml (git refs/SHAs), not attacker-controlled event data, but
+    # zizmor flags any `inputs.*` expansion inside `run:`. Safer fix (pass via
+    # `env:`) is a follow-up, not required for the zizmor gate itself.
+    - lint-commit-messages.yaml:90
+  github-app:
+    ignore:
+    # All four call sites already scope RENOVATE_REPOSITORIES/operate on only
+    # `github.repository`, but omit explicit `repositories:`/`permission-*`
+    # inputs on `create-github-app-token`, so the token is broader than used.
+    # Narrowing these is a follow-up, not required for the zizmor gate itself.
+    - release-please.yaml:20
+    - release-please.yaml:25
+    - release-semantic.yaml:52
+    - release-semantic.yaml:57
+    - renovate.yaml:38
+    - renovate.yaml:43
+    - update-aqua-checksums.yaml:49
+    - update-aqua-checksums.yaml:54
