@@ -58,7 +58,7 @@
     {
       "description": "temporarily cfg to fix renovate runs",
       "groupName": "",
-      "datasource": [ "npm" ],
+      "matchDatasources": [ "npm" ],
       "enabled": false
     }
   ],
