@@ -45,28 +45,6 @@
   "labels": [
     "pr-type:renovate"
   ],
-  "packageRules": [
-    {
-      "description": [
-        "temporarily attempt to fix renovate"
-      ],
-      "branchPrefix": "renovate/fix/",
-      "groupName": "",
-      "matchPackageNames": [ "*" ],
-      "separateMajorMinor": true,
-      "separateMinorPatch": false,
-      "separateMultipleMajor": false,
-      "separateMultipleMinor": false,
-      "enabled": true
-    },
-    {
-      "description": [
-        "temporarily disable digest changes"
-      ],
-      "matchUpdateTypes": [ "digest" ],
-      "enabled": false
-    }
-  ],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "printConfig": true,
