@@ -51,9 +51,20 @@
         "temporarily disable github-actions updates based on digest changes to fix renovate"
       ],
       "groupName": "",
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["digest"],
+      "matchManagers": [ "github-actions" ],
+      "matchUpdateTypes": [ "digest" ],
       "enabled": false
+    },
+    {
+      "description": "Disable all packages across all managers",
+      "matchPackageNames": [ "*" ],
+      "enabled": false
+    },
+    {
+      "description": "Enable updates only for this specific GitHub Action",
+      "matchManagers": [ "github-actions" ],
+      "matchPackageNames": [ "ppat/homelab-ops-actions" ],
+      "enabled": true
     }
   ],
   "prConcurrentLimit": 0,
