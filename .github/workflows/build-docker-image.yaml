@@ -223,11 +223,7 @@ jobs:
         echo "------------------------------------------------------------------------------"
         sudo tailscale dns status --all
         echo "------------------------------------------------------------------------------"
-        sudo tailscale nc 192.168.8.1 53
-        echo "------------------------------------------------------------------------------"
-        sudo tailscale nc 192.168.8.2 53
-        echo "------------------------------------------------------------------------------"
-        sudo -E tailscale ping --verbose ${{ secrets.private_registry }} --until-direct=false -c 5
+        sudo -E tailscale ping --verbose --until-direct=false --c 5 ${{ secrets.private_registry }}
         echo "------------------------------------------------------------------------------"
 
     - name: Login to Docker Hub
