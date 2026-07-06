@@ -221,6 +221,7 @@ jobs:
         echo
         sudo -E tailscale status --json --peers=false 2>&1 | sed -f .github/.output-filter
         echo
+        sudo -E tailscaile ping --verbose ${{ secrets.private_registry }}
 
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
