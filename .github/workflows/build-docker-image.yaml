@@ -206,11 +206,25 @@ jobs:
 
     - name: Tailscale Connect
       if: ${{ env.CONNECT_TAILSCALE == 'true' }}
-      uses: tailscale/github-action@6cae46e2d796f265265cfcf628b72a32b4d7cade # v3.3.0
+      uses: tailscale/github-action@306e68a486fd2350f2bfc3b19fcd143891a4a2d8 # v4.1.2
       with:
         oauth-client-id: ${{ secrets.tailscale_oauth_client_id }}
         oauth-secret: ${{ secrets.tailscale_oauth_secret }}
         tags: tag:github-action-ci-runner
+
+    - name: Tailscale Debug
+      if: ${{ env.CONNECT_TAILSCALE == 'true' && github.event_name == 'workflow_dispatch' }}
+      run: |
+        sudo -E tailscale netcheck --verbose 2>&1 | sed -f .github/.output-filter
+        echo "------------------------------------------------------------------------------"
+        sudo -E tailscale status 2>&1 | sed -f .github/.output-filter
+        echo "------------------------------------------------------------------------------"
+        sudo -E tailscale status --json --peers=false 2>&1 | sed -f .github/.output-filter
+        echo "------------------------------------------------------------------------------"
+        sudo tailscale dns status --all
+        echo "------------------------------------------------------------------------------"
+        sudo -E tailscale ping --verbose --until-direct=false --c 5 ${{ secrets.private_registry }} | sed -f .github/.output-filter
+        echo "------------------------------------------------------------------------------"
 
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
