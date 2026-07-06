@@ -1,5 +1,69 @@
 # Changelog
 
+## [4.0.0](https://github.com/ppat/github-workflows/compare/v3.3.1...v4.0.0) (2026-07-06)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update alessandrojcm/commitlint-pre-commit-hook (non-major) ([#530](https://github.com/ppat/github-workflows/issues/530)) ([b0ec9b0](https://github.com/ppat/github-workflows/commit/b0ec9b0c40e23384b3de50b598e21f3741c99243))
+* **dev-tools:** update aquaproj/aqua (v2.59.0 -&gt; v2.59.1) ([#483](https://github.com/ppat/github-workflows/issues/483)) ([c6ebcbf](https://github.com/ppat/github-workflows/commit/c6ebcbfa92c01404f965c266e5ddc9eddb325000))
+* **dev-tools:** update aquaproj/aqua (v2.59.1 -&gt; v2.60.0) ([#501](https://github.com/ppat/github-workflows/issues/501)) ([df84b91](https://github.com/ppat/github-workflows/commit/df84b914c5ccfad3ae682ca49db4e825cd2b4a68))
+* **dev-tools:** update aquaproj/aqua (v2.60.0 -&gt; v2.60.1) ([#502](https://github.com/ppat/github-workflows/issues/502)) ([748c60b](https://github.com/ppat/github-workflows/commit/748c60b962812af0f612bc620786ed71e5134d1b))
+* **dev-tools:** update astral-sh/uv (0.11.16 -&gt; 0.11.17) ([#489](https://github.com/ppat/github-workflows/issues/489)) ([db1f79a](https://github.com/ppat/github-workflows/commit/db1f79a9b9acae4f11b6b19fc987099af72f09f4))
+* **dev-tools:** update astral-sh/uv (0.11.17 -&gt; 0.11.18) ([#490](https://github.com/ppat/github-workflows/issues/490)) ([7c8f07e](https://github.com/ppat/github-workflows/commit/7c8f07eb5a77dafc6d280b3f57c9063b1f416468))
+* **dev-tools:** update astral-sh/uv (0.11.18 -&gt; 0.11.19) ([#493](https://github.com/ppat/github-workflows/issues/493)) ([e468140](https://github.com/ppat/github-workflows/commit/e46814020371c213608599ae6332cbf905c1837c))
+* **dev-tools:** update astral-sh/uv (0.11.19 -&gt; 0.11.21) ([#498](https://github.com/ppat/github-workflows/issues/498)) ([6a66cc8](https://github.com/ppat/github-workflows/commit/6a66cc85635e8f835be3a8d2d5b39a5699afd9ee))
+* **dev-tools:** update astral-sh/uv (0.11.21 -&gt; 0.11.22) ([#503](https://github.com/ppat/github-workflows/issues/503)) ([91cf84e](https://github.com/ppat/github-workflows/commit/91cf84e4e4c05fe973f230e203ac793af4346772))
+* **dev-tools:** update astral-sh/uv (github-actions dependency) (0.11.22 -&gt; 0.11.23) ([#504](https://github.com/ppat/github-workflows/issues/504)) ([957090e](https://github.com/ppat/github-workflows/commit/957090e3b9eac6cd787665dea99f4abd085b25a6))
+* **dev-tools:** update kindest/node (v1.35.1 -&gt; v1.35.5) ([#492](https://github.com/ppat/github-workflows/issues/492)) ([56675fb](https://github.com/ppat/github-workflows/commit/56675fb8a9c13cd9865d7520d9034cfac080e05e))
+* **dev-tools:** update kubernetes (v1.35.6 -&gt; v1.36.0) ([#506](https://github.com/ppat/github-workflows/issues/506)) ([6605eee](https://github.com/ppat/github-workflows/commit/6605eeed5260d97b1b5ad6f9778e6fdf15948f8c))
+* **dev-tools:** update kubernetes-sigs/kind (v0.31.0 -&gt; v0.32.0) ([#495](https://github.com/ppat/github-workflows/issues/495)) ([506c2bf](https://github.com/ppat/github-workflows/commit/506c2bf176f2f715a51a3ddfc36020d6b52cba81))
+* **dev-tools:** update kubernetes/kubernetes (v1.35.1 -&gt; v1.35.5) ([#484](https://github.com/ppat/github-workflows/issues/484)) ([75915c5](https://github.com/ppat/github-workflows/commit/75915c5f52cf6a504068f1099ca2385e3257e8be))
+* **dev-tools:** update kubernetes/kubernetes (v1.35.5 -&gt; v1.35.6) ([#499](https://github.com/ppat/github-workflows/issues/499)) ([d78fe6f](https://github.com/ppat/github-workflows/commit/d78fe6fe71c51d978290d00afae063f47a0d65ee))
+* **dev-tools:** update lockfile bun ([#488](https://github.com/ppat/github-workflows/issues/488)) ([292c6cd](https://github.com/ppat/github-workflows/commit/292c6cdb614e2b9bd4102e1a8cad9353412f2c21))
+* **dev-tools:** update lockfile bun ([#500](https://github.com/ppat/github-workflows/issues/500)) ([bed5d4a](https://github.com/ppat/github-workflows/commit/bed5d4a6405e4942598d124f8ca4d4f0d8741534))
+* **dev-tools:** update lockfile bun ([#533](https://github.com/ppat/github-workflows/issues/533)) ([89a1813](https://github.com/ppat/github-workflows/commit/89a1813277430a3ba99f688008d362a9ed0554bf))
+* **dev-tools:** update renovatebot/renovate (43.195.0 -&gt; 43.227.1) ([#486](https://github.com/ppat/github-workflows/issues/486)) ([196a343](https://github.com/ppat/github-workflows/commit/196a34311dbc59cf0aecc0d3691cca22bed8992c))
+* **dev-tools:** update renovatebot/renovate (github-actions dependency) (43.227.1 -&gt; 43.233.3) ([#507](https://github.com/ppat/github-workflows/issues/507)) ([57a73d2](https://github.com/ppat/github-workflows/commit/57a73d2e928383cc782e9292415ddf88d8c37a7b))
+* **dev-tools:** update terraform-linters/tflint (v0.62.1 -&gt; v0.63.1) ([#496](https://github.com/ppat/github-workflows/issues/496)) ([cf96372](https://github.com/ppat/github-workflows/commit/cf96372d43750214190300ecd7ee78242b91b0d8))
+* **github-actions:** update actions/checkout (v4 -&gt; v7.0.0) and actions/create-github-app-token (v2 -&gt; v3.2.0) ([#514](https://github.com/ppat/github-workflows/issues/514)) ([08975ad](https://github.com/ppat/github-workflows/commit/08975ad47ca858461a7231750dec68fbf57728a4))
+* **github-actions:** update renovatebot/github-action (v44.2.6 -&gt; v46.1.17) ([#515](https://github.com/ppat/github-workflows/issues/515)) ([9e6b7e6](https://github.com/ppat/github-workflows/commit/9e6b7e6ca985d9e2e59031f1537f2d26e7315807))
+* **release:** set next release version ([5bb10c9](https://github.com/ppat/github-workflows/commit/5bb10c9ca5122ae93fc61964e43c4b2e593988b1))
+
+
+### ✨ Features
+
+* **dev-tools:** update kindest/node (v1.35.5 -&gt; v1.36.1) ([#531](https://github.com/ppat/github-workflows/issues/531)) ([e1784d7](https://github.com/ppat/github-workflows/commit/e1784d7c2fa6d4116b0e9652b011b254ba82a01d))
+* **github-actions:** add zizmor static analysis security gate ([#535](https://github.com/ppat/github-workflows/issues/535)) ([7926396](https://github.com/ppat/github-workflows/commit/7926396abd34f186bf5ca8044fe6374f4bcfc7d5))
+* **github-actions:** update docker/build-push-action (v6.18.0 -&gt; v7.2.0) ([#521](https://github.com/ppat/github-workflows/issues/521)) ([8a94a05](https://github.com/ppat/github-workflows/commit/8a94a05aee51fe589a926971690e210a99ca23ff))
+* **github-actions:** update docker/login-action (v3.6.0 -&gt; v4.2.0) ([#522](https://github.com/ppat/github-workflows/issues/522)) ([47c1dd4](https://github.com/ppat/github-workflows/commit/47c1dd4855edc26258066e5cf164f97a30bb2912))
+* **github-actions:** update docker/metadata-action (v5.10.0 -&gt; v6.1.0) ([#523](https://github.com/ppat/github-workflows/issues/523)) ([3286626](https://github.com/ppat/github-workflows/commit/32866260809ff70387cac5417a1a0208db2fb3d1))
+* **github-actions:** update docker/setup-buildx-action (v3.11.1 -&gt; v4.1.0) ([#524](https://github.com/ppat/github-workflows/issues/524)) ([fea51eb](https://github.com/ppat/github-workflows/commit/fea51ebe6ba4824c60c222cec429a68be0567bf6))
+* **github-actions:** update docker/setup-qemu-action (v3.7.0 -&gt; v4.1.0) ([#525](https://github.com/ppat/github-workflows/issues/525)) ([dc53535](https://github.com/ppat/github-workflows/commit/dc53535460521eee5d9352f43d52b15d59690425))
+* **github-actions:** update googleapis/release-please-action (v4.4.0 -&gt; v5.0.0) ([#526](https://github.com/ppat/github-workflows/issues/526)) ([0f16be6](https://github.com/ppat/github-workflows/commit/0f16be64475070c1b11a823680d505dbad0fe346))
+* **github-actions:** update peter-evans/dockerhub-description (v4.0.2 -&gt; v5.0.0) ([#527](https://github.com/ppat/github-workflows/issues/527)) ([bc815ad](https://github.com/ppat/github-workflows/commit/bc815ada8076cc68b32eb4b44a4c6adb6587f25a))
+* **github-actions:** update ppat/homelab-ops-actions (v1.0.4 -&gt; v2.0.0) ([#511](https://github.com/ppat/github-workflows/issues/511)) ([1a578a6](https://github.com/ppat/github-workflows/commit/1a578a60cec86362942c383cd0ed3320a42d0275))
+* **github-actions:** update tailscale/github-action (v3.3.0 -&gt; v4.1.2) ([#528](https://github.com/ppat/github-workflows/issues/528)) ([495b096](https://github.com/ppat/github-workflows/commit/495b0961bfe89ec0ca953fb3576446ad61951752))
+* **github-actions:** update tj-actions/changed-files (v46.0.5 -&gt; v47.0.6) ([#529](https://github.com/ppat/github-workflows/issues/529)) ([fd206fe](https://github.com/ppat/github-workflows/commit/fd206fe57bdc231a0a9fde3472fd467e6c4340e3))
+* **github-actions:** update trusted github-actions ([#516](https://github.com/ppat/github-workflows/issues/516)) ([d5cd138](https://github.com/ppat/github-workflows/commit/d5cd138379eeb2669f0887d96738425fd30db454))
+* update commitlint packages ([#494](https://github.com/ppat/github-workflows/issues/494)) ([82fa85b](https://github.com/ppat/github-workflows/commit/82fa85b569695e1254b137a35816aafba463c53b))
+* update commitlint packages (21.0.2 -&gt; 21.1.0) ([#520](https://github.com/ppat/github-workflows/issues/520)) ([f74959b](https://github.com/ppat/github-workflows/commit/f74959b4a12a2baea99d14f3201b4d9cfcbce3db))
+* update commitlint packages (21.1.0 -&gt; 21.2.0) ([#536](https://github.com/ppat/github-workflows/issues/536)) ([d2e6b84](https://github.com/ppat/github-workflows/commit/d2e6b84b7d39b2317f55fdf64bbb9567bd607d71))
+* update conventional-changelog-conventionalcommits (9.3.1 -&gt; 10.2.0) ([#532](https://github.com/ppat/github-workflows/issues/532)) ([e4c8986](https://github.com/ppat/github-workflows/commit/e4c8986ad1596111b2e150702169221dda7ea491))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* align renovate version between renovate.yaml &lt;-&gt; lint-renovate-config-check.yaml ([aa30341](https://github.com/ppat/github-workflows/commit/aa303419407506e4ebeefb4241d2a239c527490b))
+* **dev-tools:** update astral-sh/uv (0.11.23 -&gt; 0.11.26) ([#518](https://github.com/ppat/github-workflows/issues/518)) ([85abf5b](https://github.com/ppat/github-workflows/commit/85abf5b17dd21d68086c4d090e71b78c6ad862a7))
+* **dev-tools:** update kubernetes/kubernetes (v1.36.0 -&gt; v1.36.2) ([#519](https://github.com/ppat/github-workflows/issues/519)) ([f35e109](https://github.com/ppat/github-workflows/commit/f35e109304c3687d9ed149428bbc2a23b1298784))
+* do not specify tailscale version in build-docker-image workflow ([b6ab563](https://github.com/ppat/github-workflows/commit/b6ab5635332fed839f7c02b653dcf48819824aa4))
+* **github-actions:** zizmor auto fixes ([#537](https://github.com/ppat/github-workflows/issues/537)) ([4f161c7](https://github.com/ppat/github-workflows/commit/4f161c7ba3b1787c34565be15b42cbf71116205f))
+* update @semantic-release/github (12.0.8 -&gt; 12.0.9) ([#517](https://github.com/ppat/github-workflows/issues/517)) ([5a7fbdb](https://github.com/ppat/github-workflows/commit/5a7fbdbabfecd41fa1551e25cf9dfae322165a0f))
+* update commitlint packages (21.0.1 -&gt; 21.0.2) ([#505](https://github.com/ppat/github-workflows/issues/505)) ([bc74483](https://github.com/ppat/github-workflows/commit/bc744838f1d8e8b03b6f79ed938ef845c0fed111))
+* update conventional-changelog-conventionalcommits (10.2.0 -&gt; 10.2.1) ([#538](https://github.com/ppat/github-workflows/issues/538)) ([5dce630](https://github.com/ppat/github-workflows/commit/5dce630f1b5a7e9f5149111c56a8b220e83adb91))
+* update semantic-release (25.0.3 -&gt; 25.0.5) ([#497](https://github.com/ppat/github-workflows/issues/497)) ([b7fd1a3](https://github.com/ppat/github-workflows/commit/b7fd1a3bfb9ce07e900deee826024f9cfc9eab70))
+
 ## [3.3.1](https://github.com/ppat/github-workflows/compare/v3.3.0...v3.3.1) (2026-05-27)
 
 
