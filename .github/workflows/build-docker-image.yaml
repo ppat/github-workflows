@@ -213,7 +213,7 @@ jobs:
         tags: tag:github-action-ci-runner
 
     - name: Tailscale Debug
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_artifact }}
+      if: ${{ env.CONNECT_TAILSCALE == 'true' }}
       run: |
         sudo -E tailscale netcheck --verbose 2>&1 | sed -f .github/.output-filter
         echo
