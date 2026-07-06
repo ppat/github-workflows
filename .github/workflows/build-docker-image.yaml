@@ -212,6 +212,16 @@ jobs:
         oauth-secret: ${{ secrets.tailscale_oauth_secret }}
         tags: tag:github-action-ci-runner
 
+    - name: Tailscale Debug
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_artifact }}
+      run: |
+        sudo -E tailscale netcheck --verbose 2>&1 | sed -f .github/.output-filter
+        echo
+        sudo -E tailscale status 2>&1 | sed -f .github/.output-filter
+        echo
+        sudo -E tailscale status --json --peers=false 2>&1 | sed -f .github/.output-filter
+        echo
+
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
       uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
