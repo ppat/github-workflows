@@ -19,7 +19,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=zizmorcore/zizmor
-  ZIZMOR_VERSION: "v1.26.1"
+  ZIZMOR_VERSION: "v1.27.0"
 
 jobs:
   zizmor:
