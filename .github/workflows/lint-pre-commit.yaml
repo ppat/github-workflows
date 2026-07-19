@@ -21,7 +21,7 @@ env:
   # renovate: datasource=github-releases depName=pre-commit/pre-commit
   PRECOMMIT_VERSION: "v4.6.0"
   # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.11.28"
+  UV_VERSION: "0.11.29"
 
 jobs:
   pre-commit:
