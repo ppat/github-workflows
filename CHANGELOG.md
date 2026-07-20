@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.2.0](https://github.com/ppat/github-workflows/compare/v4.1.0...v4.2.0) (2026-07-20)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update renovatebot/renovate (43.265.3 -&gt; 43.268.4) ([#558](https://github.com/ppat/github-workflows/issues/558)) ([d6f8cea](https://github.com/ppat/github-workflows/commit/d6f8cea68daec3f144e5b5848fe79c6c54e3f35d))
+
+
+### ✨ Features
+
+* **dev-tools:** update aquaproj/aqua (v2.61.0 -&gt; v2.62.0) ([#559](https://github.com/ppat/github-workflows/issues/559)) ([3b1255d](https://github.com/ppat/github-workflows/commit/3b1255d175eb64c29854b8dd2dfbb514e5be6c06))
+* **github-actions:** update ppat/homelab-ops-actions (v2.0.0 -&gt; v2.1.0) ([#560](https://github.com/ppat/github-workflows/issues/560)) ([f27fbe7](https://github.com/ppat/github-workflows/commit/f27fbe7051529a703320e4cf41afe27c64ae0668))
+
 ## [4.1.0](https://github.com/ppat/github-workflows/compare/v4.0.0...v4.1.0) (2026-07-19)
 
 
