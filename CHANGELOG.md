@@ -1,5 +1,42 @@
 # Changelog
 
+## [4.1.0](https://github.com/ppat/github-workflows/compare/v4.0.0...v4.1.0) (2026-07-19)
+
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** update davidanson/markdownlint-cli2 (non-major) ([#546](https://github.com/ppat/github-workflows/issues/546)) ([9e17d99](https://github.com/ppat/github-workflows/commit/9e17d9942869c6b3f68c6f9b5dc9bbff1dafc4ea))
+* **dev-tools:** update davidanson/markdownlint-cli2 (non-major) ([#555](https://github.com/ppat/github-workflows/issues/555)) ([f9ac56f](https://github.com/ppat/github-workflows/commit/f9ac56f0a7035ebbb2f64a820f3c31b2196632dc))
+* **dev-tools:** update lockfile bun ([#548](https://github.com/ppat/github-workflows/issues/548)) ([3242d46](https://github.com/ppat/github-workflows/commit/3242d46c34f7d860ccf7338f7b24504ff5fda925))
+* **dev-tools:** update lockfile bun ([#557](https://github.com/ppat/github-workflows/issues/557)) ([c0eb030](https://github.com/ppat/github-workflows/commit/c0eb03028f20a2a57d0f69e0d52acb6a32f17197))
+* **dev-tools:** update renovatebot/renovate (43.251.3 -&gt; 43.258.0) ([#541](https://github.com/ppat/github-workflows/issues/541)) ([2deb2e5](https://github.com/ppat/github-workflows/commit/2deb2e5afad2cbfe2c4290353eabdcac5b4d852d))
+* **dev-tools:** update renovatebot/renovate (43.258.0 -&gt; 43.259.2) ([#547](https://github.com/ppat/github-workflows/issues/547)) ([6f1141d](https://github.com/ppat/github-workflows/commit/6f1141d94ef6fee30c1a53280b17940c3f79a559))
+* **dev-tools:** update renovatebot/renovate (43.259.2 -&gt; 43.265.3) ([#556](https://github.com/ppat/github-workflows/issues/556)) ([0fe6b01](https://github.com/ppat/github-workflows/commit/0fe6b013bb1ff1a7047a4ca3f47454da713f8e04))
+* **release:** change next release version to be automatically set ([e24d419](https://github.com/ppat/github-workflows/commit/e24d419e1cfb5bf2526996576e839cc367159a8f))
+
+
+### 🛠 Improvements
+
+* add CLAUDE.md and DESIGN.md, expand README ([#553](https://github.com/ppat/github-workflows/issues/553)) ([1100929](https://github.com/ppat/github-workflows/commit/110092977300f7d18f675cf806ce08421633874b))
+
+
+### ✨ Features
+
+* **dev-tools:** update aquaproj/aqua (v2.60.2 -&gt; v2.61.0) ([#550](https://github.com/ppat/github-workflows/issues/550)) ([b638c4c](https://github.com/ppat/github-workflows/commit/b638c4cf8a8ae9ab03aa4455cb303093bbcd44fe))
+* **dev-tools:** update fluxcd/flux2 (v2.8.8 -&gt; v2.9.2) ([#551](https://github.com/ppat/github-workflows/issues/551)) ([4426073](https://github.com/ppat/github-workflows/commit/4426073b6ecbea4083903592e33bc0909b9470cd))
+* **dev-tools:** update zizmorcore/zizmor (v1.26.1 -&gt; v1.27.0) ([#552](https://github.com/ppat/github-workflows/issues/552)) ([c7cd15b](https://github.com/ppat/github-workflows/commit/c7cd15b81008bf32494e508f036793538dbf7f16))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **dev-tools:** update aquaproj/aqua (v2.60.1 -&gt; v2.60.2) ([#543](https://github.com/ppat/github-workflows/issues/543)) ([ae4d42e](https://github.com/ppat/github-workflows/commit/ae4d42ef153bb14bf2b8533ee8fb829c32c4c76e))
+* **dev-tools:** update astral-sh/uv (0.11.26 -&gt; 0.11.28) ([#540](https://github.com/ppat/github-workflows/issues/540)) ([9863d26](https://github.com/ppat/github-workflows/commit/9863d26bb1b0bfe1a1f2186b9b17da0377b0e5bb))
+* **dev-tools:** update astral-sh/uv (0.11.28 -&gt; 0.11.29) ([#549](https://github.com/ppat/github-workflows/issues/549)) ([33f8b52](https://github.com/ppat/github-workflows/commit/33f8b5220f377507d9feb752b8c692865c8a3e24))
+* update @commitlint/cli (21.2.0 -&gt; 21.2.1) ([#542](https://github.com/ppat/github-workflows/issues/542)) ([91639a2](https://github.com/ppat/github-workflows/commit/91639a2435c1604575b05cc37219824310a9df49))
+* update semantic-release (25.0.5 -&gt; 25.0.6) ([#544](https://github.com/ppat/github-workflows/issues/544)) ([109594d](https://github.com/ppat/github-workflows/commit/109594d489794e932fc0186cd2e4326c49756742))
+* update semantic-release (25.0.6 -&gt; 25.0.7) ([#545](https://github.com/ppat/github-workflows/issues/545)) ([cada031](https://github.com/ppat/github-workflows/commit/cada0313bd8d66bfe9670ce977f721d452f6e743))
+* update semantic-release (25.0.7 -&gt; 25.0.8) ([#554](https://github.com/ppat/github-workflows/issues/554)) ([a36fa7e](https://github.com/ppat/github-workflows/commit/a36fa7ea7b389df3c3c31fa4dc387a3d4498c9cd))
+
 ## [4.0.0](https://github.com/ppat/github-workflows/compare/v3.3.1...v4.0.0) (2026-07-06)
 
 
