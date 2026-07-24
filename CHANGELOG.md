@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/ppat/github-workflows/compare/v4.2.0...v4.2.1) (2026-07-24)
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **dev-tools:** update aquaproj/aqua (v2.62.0 -&gt; v2.62.1) ([#564](https://github.com/ppat/github-workflows/issues/564)) ([308c063](https://github.com/ppat/github-workflows/commit/308c063cdf47469cab73e6846f9aeba8491458d1))
+
 ## [4.2.0](https://github.com/ppat/github-workflows/compare/v4.1.0...v4.2.0) (2026-07-20)
 
 
