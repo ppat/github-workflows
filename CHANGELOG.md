@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/ppat/github-workflows/compare/v4.3.0...v4.4.0) (2026-08-08)
+
+
+### ✨ Features
+
+* **renovate:** allow mise unsafe execution for lockfile maintenance ([#592](https://github.com/ppat/github-workflows/issues/592)) ([aef1bac](https://github.com/ppat/github-workflows/commit/aef1bacdb25f21fa034ba044c590cc54087e119c))
+
 ## [4.3.0](https://github.com/ppat/github-workflows/compare/v4.2.0...v4.3.0) (2026-08-08)
 
 
