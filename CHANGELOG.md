@@ -1,5 +1,34 @@
 # Changelog
 
+## [5.0.0](https://github.com/ppat/github-workflows/compare/v4.4.0...v5.0.0) (2026-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **github-actions:** lint-github-actions.yaml now enforces shellcheck against workflow `run:` blocks. That rule was silently disabled for eight releases, so the first bump to this version can surface pre-existing findings and turn a consumer's CI red. The workflow's inputs, outputs and secrets are unchanged -- this is a behavioural break, not an interface one. Adopting it means triaging those findings: fix them, or suppress them inline at the occurrence with `# shellcheck disable=SCxxxx`.
+
+### 🧹 Miscellaneous
+
+* **dev-tools:** drop blanket shellcheck disables from .shellcheckrc ([#604](https://github.com/ppat/github-workflows/issues/604)) ([561abca](https://github.com/ppat/github-workflows/commit/561abcafc870173deaca448b4e9b923c627925f4))
+* **dev-tools:** update lockfile bun ([#598](https://github.com/ppat/github-workflows/issues/598)) ([12ed4a0](https://github.com/ppat/github-workflows/commit/12ed4a015f3402334204869c29fbf52fa97c7060))
+* **dev-tools:** update renovatebot/renovate (44.14.12 -&gt; 44.30.4) ([#597](https://github.com/ppat/github-workflows/issues/597)) ([ecb7ebd](https://github.com/ppat/github-workflows/commit/ecb7ebd47acb5b91858b20a84ebf4da287513aa8))
+
+
+### ✨ Features
+
+* **github-actions:** parameterize zizmor thresholds, persona and advisory mode ([#602](https://github.com/ppat/github-workflows/issues/602)) ([69f0f4a](https://github.com/ppat/github-workflows/commit/69f0f4a1adc5643eb04564128dc52bf8306ece1d))
+* **github-actions:** update actionlint to v1.7.12 and make its shellcheck rule actually run ([#606](https://github.com/ppat/github-workflows/issues/606)) ([d2aab3d](https://github.com/ppat/github-workflows/commit/d2aab3d86397e2064f30b73bc5966066b67c8436))
+* update conventional-changelog-conventionalcommits (10.2.1 -&gt; 10.3.0) ([#600](https://github.com/ppat/github-workflows/issues/600)) ([556fb37](https://github.com/ppat/github-workflows/commit/556fb37aa5e75cc152b8612feac4b6700805f14d))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **dev-tools:** update astral-sh/uv (0.12.3 -&gt; 0.12.5) ([#596](https://github.com/ppat/github-workflows/issues/596)) ([9cbf06a](https://github.com/ppat/github-workflows/commit/9cbf06ad4d18050093798f39412bd82d8c8bcc9e))
+* **dev-tools:** update pre-commit/pre-commit (v4.6.1 -&gt; v4.6.2) ([#594](https://github.com/ppat/github-workflows/issues/594)) ([af21279](https://github.com/ppat/github-workflows/commit/af21279fb290bd5f3d3f190820794b40842d8de4))
+* **github-actions:** invoke release-please CLI directly, drop the release-please-action wrapper ([#601](https://github.com/ppat/github-workflows/issues/601)) ([611ed03](https://github.com/ppat/github-workflows/commit/611ed032294ce4ee2f593a08644c1de2a7c8e997))
+* **github-actions:** select shell scripts by shebang, and check them one at a time ([#603](https://github.com/ppat/github-workflows/issues/603)) ([e7d85d7](https://github.com/ppat/github-workflows/commit/e7d85d79c5a81e949e77bd237786eba9bd9210e1))
+* update commitlint packages (21.2.1 -&gt; 21.2.2) ([#595](https://github.com/ppat/github-workflows/issues/595)) ([d3481b5](https://github.com/ppat/github-workflows/commit/d3481b523829adaf560bfccb1aec92c7c8ec6091))
+
 ## [4.4.0](https://github.com/ppat/github-workflows/compare/v4.3.0...v4.4.0) (2026-08-08)
 
 
