@@ -23,7 +23,11 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=rhysd/actionlint
-  ACTIONLINT_VERSION: "v1.7.4"
+  ACTIONLINT_VERSION: "v1.7.12"
+  # actionlint shells out to this binary for the `shellcheck` rule; pin it so the
+  # findings do not drift with whatever the runner image happens to ship.
+  # renovate: datasource=github-releases depName=koalaman/shellcheck
+  SHELLCHECK_VERSION: "v0.11.0"
 
 jobs:
   github-actions:
@@ -41,6 +45,7 @@ jobs:
         mise_toml: |
           [tools]
           actionlint = "${{ env.ACTIONLINT_VERSION }}"
+          shellcheck = "${{ env.SHELLCHECK_VERSION }}"
 
     - name: Lint github actions
       env:
@@ -49,12 +54,16 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        # actionlint always appends `--norc` to the shellcheck command it runs, so
+        # `--rcfile .shellcheckrc` never took effect. Findings in `run:` blocks must
+        # be handled inline with `# shellcheck disable=` directives instead.
         if [[ "${ACTIONS_FILES}" == "ALL" ]]; then
           set -x
-          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc"
+          actionlint -shellcheck shellcheck
           set +x
         else
           set -x
-          actionlint -shellcheck "shellcheck --rcfile .shellcheckrc" $ACTIONS_FILES
+          # shellcheck disable=SC2086  # intentional word splitting: $ACTIONS_FILES is a space-separated file list
+          actionlint -shellcheck shellcheck $ACTIONS_FILES
           set +x
         fi

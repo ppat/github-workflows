@@ -26,16 +26,28 @@ See [README.md](README.md) for what each workflow does and how to call one from 
 
 ## Commands
 
-No build step. `pre-commit` (yamllint, markdownlint-cli2, shellcheck, commitlint) is the primary local
-tooling:
+No build step. `pre-commit` (yamllint, markdownlint-cli2, commitlint) is the primary local tooling:
 
 ```bash
 pre-commit install
 pre-commit run --all-files
 pre-commit run yamllint --all-files
-pre-commit run shellcheck --all-files
 pre-commit run markdownlint-cli2 --all-files
 ```
+
+`shellcheck` is not a pre-commit hook; it runs only in CI, from two independent places:
+
+```bash
+# standalone scripts, as lint-shellcheck.yaml runs them (honours .shellcheckrc)
+shellcheck --rcfile .shellcheckrc <file>...
+
+# workflow `run:` blocks, as lint-github-actions.yaml runs them
+actionlint -shellcheck shellcheck
+```
+
+actionlint always appends `--norc` to the shellcheck command it invokes, so `.shellcheckrc` does
+**not** apply to `run:` blocks — suppress those findings with an inline `# shellcheck disable=SCxxxx`
+comment at the occurrence, never with a repo-wide disable.
 
 Lint a commit message locally:
 
