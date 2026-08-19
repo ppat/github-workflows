@@ -9,8 +9,8 @@ rules:
     # `github.repository`, but omit explicit `repositories:`/`permission-*`
     # inputs on `create-github-app-token`, so the token is broader than used.
     # Narrowing these is a follow-up, not required for the zizmor gate itself.
-    - release-please.yaml:20
-    - release-please.yaml:25
+    - release-please.yaml:33
+    - release-please.yaml:38
     - release-semantic.yaml:52
     - release-semantic.yaml:57
     - renovate.yaml:38

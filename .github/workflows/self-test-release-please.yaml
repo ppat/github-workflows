@@ -1,0 +1,30 @@
+---
+# yamllint disable rule:line-length
+name: self-test-release-please
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/release-please.yaml'
+    - '.github/workflows/self-test-release-please.yaml'
+    - 'release-please-config.json'
+    - '.release-please-manifest.json'
+  schedule:
+  - cron: '0 8 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  release:
+    uses: ./.github/workflows/release-please.yaml
+    with:
+      dry_run: true
+      verbose: true
+    secrets:
+      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}

@@ -4,15 +4,28 @@ name: release-please
 
 on:
   workflow_call:
+    inputs:
+      dry_run:
+        required: false
+        type: boolean
+      verbose:
+        required: false
+        type: boolean
     secrets:
       app_id:
         required: true
       app_private_key:
         required: true
 
+env:
+  # renovate: datasource=npm depName=release-please
+  RELEASE_PLEASE_VERSION: "17.11.1"
+  # renovate: datasource=node-version
+  NODE_VERSION: "24.11.1"
+
 jobs:
   release-please:
-    if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') }}
+    if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') || inputs.dry_run }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -24,17 +37,43 @@ jobs:
         private-key: ${{ secrets.app_private_key }}
         owner: ${{ github.repository_owner }}
 
-    - name: Release Please
-      uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-      id: release
+    - name: Setup repository and tools
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
       with:
-        repo-url: ${{ github.repository }}
+        current_git_ref: ${{ github.ref }}
+        current_repository: ${{ github.repository }}
         token: ${{ steps.app-token.outputs.token }}
-        config-file: release-please-config.json
-        manifest-file: .release-please-manifest.json
+        mise_toml: |
+          [tools]
+          node                     = "${{ env.NODE_VERSION }}"
+          "npm:release-please"     = "${{ env.RELEASE_PLEASE_VERSION }}"
 
-    - name: Show Release Please Output
+    # release-please itself never reads the checked-out working tree - both
+    # the action and the CLI operate entirely over the GitHub API (config
+    # files are fetched via `github.getFileJson()` against `repo-url`), so
+    # `setup-repository-tools`' checkout above is only there to install
+    # tooling. `github-release` then `release-pr` matches the action's own
+    # call order (`manifest.createReleases()` then
+    # `manifest.createPullRequests()` in manifest mode, which this workflow
+    # uses since no `release-type` is set).
+    - name: Release Please
       env:
-        RELEASE_PLEASE_OUTPUT: ${{ toJSON(steps.release.outputs) }}
+        RELEASE_PLEASE_REPO_URL: ${{ github.repository }}
+        RELEASE_PLEASE_TOKEN: ${{ steps.app-token.outputs.token }}
+        RELEASE_PLEASE_DRY_RUN: "${{ inputs.dry_run && '--dry-run' || '' }}"
+        RELEASE_PLEASE_VERBOSE: "${{ inputs.verbose && '--debug' || '' }}"
+      # yamllint disable-line rule:indentation
       run: |
-        echo ${RELEASE_PLEASE_OUTPUT} | jq .
+        set -x
+        release-please github-release \
+          --repo-url="${RELEASE_PLEASE_REPO_URL}" \
+          --token="${RELEASE_PLEASE_TOKEN}" \
+          --config-file="release-please-config.json" \
+          --manifest-file=".release-please-manifest.json" \
+          ${RELEASE_PLEASE_DRY_RUN} ${RELEASE_PLEASE_VERBOSE}
+        release-please release-pr \
+          --repo-url="${RELEASE_PLEASE_REPO_URL}" \
+          --token="${RELEASE_PLEASE_TOKEN}" \
+          --config-file="release-please-config.json" \
+          --manifest-file=".release-please-manifest.json" \
+          ${RELEASE_PLEASE_DRY_RUN} ${RELEASE_PLEASE_VERBOSE}
