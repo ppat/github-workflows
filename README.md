@@ -41,7 +41,7 @@ commit SHA:
 ```yaml
 jobs:
   lint-yaml:
-    uses: ppat/github-workflows/.github/workflows/lint-yaml.yaml@v4.0.0
+    uses: ppat/github-workflows/.github/workflows/lint-yaml.yaml@v5.0.0 # x-release-please-version
     with:
       git_ref: ${{ github.head_ref || github.ref }}
 ```
@@ -52,7 +52,7 @@ For workflows that need a GitHub App token (`release-please.yaml`, `release-sema
 ```yaml
 jobs:
   release:
-    uses: ppat/github-workflows/.github/workflows/release-please.yaml@v4.0.0
+    uses: ppat/github-workflows/.github/workflows/release-please.yaml@v5.0.0 # x-release-please-version
     secrets:
       app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
