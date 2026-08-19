@@ -73,16 +73,16 @@ jobs:
       run: |
         echo 'Creating kind cluster...'
         kind create cluster \
-          --name=${CLUSTER_NAME} \
-          --wait=${WAIT} \
-          --image=${CLUSTER_NODE_IMAGE} \
-          --config=${CONFIG}
+          --name="${CLUSTER_NAME}" \
+          --wait="${WAIT}" \
+          --image="${CLUSTER_NODE_IMAGE}" \
+          --config="${CONFIG}"
         kubectl version
 
     - name: Install flux in kind cluster
       shell: bash
       run: |
-        flux install --version ${FLUX_VERSION} --log-level debug
+        flux install --version "${FLUX_VERSION}" --log-level debug
         flux version
 
     - name: Run Chainsaw Tests
@@ -111,7 +111,7 @@ jobs:
 
         # Run tests with combined values
         set -x
-        chainsaw test ${TEST_PATH} \
-          --config ${CHAINSAW_CONFIG} \
+        chainsaw test "${TEST_PATH}" \
+          --config "${CHAINSAW_CONFIG}" \
           --values /tmp/values-ci.yaml \
           --fail-fast

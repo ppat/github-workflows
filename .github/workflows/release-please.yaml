@@ -65,12 +65,14 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -x
+        # shellcheck disable=SC2086  # intentional: both vars are flag strings that must vanish entirely when empty
         release-please github-release \
           --repo-url="${RELEASE_PLEASE_REPO_URL}" \
           --token="${RELEASE_PLEASE_TOKEN}" \
           --config-file="release-please-config.json" \
           --manifest-file=".release-please-manifest.json" \
           ${RELEASE_PLEASE_DRY_RUN} ${RELEASE_PLEASE_VERBOSE}
+        # shellcheck disable=SC2086  # intentional: both vars are flag strings that must vanish entirely when empty
         release-please release-pr \
           --repo-url="${RELEASE_PLEASE_REPO_URL}" \
           --token="${RELEASE_PLEASE_TOKEN}" \

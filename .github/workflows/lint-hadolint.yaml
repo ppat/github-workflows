@@ -66,14 +66,16 @@ jobs:
         HADOLINT_ARGS=( "${CONFIG}" "${FAILURE_THRESHOLD}" "${VERBOSITY}" )
         FILE_LIST=$(mktemp)
         if [[ "${DOCKER_FILES}" == "ALL" ]]; then
-          find . -type f -name Dockerfile > ${FILE_LIST}
+          find . -type f -name Dockerfile > "${FILE_LIST}"
         else
-          echo ${DOCKER_FILES} | tr ' ' '\n' > ${FILE_LIST}
+          # shellcheck disable=SC2086  # intentional word splitting: $DOCKER_FILES is a space-separated file list
+          echo ${DOCKER_FILES} | tr ' ' '\n' > "${FILE_LIST}"
         fi
 
         lint_dockerfile() {
           local file="$1"
-          if hadolint ${HADOLINT_ARGS[*]} ${file}; then
+          # shellcheck disable=SC2048,SC2086  # intentional: each HADOLINT_ARGS element is a flag string that must word-split, and empty ones must vanish
+          if hadolint ${HADOLINT_ARGS[*]} "${file}"; then
             return 0
           else
             return 1
@@ -82,15 +84,15 @@ jobs:
 
         error_count=0
         while IFS= read -r file; do
-          if lint_dockerfile ${file}; then
+          if lint_dockerfile "${file}"; then
             echo "✅ ${file}"
           else
             echo "❌ ${file}"
             error_count=$((error_count + 1))
           fi
           echo
-        done < ${FILE_LIST}
+        done < "${FILE_LIST}"
 
-        if (( ${error_count} > 0 )); then
+        if (( error_count > 0 )); then
           exit 1
         fi
