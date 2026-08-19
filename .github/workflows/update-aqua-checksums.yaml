@@ -52,6 +52,8 @@ jobs:
         app-id: ${{ secrets.app_id }}
         private-key: ${{ secrets.app_private_key }}
         owner: ${{ github.repository_owner }}
+        repositories: ${{ github.repository }}
+        permission-contents: write
 
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
