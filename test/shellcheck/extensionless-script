@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Sample shell script with no file extension, for testing lint-shellcheck.
+# The selector must still lint this one -- it is identified by its shebang,
+# not by its name.
+echo "Sample script for testing lint-shellcheck..."

@@ -49,12 +49,61 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
+        shellcheck_files=()
+
         if [[ "${SHELLSCRIPT_FILES}" == "ALL" ]]; then
-          set -x
-          find . -type f -not -path './node_modules/*' -not -path './.git/*' -not -path ./bun.lock -executable -exec shellcheck --rcfile .shellcheckrc {} +
-          set +x
+          # The executable bit alone does not mean "shell script": executable python/node
+          # scripts carry it too, and get rejected outright with SC1071. So keep only the
+          # files that declare themselves shell -- either a shebang naming one of the
+          # supported shells (sh/bash/dash/ksh), or a .sh/.bash extension. A file that
+          # declares neither cannot be linted anyway, since no dialect can be inferred for
+          # it (SC2148); the check-executables-have-shebangs pre-commit hook is what keeps
+          # shebang-less executables from being committed in the first place.
+          while IFS= read -r -d '' file; do
+            case "${file}" in
+              *.sh | *.bash)
+                shellcheck_files+=("${file}")
+                continue
+                ;;
+            esac
+            read -r first_line < "${file}" || true
+            if [[ "${first_line}" =~ ^#!.*[\ /](sh|bash|dash|ksh)([[:space:]]|$) ]]; then
+              shellcheck_files+=("${file}")
+            fi
+          done < <(find . -type f -not -path './node_modules/*' -not -path './.git/*' -not -path ./bun.lock -executable -print0)
         else
-          set -x
-          shellcheck --rcfile .shellcheckrc $SHELLSCRIPT_FILES
-          set +x
+          # An explicit caller-supplied list: the caller already decided what counts as a
+          # shell script here, so pass it through unfiltered rather than second-guessing
+          # it. Consumers legitimately list sourced fragments that have no shebang at all.
+          # Deliberate word splitting: the caller delimits its list with whitespace.
+          # shellcheck disable=SC2206
+          shellcheck_files=(${SHELLSCRIPT_FILES})
+        fi
+
+        if [[ "${#shellcheck_files[@]}" -eq 0 ]]; then
+          echo "shellcheck: no shell scripts selected -- nothing was checked"
+          exit 0
+        fi
+
+        # One invocation per file, each with its own PASS/FAIL line, so the log says what
+        # was checked instead of only what was wrong. A silent run and a run that checked
+        # nothing are no longer indistinguishable. Findings are printed under the FAIL line
+        # of the file they belong to, and every file is checked before the job gives up, so
+        # one bad script does not hide the rest.
+        failed=0
+        for file in "${shellcheck_files[@]}"; do
+          if output=$(shellcheck --rcfile .shellcheckrc "${file}" 2>&1); then
+            printf 'PASS  %s\n' "${file}"
+          else
+            printf 'FAIL  %s\n' "${file}"
+            printf '%s\n' "${output}"
+            failed=$((failed + 1))
+          fi
+        done
+
+        echo
+        echo "shellcheck: ${#shellcheck_files[@]} file(s) checked, ${failed} failed"
+
+        if [[ "${failed}" -gt 0 ]]; then
+          exit 1
         fi
