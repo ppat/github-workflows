@@ -20,7 +20,7 @@ releases, and dependency updates.
 | [`lint-shellcheck.yaml`](.github/workflows/lint-shellcheck.yaml) | Lint shell scripts with `shellcheck`. |
 | [`lint-terraform.yaml`](.github/workflows/lint-terraform.yaml) | Run `terraform fmt -check`, `terraform validate`, and `tflint` across a set of Terraform directories. |
 | [`lint-yaml.yaml`](.github/workflows/lint-yaml.yaml) | Lint YAML with `yamllint`. |
-| [`lint-zizmor.yaml`](.github/workflows/lint-zizmor.yaml) | Audit GitHub Actions workflows for security issues with [`zizmor`](https://github.com/zizmorcore/zizmor). |
+| [`lint-zizmor.yaml`](.github/workflows/lint-zizmor.yaml) | Audit GitHub Actions workflows for security issues with [`zizmor`](https://github.com/zizmorcore/zizmor). `min_severity`/`min_confidence`/`persona` inputs tune what gets reported (defaulting to the org-wide `medium`/`high`/`regular`); `advisory_only: true` reports findings without failing the job. |
 | [`release-please.yaml`](.github/workflows/release-please.yaml) | Cut PR-batched releases (changelog + version + tag) with [`release-please`](https://github.com/googleapis/release-please), driven by conventional commits. |
 | [`release-semantic.yaml`](.github/workflows/release-semantic.yaml) | Cut immediate, commit-triggered releases with [`semantic-release`](https://github.com/semantic-release/semantic-release) — dry-run on PRs, real release on `workflow_dispatch`. |
 | [`renovate.yaml`](.github/workflows/renovate.yaml) | Run a self-hosted [Renovate](https://github.com/renovatebot/renovate) against a repository. |

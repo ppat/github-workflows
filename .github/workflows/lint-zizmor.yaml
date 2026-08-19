@@ -8,6 +8,21 @@ on:
       git_ref:
         required: true
         type: string
+      advisory_only:
+        description: 'Report findings but do not fail the job. Turns this gate off as a merge blocker; misconfiguration and tool errors still fail.'
+        required: false
+        type: boolean
+        default: false
+      min_confidence:
+        description: 'Lowest confidence level to report. One of: low, medium, high.'
+        required: false
+        type: string
+        default: 'high'
+      min_severity:
+        description: 'Lowest severity level to report. One of: informational, low, medium, high.'
+        required: false
+        type: string
+        default: 'medium'
       mise_ignore_cfg:
         required: false
         type: string
@@ -16,6 +31,11 @@ on:
         required: false
         type: string
         default: "warn"
+      persona:
+        description: 'How aggressively to audit. One of: regular (minimal false positives), pedantic (code smells too), auditor (false positives OK).'
+        required: false
+        type: string
+        default: 'regular'
 
 env:
   # renovate: datasource=github-releases depName=zizmorcore/zizmor
@@ -40,8 +60,18 @@ jobs:
 
     - name: Audit github actions with zizmor
       env:
+        ADVISORY_ONLY: ${{ inputs.advisory_only }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        MIN_CONFIDENCE: ${{ inputs.min_confidence }}
+        MIN_SEVERITY: ${{ inputs.min_severity }}
+        PERSONA: ${{ inputs.persona }}
       shell: bash
       working-directory: ./current
+      # yamllint disable-line rule:indentation
       run: |
-        zizmor --format=github --min-severity=medium --min-confidence=high --persona=regular .
+        ZIZMOR_ARGS=( --format=github "--min-severity=${MIN_SEVERITY}" "--min-confidence=${MIN_CONFIDENCE}" "--persona=${PERSONA}" )
+        if [[ "${ADVISORY_ONLY}" == "true" ]]; then
+          echo "::warning::zizmor is running in advisory_only mode - findings below are reported but will NOT fail this job"
+          ZIZMOR_ARGS+=( --no-exit-codes )
+        fi
+        zizmor "${ZIZMOR_ARGS[@]}" .
