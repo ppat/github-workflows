@@ -57,5 +57,6 @@ jobs:
         if [[ "${YAML_FILES}" == "ALL" ]]; then
           yamllint -c .yamllint --list-files --strict --format github .
         else
+          # shellcheck disable=SC2086  # intentional word splitting: $YAML_FILES is a space-separated file list
           yamllint -c .yamllint --list-files --strict --format github $YAML_FILES
         fi

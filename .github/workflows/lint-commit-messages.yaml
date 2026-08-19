@@ -43,7 +43,7 @@ jobs:
       shell: bash
       # yamllint disable-line rule:indentation
       run: |
-        echo "FETCH_DEPTH=$((DEPTH + 1))" >> $GITHUB_ENV
+        echo "FETCH_DEPTH=$((DEPTH + 1))" >> "$GITHUB_ENV"
 
     - name: Setup repository and tools
       uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
@@ -76,8 +76,8 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         if [[ ! -e bun.lock ]]; then
-          cp $GITHUB_WORKSPACE/tools/package.json .
-          cp $GITHUB_WORKSPACE/tools/bun.lock .
+          cp "$GITHUB_WORKSPACE/tools/package.json" .
+          cp "$GITHUB_WORKSPACE/tools/bun.lock" .
         fi
         bun install --frozen-lockfile
 
@@ -87,7 +87,7 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         set -x
-        bunx commitlint --color --from ${INPUTS_FROM} --to ${INPUTS_TO} --verbose
+        bunx commitlint --color --from "${INPUTS_FROM}" --to "${INPUTS_TO}" --verbose
       env:
         INPUTS_FROM: ${{ inputs.from }}
         INPUTS_TO: ${{ inputs.to }}

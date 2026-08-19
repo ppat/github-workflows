@@ -88,8 +88,8 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         if [[ ! -e bun.lock ]]; then
-          cp $GITHUB_WORKSPACE/tools/package.json .
-          cp $GITHUB_WORKSPACE/tools/bun.lock .
+          cp "$GITHUB_WORKSPACE/tools/package.json" .
+          cp "$GITHUB_WORKSPACE/tools/bun.lock" .
         fi
         bun install --frozen-lockfile
 
@@ -102,9 +102,10 @@ jobs:
       working-directory: ./current
       run: |
         echo
+        # shellcheck disable=SC2034  # not unused: GITHUB_REF is already exported by the runner, so this overrides what semantic-release reads from the environment
         GITHUB_REF=$CURRENT_BRANCH
         set -x
-        bunx semantic-release --dry-run --no-ci --branches $CURRENT_BRANCH
+        bunx semantic-release --dry-run --no-ci --branches "$CURRENT_BRANCH"
 
     - name: Release
       if: ${{ (github.event_name == 'workflow_dispatch') && (!inputs.dry_run) }}

@@ -97,14 +97,16 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         # use the git ref segment after the final slash (as tag can contain a slash)
-        VERSION_RAW="$(echo $SOURCE_GIT_REF | grep -oE '[^/]+$')"
-        VERSION_SEMVER="$(echo $VERSION_RAW | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+        VERSION_RAW="$(echo "$SOURCE_GIT_REF" | grep -oE '[^/]+$')"
+        VERSION_SEMVER="$(echo "$VERSION_RAW" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
         VERSION_SHA="$(git rev-parse --short HEAD)"
 
         set -x
-        echo "VERSION_SEMVER=$VERSION_SEMVER" >> $GITHUB_ENV
-        echo "VERSION_RAW=$VERSION_RAW" >> $GITHUB_ENV
-        echo "VERSION_SHA=$VERSION_SHA" >> $GITHUB_ENV
+        {
+          echo "VERSION_SEMVER=$VERSION_SEMVER"
+          echo "VERSION_RAW=$VERSION_RAW"
+          echo "VERSION_SHA=$VERSION_SHA"
+        } >> "$GITHUB_ENV"
 
     - name: Automatically set image tag from branch
       if: ${{ startsWith(env.SOURCE_GIT_REF_NORMALIZED, 'refs/heads/') }}
@@ -114,12 +116,12 @@ jobs:
       # yamllint disable-line rule:indentation
       run: |
         # use the git ref segment after the final slash (as branch can contain a slash)
-        VERSION_RAW="$(echo $SOURCE_GIT_REF | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
+        VERSION_RAW="$(echo "$SOURCE_GIT_REF" | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
         VERSION_SHA="$(git rev-parse --short HEAD)"
 
         set -x
-        echo "VERSION_RAW=$VERSION_RAW" >> $GITHUB_ENV
-        echo "VERSION_SHA=$VERSION_SHA" >> $GITHUB_ENV
+        echo "VERSION_RAW=$VERSION_RAW" >> "$GITHUB_ENV"
+        echo "VERSION_SHA=$VERSION_SHA" >> "$GITHUB_ENV"
 
     - name: Automatically set image build cache parameters
       shell: bash
@@ -136,6 +138,7 @@ jobs:
           CACHE_LATEST=""
         else
           LAST_COMMIT_MSG=$(git log --oneline --no-merges -1)
+          # shellcheck disable=SC2076  # literal substring match is intended; unquoting would make [ci: bust-cache] a regex character class
           if [[ "$LAST_COMMIT_MSG" =~ "[ci: bust-cache]" ]]; then
             echo "Instruction to bust cache detected in commit message."
             echo "Disabling use of cache for the build. This build itself will still be cached."
@@ -161,9 +164,11 @@ jobs:
         fi
 
         set -x
-        echo "CACHE_FROM=\"$CACHE_FROM\"" >> $GITHUB_ENV
-        echo "CACHE_TO=\"$CACHE_TO\"" >> $GITHUB_ENV
-        echo "CACHE_LATEST=\"$CACHE_LATEST\"" >> $GITHUB_ENV
+        {
+          echo "CACHE_FROM=\"$CACHE_FROM\""
+          echo "CACHE_TO=\"$CACHE_TO\""
+          echo "CACHE_LATEST=\"$CACHE_LATEST\""
+        } >> "$GITHUB_ENV"
 
     - name: Show build parameters
       shell: bash
@@ -282,10 +287,13 @@ jobs:
         IMAGE_ID: ${{ steps.build-image.outputs.imageid }}
         IMAGE_TAG: ${{ steps.meta.outputs.version }}
         IMAGE_DIGEST: ${{ steps.build-image.outputs.digest }}
+      # yamllint disable-line rule:indentation
       run: |
-        echo "digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
-        echo "image_id=${IMAGE_ID}" >> $GITHUB_OUTPUT
-        echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        {
+          echo "digest=${IMAGE_DIGEST}"
+          echo "image_id=${IMAGE_ID}"
+          echo "image_tag=${IMAGE_TAG}"
+        } >> "$GITHUB_OUTPUT"
 
     - name: Docker Hub Description
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}

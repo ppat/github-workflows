@@ -64,6 +64,7 @@ jobs:
           CONFIG_PARAM="--config ./.markdownlint.yaml"
         fi
         if [[ "${MARKDOWN_FILES}" == "ALL" ]]; then
+          # shellcheck disable=SC2086  # intentional word splitting: $CONFIG_PARAM is either empty or a two-token "--config <path>" pair
           markdownlint-cli2 "**/*.md" $CONFIG_PARAM
         else
           FILTERED=""
@@ -78,6 +79,7 @@ jobs:
             exit 0
           fi
           set -x
+          # shellcheck disable=SC2086  # intentional word splitting: $FILTERED is a space-separated file list and $CONFIG_PARAM a "--config <path>" pair
           markdownlint-cli2 ${FILTERED} $CONFIG_PARAM
           set +x
         fi

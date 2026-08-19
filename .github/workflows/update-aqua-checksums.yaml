@@ -77,19 +77,21 @@ jobs:
       run: |
         DIR_LIST=$(mktemp)
         if [[ "${AQUA_DIRS}" == "ALL" ]]; then
-          find . -type f -name aqua.yaml -exec dirname {} \; | sort | uniq > ${DIR_LIST}
+          find . -type f -name aqua.yaml -exec dirname {} \; | sort | uniq > "${DIR_LIST}"
         else
-          echo ${AQUA_DIRS} | tr ' ' '\n' > ${DIR_LIST}
+          # shellcheck disable=SC2086  # intentional word splitting: $AQUA_DIRS is a space-separated directory list
+          echo ${AQUA_DIRS} | tr ' ' '\n' > "${DIR_LIST}"
         fi
 
         echo "Updating checksums..."
         while IFS= read -r dir; do
           echo "${dir}"
           pushd "${dir}" > /dev/null 2>&1
+          # shellcheck disable=SC2086  # intentional: $PRUNE is a flag string that must vanish entirely when empty
           aqua update-checksum ${PRUNE} 2>&1 | pr -t -o 4
           popd > /dev/null 2>&1
           echo
-        done < ${DIR_LIST} | pr -t -o 4
+        done < "${DIR_LIST}" | pr -t -o 4
 
         echo "Staging changes..."
         git add -A
