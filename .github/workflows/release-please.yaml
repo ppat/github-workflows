@@ -60,7 +60,17 @@ jobs:
     # call order (`manifest.createReleases()` then
     # `manifest.createPullRequests()` in manifest mode, which this workflow
     # uses since no `release-type` is set).
-    - name: Release Please
+    #
+    # These are two steps, not one, so that a `github-release` failure stops
+    # the job before `release-pr` runs (default step semantics: no
+    # `if: always()`, no `continue-on-error`). The commands share state via
+    # the git tag `github-release` creates - `release-pr` computes "commits
+    # since last tag" to pick the next version. If `github-release` fails, no
+    # tag exists, so a `release-pr` that still ran would treat the
+    # just-merged release commit as unreleased and open a release PR with the
+    # wrong version and contents. Skipping it costs nothing: the next push or
+    # a re-run produces both correctly.
+    - name: Release Please - create GitHub release
       env:
         RELEASE_PLEASE_REPO_URL: ${{ github.repository }}
         RELEASE_PLEASE_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -76,6 +86,16 @@ jobs:
           --config-file="release-please-config.json" \
           --manifest-file=".release-please-manifest.json" \
           ${RELEASE_PLEASE_DRY_RUN} ${RELEASE_PLEASE_VERBOSE}
+
+    - name: Release Please - create release PR
+      env:
+        RELEASE_PLEASE_REPO_URL: ${{ github.repository }}
+        RELEASE_PLEASE_TOKEN: ${{ steps.app-token.outputs.token }}
+        RELEASE_PLEASE_DRY_RUN: "${{ inputs.dry_run && '--dry-run' || '' }}"
+        RELEASE_PLEASE_VERBOSE: "${{ inputs.verbose && '--debug' || '' }}"
+      # yamllint disable-line rule:indentation
+      run: |
+        set -x
         # shellcheck disable=SC2086  # intentional: both vars are flag strings that must vanish entirely when empty
         release-please release-pr \
           --repo-url="${RELEASE_PLEASE_REPO_URL}" \
