@@ -1,31 +1,14 @@
-# SC1091: Can't follow non-constant source
-# https://github.com/koalaman/shellcheck/wiki/SC1090
-disable=SC1090
-
-# SC1091: Not following: (error message here)
-# https://github.com/koalaman/shellcheck/wiki/SC1091
-disable=SC1091
-
-# SC2046: Quote this to prevent word splitting.
-# https://github.com/koalaman/shellcheck/wiki/SC2046
-disable=SC2046
-
-# SC2059: Don't use variables in the printf format string.
-# https://github.com/koalaman/shellcheck/wiki/SC2059
-disable=SC2059
-
-# SC2068: Double quote array expansions to avoid re-splitting elements.
-# https://github.com/koalaman/shellcheck/wiki/SC2068
-disable=SC2068
-
-# SC2086: Double quote to prevent globbing and word splitting.
-# https://github.com/koalaman/shellcheck/wiki/SC2086
-disable=SC2086
-
-# SC2155: Declare and assign separately to avoid masking return values
-# https://github.com/koalaman/shellcheck/wiki/SC2155
-disable=SC2155
-
-# SC2236: Use -n instead of ! -z.
-# https://github.com/koalaman/shellcheck/wiki/SC2236
-disable=SC2236
+# ShellCheck configuration for this repository.
+#
+# Policy: no blanket `disable=` lines here. A repo-wide disable silences every
+# future occurrence of a rule, including ones nobody has looked at yet. Suppress
+# at the point of occurrence instead, with a comment saying why:
+#
+#   # shellcheck disable=SC2086  # intentional word splitting: $FILES is a path list
+#   shellcheck $FILES
+#
+# Scope: this file applies only to scripts linted via `shellcheck --rcfile
+# .shellcheckrc` (see lint-shellcheck.yaml). It does NOT apply to workflow `run:`
+# blocks checked by lint-github-actions.yaml -- actionlint always appends
+# `--norc` to the shellcheck command it invokes, so those require inline
+# `# shellcheck disable=` directives regardless of what is configured here.
