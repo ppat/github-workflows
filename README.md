@@ -58,5 +58,17 @@ jobs:
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
 ```
 
+Those tokens are minted scoped to the calling repository only, with an explicit permission set per
+workflow. The App installation behind `app_id`/`app_private_key` must already carry at least these
+permissions — `actions/create-github-app-token` fails outright when asked for one the installation
+does not have:
+
+| Workflow | Installation permissions requested |
+| --- | --- |
+| [`release-please.yaml`](.github/workflows/release-please.yaml) | `contents: write` (tags + releases), `pull-requests: write` (release PR), `issues: write` (`autorelease:*` labels) |
+| [`release-semantic.yaml`](.github/workflows/release-semantic.yaml) | `contents: write` (tags, releases, `@semantic-release/git` pushes), `pull-requests: write`, `issues: write` (release comments/labels) |
+| [`update-aqua-checksums.yaml`](.github/workflows/update-aqua-checksums.yaml) | `contents: write` (signed commit of the updated checksums) |
+| [`renovate.yaml`](.github/workflows/renovate.yaml) | whatever the installation grants — Renovate's needs are broad and config-dependent (contents, pull-requests, issues, workflows, packages, checks, statuses, members, vulnerability alerts) |
+
 See `.github/workflows/self-*.yaml` in this repo for complete, working call sites of every workflow
 above.
