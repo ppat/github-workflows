@@ -79,14 +79,20 @@ This repo offers **two independent release mechanisms** as reusable workflows, b
 history, and both remain actively maintained here — this is a deliberate, unhurried mid-migration state, not
 an oversight:
 
-- `release-please.yaml` wraps
-  [`googleapis/release-please-action`](https://github.com/googleapis/release-please-action): PR-based —
-  commits land on a standing release PR that captures the pending changelog/version bump, and merging that
-  PR is what cuts the release. Signed commits are the default behavior, not a workaround. It also natively
-  supports monorepos, including both same-version-across-all-components and independently-versioned
-  components, which `semantic-release` has no real equivalent for. This repo releases **itself** this way —
-  `self-release-please.yaml` runs it on every push to `main`, driven by `release-please-config.json` /
-  `.release-please-manifest.json`.
+- `release-please.yaml` installs the [`release-please`](https://github.com/googleapis/release-please) CLI
+  itself via `setup-repository-tools` (mise, `npm:release-please`) and invokes `release-please github-release`
+  then `release-please release-pr` directly, rather than wrapping
+  [`googleapis/release-please-action`](https://github.com/googleapis/release-please-action) — the action's
+  own release cadence lagged badly enough behind `release-please` proper that it stayed pinned to a version
+  carrying a changelog bug (any recognized issue reference, regardless of footer keyword, rendered as
+  `, closes` and auto-closed the referenced issue on squash-merge; fixed upstream in `release-please` 17.10.4).
+  Both the CLI and the action are thin wrappers around the same `Manifest.fromManifest()` API calls, so
+  behavior is unchanged: PR-based — commits land on a standing release PR that captures the pending
+  changelog/version bump, and merging that PR is what cuts the release. Signed commits are the default
+  behavior, not a workaround. It also natively supports monorepos, including both
+  same-version-across-all-components and independently-versioned components, which `semantic-release` has no
+  real equivalent for. This repo releases **itself** this way — `self-release-please.yaml` runs it on every
+  push to `main`, driven by `release-please-config.json` / `.release-please-manifest.json`.
 - `release-semantic.yaml` wraps
   [`semantic-release`](https://github.com/semantic-release/semantic-release) (config in `.releaserc.js`,
   dependencies in `package.json`/`bun.lock`): commit-driven, releases immediately on `workflow_dispatch`
