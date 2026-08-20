@@ -1,5 +1,24 @@
 # Changelog
 
+## [5.0.1](https://github.com/ppat/github-workflows/compare/v5.0.0...v5.0.1) (2026-08-20)
+
+
+### 🧹 Miscellaneous
+
+* define a coherent commit taxonomy anchored on whether a change reaches a consumer ([#612](https://github.com/ppat/github-workflows/issues/612)) ([2823320](https://github.com/ppat/github-workflows/commit/2823320a05ea9b54ff0ecd7d20c4f53644e904e9))
+
+
+### 🛠 Improvements
+
+* **release:** keep README usage examples pinned to the current major ([#610](https://github.com/ppat/github-workflows/issues/610)) ([1c39268](https://github.com/ppat/github-workflows/commit/1c3926854e6b7dc2cc002717cc740826f5999f29))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** scope github app tokens to the calling repo and least permissions ([#605](https://github.com/ppat/github-workflows/issues/605)) ([116fbb7](https://github.com/ppat/github-workflows/commit/116fbb7d8141c8c586ddfbe6f6f1363df0376755))
+* **github-actions:** split release-please into separate github-release and release-pr steps ([#607](https://github.com/ppat/github-workflows/issues/607)) ([68e2d7c](https://github.com/ppat/github-workflows/commit/68e2d7c9429db88d6d0f3b721898c331358cb183))
+* **github-actions:** update renovatebot/github-action (v46.2.1 -&gt; v46.2.2) ([#609](https://github.com/ppat/github-workflows/issues/609)) ([d6e38aa](https://github.com/ppat/github-workflows/commit/d6e38aa031d95153d7acc44210416967e1a68c46))
+
 ## [5.0.0](https://github.com/ppat/github-workflows/compare/v4.4.0...v5.0.0) (2026-08-19)
 
 
