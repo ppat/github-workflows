@@ -1,5 +1,22 @@
 # Changelog
 
+## [6.0.0](https://github.com/ppat/github-workflows/compare/v5.0.1...v6.0.0) (2026-08-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **reusable-workflows:** consumers calling build-docker-image.yaml must rename their `source_git_ref:` input to `git_ref:`. Any consumer reading the `image_id` output must switch to `image_tag` or `digest` -- audit found none currently do.
+
+### ✨ Features
+
+* **reusable-workflows:** build-docker-image - add GHCR target, rename git_ref, drop image_id output ([#615](https://github.com/ppat/github-workflows/issues/615)) ([5f537e7](https://github.com/ppat/github-workflows/commit/5f537e7d3e929ce6934121b710486dcb001418fa))
+* **shipped-dependencies:** update renovatebot/renovate (44.30.4 -&gt; 44.31.0) ([#613](https://github.com/ppat/github-workflows/issues/613)) ([a67f0d6](https://github.com/ppat/github-workflows/commit/a67f0d6910c70d0ed0b3dada7ce52589bd9f57c4))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **reusable-workflows:** build-docker-image - fix cache plumbing, ref-classification, and validation bugs ([#614](https://github.com/ppat/github-workflows/issues/614)) ([044afdf](https://github.com/ppat/github-workflows/commit/044afdff63308a12ad09e465d52a2cb1978c70c9))
+
 ## [5.0.1](https://github.com/ppat/github-workflows/compare/v5.0.0...v5.0.1) (2026-08-20)
 
 
