@@ -12,14 +12,22 @@ on:
         type: string
         required: false
       label_title:
-        required: true
+        required: false
         type: string
+        default: ${{ github.event.repository.name }}
       label_description:
-        required: true
+        required: false
         type: string
+        default: ${{ github.event.repository.description }}
       platforms:
-        required: true
+        required: false
         type: string
+        # linux/amd64 only: defaulting to a multi-arch pair would silently hand a naive new
+        # consumer QEMU-emulated arm64 builds -- images/openclaw hit exactly this trap (arm64
+        # blew a 20-minute timeout while amd64 finished in under 2 minutes). Widen explicitly
+        # with a `with: platforms: linux/amd64,linux/arm64` once native arm64 build capacity
+        # justifies the cost.
+        default: linux/amd64
       private_registry_repository:
         required: false
         type: string
@@ -30,8 +38,9 @@ on:
         required: true
         type: string
       timeout_minutes:
-        required: true
+        required: false
         type: number
+        default: 30
     secrets:
       build_secrets:
         required: false
@@ -54,12 +63,18 @@ on:
         value: ${{ jobs.build-image.outputs.digest }}
       image_tag:
         value: ${{ jobs.build-image.outputs.image_tag }}
+      image_refs:
+        value: ${{ jobs.build-image.outputs.image_refs }}
 
 permissions: {}
 
 env:
   PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
   PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
+  # Computed once so `push:`/`sbom:`/`provenance:` (and anything added later) all answer "is
+  # anything being published at all" from one place, instead of each repeating
+  # `PUBLISH_DOCKERHUB == 'true' || PUBLISH_PRIVATE_REGISTRY == 'true'` verbatim.
+  PUBLISH_ANY: ${{ (inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '') || (secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '') }}
   CONNECT_TAILSCALE: ${{ secrets.tailscale_oauth_client_id != '' && secrets.tailscale_oauth_secret != '' }}
   REF_KIND: ''
   VERSION_SEMVER: ''
@@ -80,6 +95,7 @@ jobs:
     outputs:
       digest: ${{ steps.image_info.outputs.digest }}
       image_tag: ${{ steps.image_info.outputs.image_tag }}
+      image_refs: ${{ steps.image_info.outputs.image_refs }}
 
     steps:
     - name: Validate publish target configuration
@@ -94,56 +110,89 @@ jobs:
         PRIVATE_REGISTRY_TOKEN: ${{ secrets.private_registry_token }}
         TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.tailscale_oauth_client_id }}
         TAILSCALE_OAUTH_SECRET: ${{ secrets.tailscale_oauth_secret }}
+        # The `github` context of a called (workflow_call) workflow is the same context the
+        # caller's job graph runs under -- it's the same run, not a separate event -- so this
+        # correctly reflects the ORIGINAL triggering event even one workflow_call hop up (e.g.
+        # ppat/images' release-workflow.yaml calling this one). On a non-pull_request run,
+        # github.event.pull_request is unset and this evaluates to `false`, not an error.
+        FORK_PR: ${{ github.event.pull_request.head.repo.fork == true }}
       # yamllint disable-line rule:indentation
       run: |
-        # A target's *credentials* (secrets only) are all-or-nothing -- unlike a repository
-        # input, a secret is genuinely empty when the caller hasn't set it, so it's the only
-        # reliable signal of intent. A repository input commonly gets built by the caller by
-        # interpolating a repo/org variable in front of a literal path segment, and so is
-        # never cleanly empty even when that variable is unset (this is what made the previous
-        # version of this check reject every fork PR, where secrets are empty but
-        # repository/build-cache inputs still resolve to a non-empty, garbage string).
+        # One rule, applied identically to both targets, keyed on the *repository* input --
+        # not on credentials -- because a target authenticated by an ambient token (no
+        # credential secret to be "present") still has a repository to be requested with.
         #
-        #   - some but not all of a target's credentials set -> unambiguous misconfiguration,
-        #     fail the job before any expensive setup runs.
-        #   - none of a target's credentials set -> the target is simply disabled. This is the
-        #     fork-PR case and the "I only want a build" case, indistinguishable from outside.
-        #     Warn, don't fail.
-        #   - all of a target's credentials set but its repository input is empty -> still an
-        #     error: the caller clearly wanted this target on.
+        #   requested = repository input is non-empty AND well-formed (no leading/trailing
+        #   '/', no empty path segment). A caller commonly builds this input by interpolating
+        #   an org/repo variable in front of a literal path segment (a bare vars-context
+        #   value, followed by "/name"), which resolves to a genuinely malformed "/name" when
+        #   that variable is unset -- e.g. on a fork PR, where organization variables are
+        #   withheld the same way secrets are.
+        #   Rejecting that shape as malformed (treated as unset, with a warning) is a real
+        #   well-formedness check, not a fork heuristic -- it fires the same way regardless of
+        #   event type. Deep paths like `library/team/name` remain valid.
         #
-        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY, computed once above
-        # from these same fields; the zero-targets check at the bottom reads those rather than
-        # recomputing a second notion of "is this target on".
+        #   requested && credentials missing -> error and fail, UNLESS this is a fork PR (only
+        #   then are credentials legitimately withheld rather than simply forgotten) -- warn
+        #   and disable the target instead.
+        #   requested && credentials complete -> target on, nothing to report.
+        #   !requested && credentials complete -> error: credentials were clearly meant for
+        #   this target, but there is nothing to publish to.
+        #   !requested && credentials missing -> target simply disabled. Warn, don't fail.
+        #   partial credentials (some but not all) -> always an unambiguous misconfiguration,
+        #   independent of `requested`; fail before any expensive setup runs.
+        #
+        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY / env.PUBLISH_ANY,
+        # computed once above from these same fields; the zero-targets check at the bottom
+        # reads those rather than recomputing a second notion of "is this target on".
         fail=0
+
+        is_malformed_repo() {
+          [[ "$1" =~ ^/|/$|// ]]
+        }
+
+        check_target() {
+          local name="$1" repo="$2" creds_label="$3" creds_set="$4" creds_total="$5"
+
+          local requested=0
+          if [[ -z "$repo" ]]; then
+            requested=0
+          elif is_malformed_repo "$repo"; then
+            echo "::warning::${name}: repository '${repo}' is malformed (a leading/trailing '/', or an empty path segment) -- treating it as unset."
+            requested=0
+          else
+            requested=1
+          fi
+
+          if [[ "$creds_set" -gt 0 && "$creds_set" -lt "$creds_total" ]]; then
+            echo "::error::${name} is partially configured: ${creds_label} must all be set together, or none of them."
+            fail=1
+          elif [[ "$requested" -eq 1 && "$creds_set" -eq 0 ]]; then
+            if [[ "$FORK_PR" == 'true' ]]; then
+              echo "::warning::${name}: repository is set but credentials (${creds_label}) are withheld on a fork PR -- disabling ${name} for this run."
+            else
+              echo "::error::${name}: repository is set but credentials (${creds_label}) are not configured."
+              fail=1
+            fi
+          elif [[ "$requested" -eq 0 && "$creds_set" -eq "$creds_total" ]]; then
+            echo "::error::${name}: credentials (${creds_label}) are configured but its repository is empty or malformed."
+            fail=1
+          elif [[ "$requested" -eq 0 && "$creds_set" -eq 0 ]]; then
+            echo "::warning::${name} is not configured (repository and credentials both unset) -- publish is disabled for this run."
+          fi
+        }
 
         dockerhub_creds_set=0
         for field in "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN"; do
           [[ -n "$field" ]] && dockerhub_creds_set=$((dockerhub_creds_set + 1))
         done
-        if [[ "$dockerhub_creds_set" -gt 0 && "$dockerhub_creds_set" -lt 2 ]]; then
-          echo "::error::Docker Hub is partially configured: dockerhub_username and dockerhub_token secrets must both be set together, or neither."
-          fail=1
-        elif [[ "$dockerhub_creds_set" -eq 0 ]]; then
-          echo "::warning::Docker Hub credentials (dockerhub_username / dockerhub_token) are not configured -- Docker Hub publish is disabled for this run."
-        elif [[ -z "$DOCKERHUB_REPOSITORY" ]]; then
-          echo "::error::Docker Hub credentials are configured but dockerhub_repository is empty."
-          fail=1
-        fi
+        check_target "Docker Hub" "$DOCKERHUB_REPOSITORY" "dockerhub_username / dockerhub_token" "$dockerhub_creds_set" 2
 
         private_registry_creds_set=0
         for field in "$PRIVATE_REGISTRY" "$PRIVATE_REGISTRY_USERNAME" "$PRIVATE_REGISTRY_TOKEN"; do
           [[ -n "$field" ]] && private_registry_creds_set=$((private_registry_creds_set + 1))
         done
-        if [[ "$private_registry_creds_set" -gt 0 && "$private_registry_creds_set" -lt 3 ]]; then
-          echo "::error::Private registry is partially configured: the private_registry, private_registry_username and private_registry_token secrets must all be set together, or none of them."
-          fail=1
-        elif [[ "$private_registry_creds_set" -eq 0 ]]; then
-          echo "::warning::Private registry credentials (private_registry / private_registry_username / private_registry_token) are not configured -- private registry publish is disabled for this run."
-        elif [[ -z "$PRIVATE_REGISTRY_REPOSITORY" ]]; then
-          echo "::error::Private registry credentials are configured but private_registry_repository is empty."
-          fail=1
-        fi
+        check_target "Private registry" "$PRIVATE_REGISTRY_REPOSITORY" "private_registry / private_registry_username / private_registry_token" "$private_registry_creds_set" 3
 
         # Tailscale is a precondition for the private registry (a Tailnet-only host): apply the
         # same all-or-nothing rule to its OAuth pair so a half-configured Tailscale fails fast
@@ -160,7 +209,7 @@ jobs:
           echo "::warning::Tailscale credentials (tailscale_oauth_client_id / tailscale_oauth_secret) are not configured -- Tailscale connectivity, and anything depending on it (the private registry build cache, a Tailnet-only registry login), is disabled for this run."
         fi
 
-        if [[ "$PUBLISH_DOCKERHUB" != 'true' && "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
+        if [[ "$PUBLISH_ANY" != 'true' ]]; then
           echo "::warning::No publish target is configured (Docker Hub and private registry are both disabled) -- this will be a build-only run that publishes nothing."
         fi
 
@@ -249,7 +298,14 @@ jobs:
         # Guard on private_registry_build_cache directly: IMAGE_CACHE always contains a
         # literal "/" (it's secrets.private_registry + "/" + this input), so it can never be
         # empty even when the input itself is unset -- that made this guard dead.
-        if [[ -z "$PRIVATE_REGISTRY_BUILD_CACHE" || "$CONNECT_TAILSCALE" != 'true' || "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
+        #
+        # No CONNECT_TAILSCALE check here: the cache lives in the same registry the private
+        # registry target logs into, so if that host is reachable, so is the cache -- and if
+        # it isn't, "Login to Private Registry" fails first and loudly, well before caching
+        # matters. Gating on Tailscale here instead silently dropped layer caching for any
+        # consumer whose private registry happens to be reachable without it, while printing a
+        # message claiming no cache repository was specified, which was false.
+        if [[ -z "$PRIVATE_REGISTRY_BUILD_CACHE" || "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
           echo "No repository for docker build cache specified, disabling build cache all together."
           CACHE_FROM=""
           CACHE_TO=""
@@ -359,6 +415,11 @@ jobs:
 
     - name: Tailscale Debug
       if: ${{ env.CONNECT_TAILSCALE == 'true' && github.event_name == 'workflow_dispatch' }}
+      # Debug scaffolding, load-bearing on nothing: `tailscale ping` legitimately fails for a
+      # host behind a subnet router, and under bash's default -eo pipefail that would kill the
+      # job before the build ever ran. continue-on-error keeps a flaky diagnostic step from
+      # failing a build that would otherwise have succeeded.
+      continue-on-error: true
       env:
         PRIVATE_REGISTRY: ${{ secrets.private_registry }}
       # yamllint disable-line rule:indentation
@@ -385,8 +446,13 @@ jobs:
         echo "------------------------------------------------------------------------------"
         sudo tailscale dns status --all
         echo "------------------------------------------------------------------------------"
-        sudo -E tailscale ping --verbose --until-direct=false --c 5 "$PRIVATE_REGISTRY" | output_filter
-        echo "------------------------------------------------------------------------------"
+        # Only ping the private registry when it's actually a publish target: this runs
+        # whenever Tailscale is connected regardless of whether the private registry is on,
+        # and pinging an empty argument (target disabled) is pointless as well as noisy.
+        if [[ "$PUBLISH_PRIVATE_REGISTRY" == 'true' ]]; then
+          sudo -E tailscale ping --verbose --until-direct=false --c 5 "$PRIVATE_REGISTRY" | output_filter
+          echo "------------------------------------------------------------------------------"
+        fi
 
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
@@ -410,14 +476,14 @@ jobs:
         context: ./${{ inputs.image_context_path }}
         platforms: ${{ inputs.platforms }}
         load: false
-        push: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
+        push: ${{ env.PUBLISH_ANY == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         annotations: ${{ steps.meta.outputs.annotations }}
         cache-from: ${{ env.CACHE_FROM }}
         cache-to: ${{ env.CACHE_TO }}
-        sbom: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
-        provenance: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
+        sbom: ${{ env.PUBLISH_ANY == 'true' }}
+        provenance: ${{ env.PUBLISH_ANY == 'true' }}
         secrets: ${{ secrets.build_secrets }}
 
     - name: Prepare job outputs from image build
@@ -426,22 +492,55 @@ jobs:
       env:
         IMAGE_TAG: ${{ steps.meta.outputs.version }}
         IMAGE_DIGEST: ${{ steps.build-image.outputs.digest }}
+        IMAGE_REFS: ${{ steps.meta.outputs.tags }}
       # yamllint disable-line rule:indentation
       run: |
+        # A build-only run (zero publish targets) is a green run by design, and in that case
+        # digest is legitimately empty -- there's nothing pushed to have a digest. But if
+        # PUBLISH_ANY is true, an empty digest here means the build silently produced nothing
+        # publishable, which a consumer keying off this output (e.g. `docker run ...@$digest`)
+        # would otherwise fail against obscurely, well after this job reported green.
+        if [[ "$PUBLISH_ANY" == 'true' && -z "$IMAGE_DIGEST" ]]; then
+          echo "::error::A publish target is enabled but the build produced no digest."
+          exit 1
+        fi
+
         {
           echo "digest=${IMAGE_DIGEST}"
           echo "image_tag=${IMAGE_TAG}"
+          echo "image_refs<<IMAGE_REFS_EOF"
+          echo "${IMAGE_REFS}"
+          echo "IMAGE_REFS_EOF"
         } >> "$GITHUB_OUTPUT"
+
+    - name: Truncate Docker Hub short description
+      id: dockerhub_meta
+      if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
+      shell: bash
+      env:
+        LABEL_DESCRIPTION: ${{ inputs.label_description }}
+      # yamllint disable-line rule:indentation
+      run: |
+        # Docker Hub caps short-description at 100 characters server-side; label_description
+        # is free text meant for OCI image labels, which have no such limit, so the two can
+        # silently diverge -- images/obsidian and images/openclaw both sit at 96 characters
+        # today, one word away from red-lighting a run whose image published fine.
+        echo "short_description=${LABEL_DESCRIPTION:0:100}" >> "$GITHUB_OUTPUT"
 
     - name: Docker Hub Description
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
+      # This is an announcement bolted on after the push already succeeded, with failure modes
+      # nobody declared as a dependency: readme-filepath must exist, and short-description
+      # (truncated above, but still) is otherwise at the mercy of Docker Hub's API. Don't let
+      # either fail a build that already published.
+      continue-on-error: true
       uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
       with:
         username: ${{ secrets.dockerhub_username }}
         password: ${{ secrets.dockerhub_token }}
         repository: ${{ inputs.dockerhub_repository }}
         readme-filepath: ./${{ inputs.image_context_path }}/README.md
-        short-description: ${{ inputs.label_description }}
+        short-description: ${{ steps.dockerhub_meta.outputs.short_description }}
         enable-url-completion: true
 
     - name: Tailscale Disconnect
