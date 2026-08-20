@@ -79,12 +79,30 @@ Two things to know beyond the permission, neither of which the job can catch for
   `docker push` from your machine.** A package pushed manually first is never linked to a repository, and
   `GITHUB_TOKEN` then has no permission to push to it -- a documented GitHub trap that produces a
   permissions error unrelated to your `permissions:` block.
-- **A brand-new package is private by default**, regardless of the linked repository's own visibility --
-  visibility does not inherit, only access permissions do. Making it public is a **one-time, manual, and
-  irreversible** step in the package's own settings (Settings → Danger Zone → Change visibility) on
-  github.com; there is no REST endpoint, GraphQL field (deprecated for GHCR in 2022), or `gh` CLI command
-  for it ([cli/cli#6820](https://github.com/cli/cli/issues/6820) is still open), so this genuinely cannot
-  be scripted or automated -- budget for that click if the image needs to be public.
+- **GitHub's docs say a brand-new package is private by default, regardless of the linked repository's own
+  visibility -- and that visibility does not inherit, only access permissions do** ([Configuring a
+  package's access control and
+  visibility](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility),
+  checked 2026-08-20). **This workflow's own first GHCR push contradicted that**: on a personal (non-org)
+  account, pushing from a public repository's CI produced a package that came out **public** with nobody
+  touching a setting --
+  `gh api /users/OWNER/packages/container/NAME --jq '{visibility,repository:.repository.full_name}'`
+  showed `public` immediately, and the image was confirmed genuinely, anonymously pullable (`curl` against
+  the GHCR manifest endpoint with a credential-free token succeeded). The usual confounds don't explain
+  it: there's no personal-account equivalent of the org-only "Package creation" default-visibility
+  setting, and the package's `created_at` timestamp falls inside the very first push's CI run, ruling out
+  an earlier/different creation path. **Treat this as unresolved rather than as a new rule** -- the docs
+  and this repo's own observation disagree, and we don't know which conditions (org vs. personal account,
+  public vs. private repo, first push vs. later push) flip the outcome. **Don't assume either default:
+  check the package's actual visibility after your first push**, with the `gh api` one-liner above or the
+  package's Settings page, rather than trusting either this doc or GitHub's.
+- Whichever way it lands, GitHub still documents that flipping a package from **private to public is
+  one-time, manual, and irreversible** -- Settings → Danger Zone → Change visibility on github.com, with
+  an explicit "Once you make a package public, you cannot make it private again" warning in that flow --
+  and that there is no REST endpoint, GraphQL field (deprecated for GHCR in 2022), or `gh` CLI command to
+  do it ([cli/cli#6820](https://github.com/cli/cli/issues/6820) is still open as of 2026-08-20). That cuts
+  both ways: you can't script *making* an image public, and if your package turns out public when you
+  didn't want that, you can't script undoing it either -- budget for a manual click either direction.
 
 ## Usage
 
