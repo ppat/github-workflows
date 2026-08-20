@@ -8,7 +8,7 @@ releases, and dependency updates.
 
 | Workflow | Description |
 | --- | --- |
-| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image (Docker Hub and/or a private registry over Tailscale). A target is "requested" when its repository input is non-empty and well-formed (no leading/trailing `/`, no empty path segment -- a malformed value, e.g. from an unset variable interpolated into the input, is treated as unset with a warning); a requested target missing its credentials fails the job, except on a fork PR, where secrets are withheld and it is disabled with a warning instead; a target with no repository requested is simply disabled (with a warning); a run with no publish targets configured is a green build-only run (also warned), and in that case `digest`/`image_refs` come back empty since nothing was pushed. Registry-backed layer caching imports/exports a `:branch-<name>` ref per branch plus a shared `:cache-latest`, and OCI labels/annotations are derived from the git ref, which must resolve to a branch or a tag (`git_ref` may be fully-qualified or bare) -- anything else, e.g. a `refs/pull/N/merge` ref, fails the job rather than publishing an unversioned image. `platforms`, `label_title`, `label_description`, and `timeout_minutes` all have defaults (`linux/amd64`; the caller repo's name/description; `30`) but can be overridden per call. |
+| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image to Docker Hub, a private registry over Tailscale, and/or GHCR (`ghcr.io`, via `ghcr_repository`, authenticated with the ambient `GITHUB_TOKEN` -- no secrets needed, but see below for a `packages: write` permission every caller must grant). A target is "requested" when its repository input is non-empty and well-formed (no leading/trailing `/`, no empty path segment -- a malformed value, e.g. from an unset variable interpolated into the input, is treated as unset with a warning); a requested Docker Hub/private-registry target missing its credentials fails the job, except on a fork PR, where secrets are withheld and it is disabled with a warning instead; a target with no repository requested is simply disabled (with a warning, not an error -- credentials inherited via `secrets: inherit` but unused by a target you didn't request are harmless); a run with no publish targets configured is a green build-only run (also warned), and in that case `digest`/`image_refs` come back empty since nothing was pushed. Registry-backed layer caching imports/exports a `:branch-<name>` ref per branch plus a shared `:cache-latest`, and OCI labels/annotations are derived from the git ref, which must resolve to a branch or a tag (`git_ref` may be fully-qualified or bare) -- anything else, e.g. a `refs/pull/N/merge` ref, fails the job rather than publishing an unversioned image. `platforms`, `label_title`, `label_description`, and `timeout_minutes` all have defaults (`linux/amd64`; the caller repo's name/description; `30`) but can be overridden per call. See "Publishing to GHCR" below for the `packages: write` permission this workflow requires unconditionally from every caller, and other caveats specific to that target. |
 | [`chainsaw-test.yaml`](.github/workflows/chainsaw-test.yaml) | Spin up a `kind` cluster with Flux installed and run [`kyverno/chainsaw`](https://github.com/kyverno/chainsaw) tests against it. |
 | [`detect-changed-files.yaml`](.github/workflows/detect-changed-files.yaml) | Wrap [`tj-actions/changed-files`](https://github.com/tj-actions/changed-files) so downstream jobs can gate on which paths changed in a PR. |
 | [`lint-commit-messages.yaml`](.github/workflows/lint-commit-messages.yaml) | Lint a commit range with `commitlint`. |
@@ -32,6 +32,59 @@ this table is a summary, not a substitute for reading the file you're about to c
 See [DESIGN.md](DESIGN.md) for how these workflows are structured, how they test themselves
 (`self-*.yaml`), and how release/renovate automation fits together, and [CLAUDE.md](CLAUDE.md) for
 repo-specific guidance when working with Claude Code.
+
+## Publishing to GHCR
+
+`build-docker-image.yaml`'s GHCR target (`ghcr_repository`) authenticates with the ambient `GITHUB_TOKEN`
+-- **no secrets are needed**. A minimal call looks like:
+
+```yaml
+    permissions:
+      contents: read           # must be restated: any permissions: block zeroes unlisted scopes
+      packages: write          # required on EVERY caller of this workflow, see below
+    with:
+      ghcr_repository: owner/name
+```
+
+**Why every caller must grant `packages: write`, whether or not they use GHCR:** `build-docker-image.yaml`
+declares `packages: write` unconditionally on its own job, because a job's `permissions:` block accepts no
+expressions -- it cannot be gated on whether a given call actually uses GHCR. A called (`workflow_call`)
+job that declares a permission its caller hasn't granted fails the **entire workflow at load time**, not
+just the job: zero jobs run, no annotations are produced, only a top-level error like:
+
+```text
+The workflow is not valid. .github/workflows/<caller>.yaml (Line: N, Col: N): Error calling workflow
+'<org>/github-workflows/.github/workflows/build-docker-image.yaml@<ref>'. The nested job 'build-image' is
+requesting 'packages: write', but is only allowed 'packages: none'.
+```
+
+This is a hard failure, not a degraded run, and it affects **every** caller of this workflow -- including
+one that only ever publishes to Docker Hub or the private registry and never touches GHCR -- because the
+permission is on the called job, not conditional on which target you requested. That's the price of the
+feature: grant `packages: write` (and restate `contents: read`, since specifying any `permissions:` block
+zeroes every scope you don't list) on the job that calls `build-docker-image.yaml`, or the run never
+starts.
+
+**An earlier iteration of this workflow instead had the caller pass a `GITHUB_TOKEN` forwarded as a
+secret** (`ghcr_username`/`ghcr_token`), reasoning that the called job's own token couldn't be scoped for
+GHCR. That does not work: `docker/login-action` succeeds (it only validates token form), but the push
+403s with `denied: installation not allowed to Write organization package`. GHCR authorizes against the
+permissions of the job that actually executes the push, not whichever job a token string was minted in --
+so the token has to come from `packages: write` on the job doing the push itself, which is why this
+workflow's own job declares it unconditionally instead.
+
+Two things to know beyond the permission, neither of which the job can catch for you at startup:
+
+- **The first push to a given package must come from this workflow (i.e. from CI), not a manual
+  `docker push` from your machine.** A package pushed manually first is never linked to a repository, and
+  `GITHUB_TOKEN` then has no permission to push to it -- a documented GitHub trap that produces a
+  permissions error unrelated to your `permissions:` block.
+- **A brand-new package is private by default**, regardless of the linked repository's own visibility --
+  visibility does not inherit, only access permissions do. Making it public is a **one-time, manual, and
+  irreversible** step in the package's own settings (Settings → Danger Zone → Change visibility) on
+  github.com; there is no REST endpoint, GraphQL field (deprecated for GHCR in 2022), or `gh` CLI command
+  for it ([cli/cli#6820](https://github.com/cli/cli/issues/6820) is still open), so this genuinely cannot
+  be scripted or automated -- budget for that click if the image needs to be public.
 
 ## Usage
 

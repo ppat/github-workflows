@@ -34,6 +34,9 @@ on:
       private_registry_build_cache:
         required: false
         type: string
+      ghcr_repository:
+        required: false
+        type: string
       git_ref:
         required: true
         type: string
@@ -71,10 +74,16 @@ permissions: {}
 env:
   PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
   PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
+  # GHCR authenticates with the ambient GITHUB_TOKEN (github.actor / github.token), not
+  # caller-supplied credentials -- unlike the other two targets, it has no secrets of its own.
+  # That's why it keys on the repository input alone: see the job `permissions:` below for why
+  # `packages: write` is declared unconditionally on this job, and "Publishing to GHCR" in the
+  # README for what that costs every caller.
+  PUBLISH_GHCR: ${{ inputs.ghcr_repository != '' }}
   # Computed once so `push:`/`sbom:`/`provenance:` (and anything added later) all answer "is
   # anything being published at all" from one place, instead of each repeating
-  # `PUBLISH_DOCKERHUB == 'true' || PUBLISH_PRIVATE_REGISTRY == 'true'` verbatim.
-  PUBLISH_ANY: ${{ (inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '') || (secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '') }}
+  # `PUBLISH_DOCKERHUB == 'true' || PUBLISH_PRIVATE_REGISTRY == 'true' || PUBLISH_GHCR == 'true'` verbatim.
+  PUBLISH_ANY: ${{ (inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '') || (secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '') || (inputs.ghcr_repository != '') }}
   CONNECT_TAILSCALE: ${{ secrets.tailscale_oauth_client_id != '' && secrets.tailscale_oauth_secret != '' }}
   REF_KIND: ''
   VERSION_SEMVER: ''
@@ -91,6 +100,19 @@ jobs:
 
     permissions:
       contents: read
+      # packages: write is declared unconditionally, not gated on whether this call actually
+      # uses GHCR: a job's `permissions:` block accepts no expressions, so it cannot be made
+      # conditional. The consequence is not a soft one -- a caller that does not itself grant
+      # packages: write gets a hard failure at workflow LOAD, not a clamp to what they granted:
+      # zero jobs run, no annotations are produced, only a top-level error of the form:
+      #
+      #   The nested job 'build-image' is requesting 'packages: write', but is only allowed
+      #   'packages: none'.
+      #
+      # So every caller of this workflow -- including one that never touches GHCR -- must grant
+      # packages: write on the job that calls it, or the run never starts. See "Publishing to
+      # GHCR" in the README for the full consumer-facing explanation.
+      packages: write  # required unconditionally for GHCR; see the comment above and the README
 
     outputs:
       digest: ${{ steps.image_info.outputs.digest }}
@@ -108,6 +130,7 @@ jobs:
         PRIVATE_REGISTRY_REPOSITORY: ${{ inputs.private_registry_repository }}
         PRIVATE_REGISTRY_USERNAME: ${{ secrets.private_registry_username }}
         PRIVATE_REGISTRY_TOKEN: ${{ secrets.private_registry_token }}
+        GHCR_REPOSITORY: ${{ inputs.ghcr_repository }}
         TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.tailscale_oauth_client_id }}
         TAILSCALE_OAUTH_SECRET: ${{ secrets.tailscale_oauth_secret }}
         # The `github` context of a called (workflow_call) workflow is the same context the
@@ -118,9 +141,9 @@ jobs:
         FORK_PR: ${{ github.event.pull_request.head.repo.fork == true }}
       # yamllint disable-line rule:indentation
       run: |
-        # One rule, applied identically to both targets, keyed on the *repository* input --
-        # not on credentials -- because a target authenticated by an ambient token (no
-        # credential secret to be "present") still has a repository to be requested with.
+        # One rule, applied identically to all three targets, keyed on the *repository* input
+        # -- not on credentials -- since a repository can be requested independently of
+        # whether its credentials happen to be configured.
         #
         #   requested = repository input is non-empty AND well-formed (no leading/trailing
         #   '/', no empty path segment). A caller commonly builds this input by interpolating
@@ -136,15 +159,33 @@ jobs:
         #   then are credentials legitimately withheld rather than simply forgotten) -- warn
         #   and disable the target instead.
         #   requested && credentials complete -> target on, nothing to report.
-        #   !requested && credentials complete -> error: credentials were clearly meant for
-        #   this target, but there is nothing to publish to.
+        #   !requested && credentials complete -> WARNING, not error: a caller that inherits
+        #   org-level credentials it doesn't intend to use (a `secrets: inherit` block pulling
+        #   in e.g. an org DOCKERHUB_TOKEN) is not misconfigured -- passing unused credentials
+        #   is harmless, and the repository input alone is the request signal.
         #   !requested && credentials missing -> target simply disabled. Warn, don't fail.
         #   partial credentials (some but not all) -> always an unambiguous misconfiguration,
         #   independent of `requested`; fail before any expensive setup runs.
         #
-        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY / env.PUBLISH_ANY,
-        # computed once above from these same fields; the zero-targets check at the bottom
-        # reads those rather than recomputing a second notion of "is this target on".
+        # Docker Hub and the private registry declare a non-empty credential set (creds_total
+        # 2 and 3 below); GHCR does not -- it authenticates with the ambient GITHUB_TOKEN, not
+        # a credential pair of its own, so it's called with creds_set=0, creds_total=0. Walk
+        # check_target's branches at that specific point, since a wrong branch here means an
+        # error for every consumer that doesn't use GHCR:
+        #   - partial (creds_set>0 && creds_set<creds_total): needs creds_set>0, impossible
+        #     when creds_set is always 0 -- can never fire.
+        #   - requested && creds missing (requested==1 && creds_set<creds_total): 0<0 is
+        #     false -- can never fire, so a requested GHCR with no credentials is not an error.
+        #   - !requested && creds "complete" (requested==0 && creds_total>0 && ...): guarded by
+        #     creds_total>0, which is false here -- can never fire ("vacuous complete" is
+        #     exactly what this guard exists to block).
+        #   - !requested && creds_set==0: the only branch reachable at creds_total=0. Fires
+        #     the ordinary "not configured" warning when GHCR isn't requested, same as any
+        #     other unrequested target.
+        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY / env.PUBLISH_GHCR /
+        # env.PUBLISH_ANY, computed once above from these same fields; the zero-targets check
+        # at the bottom reads those rather than recomputing a second notion of "is this target
+        # on".
         fail=0
 
         is_malformed_repo() {
@@ -167,16 +208,15 @@ jobs:
           if [[ "$creds_set" -gt 0 && "$creds_set" -lt "$creds_total" ]]; then
             echo "::error::${name} is partially configured: ${creds_label} must all be set together, or none of them."
             fail=1
-          elif [[ "$requested" -eq 1 && "$creds_set" -eq 0 ]]; then
+          elif [[ "$requested" -eq 1 && "$creds_set" -lt "$creds_total" ]]; then
             if [[ "$FORK_PR" == 'true' ]]; then
               echo "::warning::${name}: repository is set but credentials (${creds_label}) are withheld on a fork PR -- disabling ${name} for this run."
             else
               echo "::error::${name}: repository is set but credentials (${creds_label}) are not configured."
               fail=1
             fi
-          elif [[ "$requested" -eq 0 && "$creds_set" -eq "$creds_total" ]]; then
-            echo "::error::${name}: credentials (${creds_label}) are configured but its repository is empty or malformed."
-            fail=1
+          elif [[ "$requested" -eq 0 && "$creds_total" -gt 0 && "$creds_set" -eq "$creds_total" ]]; then
+            echo "::warning::${name}: credentials (${creds_label}) are configured but its repository is empty or malformed -- publish is disabled for this run. If these credentials were inherited (e.g. \`secrets: inherit\`) rather than deliberately set for ${name}, this is expected and harmless."
           elif [[ "$requested" -eq 0 && "$creds_set" -eq 0 ]]; then
             echo "::warning::${name} is not configured (repository and credentials both unset) -- publish is disabled for this run."
           fi
@@ -194,6 +234,27 @@ jobs:
         done
         check_target "Private registry" "$PRIVATE_REGISTRY_REPOSITORY" "private_registry / private_registry_username / private_registry_token" "$private_registry_creds_set" 3
 
+        # GHCR authenticates with the ambient GITHUB_TOKEN (see the PUBLISH_GHCR comment above
+        # and the job `permissions:` block), not a credential pair of its own -- unlike the
+        # other two targets, it has no username/token secrets to check here at all.
+        #
+        # GHCR rejects uppercase repository references outright, so lowercase it here (mirroring
+        # GitHub's own `tr '[A-Z]' '[a-z]'` guidance) before it's used anywhere -- both in this
+        # target's own requested-check and in the "Docker meta" step's `images:` list -- rather
+        # than hard-failing on what is usually just an image name that happens to share casing
+        # with a GitHub repository name. Exported via GITHUB_ENV since GitHub Actions expression
+        # syntax has no lower-casing function; `env.GHCR_REPOSITORY_LOWER` is what later steps
+        # read.
+        ghcr_repository_lower="$(printf '%s' "$GHCR_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+        if [[ "$ghcr_repository_lower" != "$GHCR_REPOSITORY" ]]; then
+          echo "::warning::GHCR: repository '${GHCR_REPOSITORY}' contains uppercase characters -- GHCR requires a lowercase path; normalizing to '${ghcr_repository_lower}'."
+        fi
+        echo "GHCR_REPOSITORY_LOWER=${ghcr_repository_lower}" >> "$GITHUB_ENV"
+
+        # creds_set=0, creds_total=0: GHCR has no credentials of its own to be partial or
+        # missing about -- see the branch-by-branch walk in the comment above check_target.
+        check_target "GHCR" "$ghcr_repository_lower" "" 0 0
+
         # Tailscale is a precondition for the private registry (a Tailnet-only host): apply the
         # same all-or-nothing rule to its OAuth pair so a half-configured Tailscale fails fast
         # here instead of silently disabling the build cache and then failing late at
@@ -210,7 +271,7 @@ jobs:
         fi
 
         if [[ "$PUBLISH_ANY" != 'true' ]]; then
-          echo "::warning::No publish target is configured (Docker Hub and private registry are both disabled) -- this will be a build-only run that publishes nothing."
+          echo "::warning::No publish target is configured (Docker Hub, private registry, and GHCR are all disabled) -- this will be a build-only run that publishes nothing."
         fi
 
         exit "$fail"
@@ -388,6 +449,7 @@ jobs:
         images: |-
           ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
           ${{ env.PUBLISH_DOCKERHUB == 'true' && inputs.dockerhub_repository || '' }}
+          ${{ env.PUBLISH_GHCR == 'true' && format('ghcr.io/{0}', env.GHCR_REPOSITORY_LOWER) || '' }}
         labels: |
           org.opencontainers.image.title=${{ inputs.label_title }}
           org.opencontainers.image.description=${{ inputs.label_description }}
@@ -468,6 +530,22 @@ jobs:
         registry: ${{ secrets.private_registry }}
         username: ${{ secrets.private_registry_username }}
         password: ${{ secrets.private_registry_token }}
+
+    - name: Login to GHCR
+      if: ${{ env.PUBLISH_GHCR == 'true' }}
+      # Ambient GITHUB_TOKEN, not a caller-supplied secret: this job declares `packages: write`
+      # unconditionally (see the job `permissions:` block above), so github.token here already
+      # carries package-write scope. A caller-forwarded `secrets.GITHUB_TOKEN` was tried first
+      # and empirically does NOT work -- docker/login-action succeeds (it only validates token
+      # form) but the subsequent push 403s with "denied: installation not allowed to Write
+      # organization package". GHCR authorizes against the permissions of the job that executes
+      # the push, not whatever job a token string was minted in, so the token must come from
+      # this job's own ambient permissions -- see "Publishing to GHCR" in the README.
+      uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
 
     - name: Build and publish image
       id: build-image
