@@ -33,13 +33,14 @@
     "mergeConfidence:age-confidence-badges",
     "mergeConfidence:all-badges",
     "workarounds:k3sKubernetesVersioning",
-    "github>ppat/renovate-presets#v0.2.1",
-    "github>ppat/renovate-presets:dev-tools#v0.2.1",
-    "github>ppat/renovate-presets:github-actions-provider#v0.2.1",
-    "github>ppat/renovate-presets:kubernetes#v0.2.1",
+    "github>ppat/renovate-presets#v1.0.0",
+    "github>ppat/renovate-presets:dev-tools#v1.0.0",
+    "github>ppat/renovate-presets:github-actions-provider#v1.0.0",
+    "github>ppat/renovate-presets:kubernetes#v1.0.0",
     "github>ppat/github-workflows//.github/renovate/release-age",
     "github>ppat/github-workflows//.github/renovate/group",
-    "github>ppat/github-workflows//.github/renovate/exceptions"
+    "github>ppat/github-workflows//.github/renovate/exceptions",
+    "github>ppat/github-workflows//.github/renovate/scopes"
   ],
   "internalChecksFilter": "strict",
   "labels": [

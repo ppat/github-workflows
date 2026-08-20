@@ -110,9 +110,11 @@ above) rather than one being left to bit-rot in favor of the other. Don't take o
 consumer repos from one to the other without being asked — pick whichever mechanism a given repo already
 uses, or ask, rather than assuming `release-please` is always the right default going forward.
 
-Commit messages are enforced by commitlint (`commitlint.config.js`, scopes limited to
-`dev-tools`/`github-actions`/`release`/`renovate`/empty) via `lint-commit-messages.yaml`. `CHANGELOG.md` and
-version numbers are fully automated by whichever mechanism a repo uses — don't hand-edit either.
+Commit messages are enforced by commitlint (`commitlint.config.js`) via `lint-commit-messages.yaml`. The
+type/scope taxonomy those rules encode — and the artifact boundary that decides it — is documented in
+[.claude/rules/commits.md](.claude/rules/commits.md); it is not restated here, so there is one source of
+truth. `CHANGELOG.md` and version numbers are fully automated by whichever mechanism a repo uses — don't
+hand-edit either.
 
 ## Dependency updates
 
