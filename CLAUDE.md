@@ -52,7 +52,7 @@ comment at the occurrence, never with a repo-wide disable.
 Lint a commit message locally:
 
 ```bash
-echo "fix(github-actions): pin actions/checkout to v7" | npx commitlint
+echo "fix(github-actions): re-pin actions/checkout to its current major" | npx commitlint
 ```
 
 `bun install` is only needed if changing `package.json`/`.releaserc.js` (semantic-release deps); it is not
@@ -63,6 +63,17 @@ push a branch/PR that touches it (or its `test/<name>/` fixtures), which trigger
 `self-test-<name>.yaml` in GitHub Actions. These also run weekly and via `workflow_dispatch`, so a
 passing run days ago doesn't guarantee the workflow still works against current upstream tool versions.
 
+## Commit types and scopes
+
+The full taxonomy lives in [.claude/rules/commits.md](.claude/rules/commits.md) — read it before writing
+a commit message or a PR title. In short: **type** answers *what kind of change*, **scope** answers *which
+maintenance surface*, and the split between them turns on one question — does the thing you changed reach
+a consumer, or only this repo's own CI? commitlint enforces both the scope list and the rule that a type
+claiming shipped behaviour cannot sit on a scope that never ships.
+
+This matters more than it looks: release-please derives the version bump and the changelog from the
+header, and squash-merge means the **PR title** is the released commit on a multi-commit branch.
+
 ## Working in this repo
 
 - Every reusable workflow takes `git_ref` (or `source_git_ref`) as an explicit input rather than assuming
@@ -72,6 +83,14 @@ passing run days ago doesn't guarantee the workflow still works against current 
 - When changing a reusable workflow's inputs, outputs, or secrets, update its matching table row in
   [README.md](README.md) in the same change — README is the interface contract consumers read before
   wiring a `with:`/`secrets:` block, not just a summary.
+- An input's **default** is part of that interface too. Change one only for consumers' sake, never to suit
+  this repo — override it at the call site instead, as `self-test-aqua.yaml` does for
+  `update-aqua-checksums.yaml`'s `semantic_commit_scope`. Changing a default is a breaking change and
+  belongs with a coordinated rollout.
+- An input's **default** is part of that interface too. Change one only for consumers' sake, never to suit
+  this repo — override it at the call site instead, as `self-test-aqua.yaml` does for
+  `update-aqua-checksums.yaml`'s `semantic_commit_scope`. Changing a default is a breaking change and
+  belongs with a coordinated rollout.
 - If a workflow's runtime behavior changed (not just its `with:`/`secrets:` surface), check whether a
   matching `self-test-<name>.yaml` + `test/<name>/` fixture exists and update it rather than relying on
   manual verification — see [DESIGN.md](DESIGN.md) for the dogfooding pattern this repo uses.
@@ -81,10 +100,9 @@ passing run days ago doesn't guarantee the workflow still works against current 
   than inventing a new comment format.
 - Pin any new third-party Action reference to a commit SHA with the version as a trailing comment
   (`uses: owner/repo@<sha> # vX.Y.Z`).
-- Commit messages must pass commitlint: conventional-commit format, scope must be one of `dev-tools`,
-  `github-actions`, `release`, `renovate`, or empty, header ≤120 chars. `CHANGELOG.md` and version numbers
-  are otherwise fully automated by release-please (this repo's own release mechanism, see
-  [DESIGN.md](DESIGN.md)) — don't hand-edit either.
+- Commit messages must pass commitlint (header ≤120 chars) — see
+  [.claude/rules/commits.md](.claude/rules/commits.md) for which type/scope to pick. `CHANGELOG.md` and version numbers are fully automated by release-please (this
+  repo's own release mechanism, see [DESIGN.md](DESIGN.md)) — don't hand-edit either.
 - This repo offers both `release-please.yaml` and `release-semantic.yaml` as reusable workflows for
   consumers to pick one from, but only dogfoods `release-please` on itself. Don't assume the two are
   interchangeable or that a change to one should mirror in the other — they're deliberately separate

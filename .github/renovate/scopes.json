@@ -1,0 +1,221 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "description": "CONSERVATIVE DEFAULT: the shared presets classify these managers as internal-dependencies, but with narrower matchers -- bun/npm/poetry only for dev depTypes, mise only at the repo root. This claims the scope for the whole manager so a dep those matchers miss cannot fall through to the empty scope, which is reserved for repo-level policy. The file-based SHIPS rules below promote the ones that do reach a consumer",
+      "commitBody": "",
+      "matchManagers": [
+        "bun",
+        "mise",
+        "npm",
+        "pep621",
+        "poetry",
+        "pre-commit"
+      ],
+      "semanticCommitScope": "internal-dependencies",
+      "semanticCommitType": "chore"
+    },
+    {
+      "description": "CONSERVATIVE DEFAULT: a lockfile refresh carries no semver level, so nothing derives its scope. Default it to internal-dependencies and let the file-based rule further down promote the one lockfile that does ship. Placed before that rule deliberately -- later rules win. Also covers the upstream rule that matches lockFileMaintenance with no manager filter",
+      "commitBody": "",
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "semanticCommitScope": "internal-dependencies",
+      "semanticCommitType": "chore"
+    },
+    {
+      "description": "CONSERVATIVE DEFAULT: this repo's custom regex managers scan every *.yaml and every Dockerfile, not just workflows, so a '# renovate:' pin can land outside a shipped path (.pre-commit-config.yaml, zizmor.yaml, a fixture). Default those to internal-dependencies instead of letting them fall through to the empty scope, which is reserved for repo-level policy. The file-based SHIPS rule below promotes the ones inside reusable workflows",
+      "commitBody": "",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "semanticCommitScope": "internal-dependencies",
+      "semanticCommitType": "chore"
+    },
+    {
+      "description": "SHIPS: any version pinned anywhere inside a reusable workflow file is resolved in the caller's CI. The extglob excludes self-*.yaml, so this selects exactly what it claims and does not depend on a later rule to undo it. No matchUpdateTypes on purpose, so no update type can fall through to an upstream scope this repo rejects",
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "semanticCommitScope": "shipped-dependencies"
+    },
+    {
+      "description": "restore the semver-derived type for reusable-workflow pins (self-*.yaml excluded by the extglob) -- major/minor. dev-tools.json rule 7 forces 'chore' on the renovate CLI, which ships",
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "semanticCommitType": "feat"
+    },
+    {
+      "description": "restore the semver-derived type for reusable-workflow pins (self-*.yaml excluded by the extglob) -- patch/digest",
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "digest"
+      ],
+      "semanticCommitType": "fix"
+    },
+    {
+      "description": "SHIPS: package.json/bun.lock are copied into the caller's workspace by lint-commit-messages and release-semantic. No matchUpdateTypes, for the same reason as above",
+      "commitMessageExtra": "({{currentVersion}} -> {{newVersion}})",
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchManagers": [
+        "bun",
+        "npm"
+      ],
+      "semanticCommitScope": "shipped-dependencies"
+    },
+    {
+      "description": "restore the semver-derived type for package.json -- major/minor. renovate-presets>=v0.3.0 adds 'bun' to dev-tools.json rule 1, which forces 'chore' on deps that ship",
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchManagers": [
+        "bun",
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "semanticCommitType": "feat"
+    },
+    {
+      "description": "restore the semver-derived type for package.json -- patch/digest",
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchManagers": [
+        "bun",
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "digest"
+      ],
+      "semanticCommitType": "fix"
+    },
+    {
+      "description": "SHIPS: bun.lock is copied into the caller's workspace alongside package.json, so refreshing it is consumer-facing. Matched by lock file name -- matchFileNames tests packageFile and every lockFiles entry, so the lock file itself is nameable. The repo's other lock file, test/terraform/.terraform.lock.hcl, is a fixture and is deliberately absent from this list. lockFileMaintenance has no semver level, so the type is chore by construction and cannot reach the major-only breaking rules below",
+      "matchFileNames": [
+        "bun.lock",
+        "package.json"
+      ],
+      "matchUpdateTypes": [
+        "lockFileMaintenance"
+      ],
+      "semanticCommitScope": "shipped-dependencies",
+      "semanticCommitType": "chore"
+    },
+    {
+      "description": "INTERNAL CARVE-OUT: a 'uses:' bump in this repo's own workflows keeps scope github-actions -- that scope is location-independent by convention -- but takes type chore, because nothing a consumer runs changed. Without this it inherits feat/fix from the update type and an internal-only bump cuts a release consumers see",
+      "commitBody": "",
+      "matchFileNames": [
+        ".github/workflows/self-*.yaml"
+      ],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "semanticCommitType": "chore"
+    },
+    {
+      "description": "kubernetes-api deps here live only in test/chainsaw fixtures, so a bump cannot break a consumer: strip the '!' and the BREAKING CHANGE body that renovate-presets:kubernetes emits",
+      "commitBody": "",
+      "commitMessagePrefix": "chore(kubernetes-api):",
+      "matchDatasources": [
+        "kubernetes-api"
+      ],
+      "semanticCommits": "disabled"
+    },
+    {
+      "description": "a major of anything that ships must not merge itself: it cuts a major release. Matcher is ships-only, so internal majors automerge as normal. Also counters a shared preset that enables automerge for a package pattern without filtering on update type",
+      "automerge": false,
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml",
+        "package.json",
+        "bun.lock"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ]
+    },
+    {
+      "description": "NO BREAKING MARKER by default: the shared default preset marks every major breaking, which is the right conservative default but wrong here for anything that cannot reach a consumer. Strip it back to a plain prefix, then let the BREAKING MARKER rules below re-add '!' for the paths that do ship. Excludes the kubernetes manager so the kubernetes-api rule above keeps its own prefix",
+      "commitMessagePrefix": "{{semanticCommitType}}{{#if semanticCommitScope}}({{semanticCommitScope}}){{/if}}:",
+      "matchManagers": [
+        "bun",
+        "custom.regex",
+        "github-actions",
+        "mise",
+        "npm",
+        "pep621",
+        "poetry",
+        "pre-commit"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ]
+    },
+    {
+      "description": "BREAKING MARKER: a major of a dependency that ships is breaking for consumers by construction, so emit '!' mechanically -- reusable-workflow pins",
+      "commitMessagePrefix": "feat(shipped-dependencies)!:",
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "semanticCommits": "disabled"
+    },
+    {
+      "description": "BREAKING MARKER: same, for the package.json/bun.lock that get copied into the caller's workspace",
+      "commitMessagePrefix": "feat(shipped-dependencies)!:",
+      "matchFileNames": [
+        "package.json"
+      ],
+      "matchManagers": [
+        "bun",
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "semanticCommits": "disabled"
+    },
+    {
+      "description": "BREAKING MARKER: same, for a 'uses:' ref inside a reusable workflow -- it runs in the caller's CI just as a pinned tool does",
+      "commitMessagePrefix": "feat(github-actions)!:",
+      "matchFileNames": [
+        ".github/workflows/!(self-*).yaml"
+      ],
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "semanticCommits": "disabled"
+    }
+  ]
+}
