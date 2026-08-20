@@ -72,18 +72,22 @@ on:
 permissions: {}
 
 env:
-  PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
-  PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
-  # GHCR authenticates with the ambient GITHUB_TOKEN (github.actor / github.token), not
-  # caller-supplied credentials -- unlike the other two targets, it has no secrets of its own.
-  # That's why it keys on the repository input alone: see the job `permissions:` below for why
-  # `packages: write` is declared unconditionally on this job, and "Publishing to GHCR" in the
-  # README for what that costs every caller.
-  PUBLISH_GHCR: ${{ inputs.ghcr_repository != '' }}
-  # Computed once so `push:`/`sbom:`/`provenance:` (and anything added later) all answer "is
-  # anything being published at all" from one place, instead of each repeating
-  # `PUBLISH_DOCKERHUB == 'true' || PUBLISH_PRIVATE_REGISTRY == 'true' || PUBLISH_GHCR == 'true'` verbatim.
-  PUBLISH_ANY: ${{ (inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '') || (secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '') || (inputs.ghcr_repository != '') }}
+  # PUBLISH_DOCKERHUB / PUBLISH_PRIVATE_REGISTRY / PUBLISH_GHCR / PUBLISH_ANY are declared here
+  # only as empty-string placeholders, following the same convention as REF_KIND/VERSION_*/
+  # CACHE_* below: it lets actionlint resolve every `env.PUBLISH_*` reference later in this file
+  # without a false "undefined variable" finding. The real values are computed exactly once, by
+  # check_target in the "Validate publish target configuration" step (the job's first step), and
+  # exported via $GITHUB_ENV before anything else in the job runs -- that step is the single
+  # source of truth for whether a target actually publishes (repository well-formed AND, where
+  # applicable, credentials complete), not this block. Re-deriving the decision here from
+  # `inputs.*`/`secrets.*` directly -- as this block used to do -- skips the malformed-repository
+  # check and silently diverges from what check_target decided; see that step's comments for the
+  # full branch-by-branch reasoning, including the GHCR creds_total=0 case and the fork-PR
+  # carve-out.
+  PUBLISH_DOCKERHUB: ''
+  PUBLISH_PRIVATE_REGISTRY: ''
+  PUBLISH_GHCR: ''
+  PUBLISH_ANY: ''
   CONNECT_TAILSCALE: ${{ secrets.tailscale_oauth_client_id != '' && secrets.tailscale_oauth_secret != '' }}
   REF_KIND: ''
   VERSION_SEMVER: ''
@@ -182,10 +186,13 @@ jobs:
         #   - !requested && creds_set==0: the only branch reachable at creds_total=0. Fires
         #     the ordinary "not configured" warning when GHCR isn't requested, same as any
         #     other unrequested target.
-        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY / env.PUBLISH_GHCR /
-        # env.PUBLISH_ANY, computed once above from these same fields; the zero-targets check
-        # at the bottom reads those rather than recomputing a second notion of "is this target
-        # on".
+        # check_target below is the single source of truth for env.PUBLISH_DOCKERHUB /
+        # env.PUBLISH_PRIVATE_REGISTRY / env.PUBLISH_GHCR / env.PUBLISH_ANY: it computes
+        # target_publish per target (requested && creds_set == creds_total -- the one case none
+        # of its branches print a message for) and this step exports all four via $GITHUB_ENV
+        # below, before any other step runs. There is no separate workflow-level computation for
+        # these to diverge from; every later `if:`/`images:`/`push:`/`sbom:`/`provenance:` reads
+        # exactly this decision.
         fail=0
 
         is_malformed_repo() {
@@ -220,6 +227,16 @@ jobs:
           elif [[ "$requested" -eq 0 && "$creds_set" -eq 0 ]]; then
             echo "::warning::${name} is not configured (repository and credentials both unset) -- publish is disabled for this run."
           fi
+
+          # The one case none of the branches above print anything for: a well-formed request
+          # with a complete credential set (for GHCR, creds_total=0 so this reduces to bare
+          # "requested"). This is what actually decides whether ${name} publishes -- the caller
+          # captures target_publish immediately after each call, below.
+          if [[ "$requested" -eq 1 && "$creds_set" -eq "$creds_total" ]]; then
+            target_publish=1
+          else
+            target_publish=0
+          fi
         }
 
         dockerhub_creds_set=0
@@ -227,16 +244,18 @@ jobs:
           [[ -n "$field" ]] && dockerhub_creds_set=$((dockerhub_creds_set + 1))
         done
         check_target "Docker Hub" "$DOCKERHUB_REPOSITORY" "dockerhub_username / dockerhub_token" "$dockerhub_creds_set" 2
+        publish_dockerhub=$target_publish
 
         private_registry_creds_set=0
         for field in "$PRIVATE_REGISTRY" "$PRIVATE_REGISTRY_USERNAME" "$PRIVATE_REGISTRY_TOKEN"; do
           [[ -n "$field" ]] && private_registry_creds_set=$((private_registry_creds_set + 1))
         done
         check_target "Private registry" "$PRIVATE_REGISTRY_REPOSITORY" "private_registry / private_registry_username / private_registry_token" "$private_registry_creds_set" 3
+        publish_private_registry=$target_publish
 
-        # GHCR authenticates with the ambient GITHUB_TOKEN (see the PUBLISH_GHCR comment above
-        # and the job `permissions:` block), not a credential pair of its own -- unlike the
-        # other two targets, it has no username/token secrets to check here at all.
+        # GHCR authenticates with the ambient GITHUB_TOKEN (see the creds_total=0 branch-by-branch
+        # walk above and the job `permissions:` block), not a credential pair of its own --
+        # unlike the other two targets, it has no username/token secrets to check here at all.
         #
         # GHCR rejects uppercase repository references outright, so lowercase it here (mirroring
         # GitHub's own `tr '[A-Z]' '[a-z]'` guidance) before it's used anywhere -- both in this
@@ -254,6 +273,19 @@ jobs:
         # creds_set=0, creds_total=0: GHCR has no credentials of its own to be partial or
         # missing about -- see the branch-by-branch walk in the comment above check_target.
         check_target "GHCR" "$ghcr_repository_lower" "" 0 0
+        publish_ghcr=$target_publish
+
+        publish_any=0
+        [[ "$publish_dockerhub" -eq 1 || "$publish_private_registry" -eq 1 || "$publish_ghcr" -eq 1 ]] && publish_any=1
+
+        bool() { [[ "$1" -eq 1 ]] && echo true || echo false; }
+
+        {
+          echo "PUBLISH_DOCKERHUB=$(bool "$publish_dockerhub")"
+          echo "PUBLISH_PRIVATE_REGISTRY=$(bool "$publish_private_registry")"
+          echo "PUBLISH_GHCR=$(bool "$publish_ghcr")"
+          echo "PUBLISH_ANY=$(bool "$publish_any")"
+        } >> "$GITHUB_ENV"
 
         # Tailscale is a precondition for the private registry (a Tailnet-only host): apply the
         # same all-or-nothing rule to its OAuth pair so a half-configured Tailscale fails fast
@@ -270,7 +302,7 @@ jobs:
           echo "::warning::Tailscale credentials (tailscale_oauth_client_id / tailscale_oauth_secret) are not configured -- Tailscale connectivity, and anything depending on it (the private registry build cache, a Tailnet-only registry login), is disabled for this run."
         fi
 
-        if [[ "$PUBLISH_ANY" != 'true' ]]; then
+        if [[ "$publish_any" -ne 1 ]]; then
           echo "::warning::No publish target is configured (Docker Hub, private registry, and GHCR are all disabled) -- this will be a build-only run that publishes nothing."
         fi
 
@@ -331,6 +363,12 @@ jobs:
             # `-eo pipefail` that would otherwise kill this step outright. The trailing
             # `|| true` sits after the whole pipeline (not inside it) so it absorbs that
             # exit status regardless of which stage produced it.
+            #
+            # KNOWN GAP, not fixed here: this pattern matches only the leading X.Y.Z and drops
+            # any pre-release suffix, so "v1.2.3-rc1" yields version_semver="1.2.3" -- indistinguishable
+            # from a genuine 1.2.3 release. Downstream, metadata-action's `latest=auto` then
+            # publishes `latest` for that rc build, overwriting the real 1.2.3. Pre-existing,
+            # unchanged by this PR; no current consumer cuts rc tags.
             version_semver="$(echo "$version_raw" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
           else
             echo "::error::git_ref '$GIT_REF' resolved to neither a branch nor a tag after checkout (detached HEAD, no tag points at it) -- refusing to publish an image with an unclassifiable version."
@@ -340,7 +378,6 @@ jobs:
 
         version_sha="$(git rev-parse --short HEAD)"
 
-        set -x
         {
           echo "REF_KIND=$ref_kind"
           echo "VERSION_SEMVER=$version_semver"
@@ -408,7 +445,6 @@ jobs:
           fi
         fi
 
-        set -x
         {
           echo "CACHE_FROM<<CACHE_FROM_EOF"
           echo "$CACHE_FROM"
@@ -427,7 +463,7 @@ jobs:
         # set image build cache parameters" -- since docker/build-push-action's Util.getInputList
         # only splits cache-from/cache-to on newlines). Print each variable explicitly instead so
         # every ref is visible; this step exists to make cache plumbing auditable.
-        for var in VERSION_RAW VERSION_SEMVER VERSION_SHA CACHE_FROM CACHE_TO; do
+        for var in REF_KIND VERSION_RAW VERSION_SEMVER VERSION_SHA CACHE_FROM CACHE_TO; do
           echo "=== $var ==="
           echo "${!var}"
         done
@@ -477,11 +513,14 @@ jobs:
 
     - name: Tailscale Debug
       if: ${{ env.CONNECT_TAILSCALE == 'true' && github.event_name == 'workflow_dispatch' }}
-      # Debug scaffolding, load-bearing on nothing: `tailscale ping` legitimately fails for a
-      # host behind a subnet router, and under bash's default -eo pipefail that would kill the
-      # job before the build ever ran. continue-on-error keeps a flaky diagnostic step from
-      # failing a build that would otherwise have succeeded.
+      # Debug scaffolding, load-bearing on nothing: `sudo tailscale dns status --all` below is
+      # unpiped, so under `set -e` (on by default, and explicit here via shell: bash's
+      # -eo pipefail) a non-zero exit from it alone would kill this step before the later,
+      # more-likely-to-flake `tailscale ping` against a host that may sit behind a subnet router
+      # ever runs. continue-on-error keeps any of that from failing a build that would otherwise
+      # have succeeded.
       continue-on-error: true
+      shell: bash
       env:
         PRIVATE_REGISTRY: ${{ secrets.private_registry }}
       # yamllint disable-line rule:indentation
@@ -570,7 +609,13 @@ jobs:
       env:
         IMAGE_TAG: ${{ steps.meta.outputs.version }}
         IMAGE_DIGEST: ${{ steps.build-image.outputs.digest }}
-        IMAGE_REFS: ${{ steps.meta.outputs.tags }}
+        # metadata-action's getTags() does NOT return [] for an empty `images:` list -- it falls
+        # back to generateTags() with an empty image prefix, so a zero-target run's
+        # steps.meta.outputs.tags is still populated with bare, unpushed tag strings (e.g.
+        # "branch-main", "git-1a2b3c4") that look pullable but are not. Gate on PUBLISH_ANY so
+        # image_refs is genuinely empty whenever nothing was pushed, matching what its name
+        # promises and what the README documents.
+        IMAGE_REFS: ${{ env.PUBLISH_ANY == 'true' && steps.meta.outputs.tags || '' }}
       # yamllint disable-line rule:indentation
       run: |
         # A build-only run (zero publish targets) is a green run by design, and in that case

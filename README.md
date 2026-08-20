@@ -8,7 +8,7 @@ releases, and dependency updates.
 
 | Workflow | Description |
 | --- | --- |
-| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image to Docker Hub, a private registry over Tailscale, and/or GHCR (`ghcr.io`, via `ghcr_repository`, authenticated with the ambient `GITHUB_TOKEN` -- no secrets needed, but see below for a `packages: write` permission every caller must grant). A target is "requested" when its repository input is non-empty and well-formed (no leading/trailing `/`, no empty path segment -- a malformed value, e.g. from an unset variable interpolated into the input, is treated as unset with a warning); a requested Docker Hub/private-registry target missing its credentials fails the job, except on a fork PR, where secrets are withheld and it is disabled with a warning instead; a target with no repository requested is simply disabled (with a warning, not an error -- credentials inherited via `secrets: inherit` but unused by a target you didn't request are harmless); a run with no publish targets configured is a green build-only run (also warned), and in that case `digest`/`image_refs` come back empty since nothing was pushed. Registry-backed layer caching imports/exports a `:branch-<name>` ref per branch plus a shared `:cache-latest`, and OCI labels/annotations are derived from the git ref, which must resolve to a branch or a tag (`git_ref` may be fully-qualified or bare) -- anything else, e.g. a `refs/pull/N/merge` ref, fails the job rather than publishing an unversioned image. `platforms`, `label_title`, `label_description`, and `timeout_minutes` all have defaults (`linux/amd64`; the caller repo's name/description; `30`) but can be overridden per call. See "Publishing to GHCR" below for the `packages: write` permission this workflow requires unconditionally from every caller, and other caveats specific to that target. |
+| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image to Docker Hub, a private registry over Tailscale, and/or GHCR (`ghcr.io`, via `ghcr_repository`, authenticated with the ambient `GITHUB_TOKEN` -- no secrets needed, but see below for a `packages: write` permission every caller must grant). A target is "requested" when its repository input is non-empty and well-formed (no leading/trailing `/`, no empty path segment -- a malformed value, e.g. from an unset variable interpolated into the input, is treated as unset with a warning); a requested Docker Hub/private-registry target missing its credentials fails the job, except on a fork PR, where secrets are withheld and it is disabled with a warning instead; a target with no repository requested is simply disabled (with a warning, not an error -- a *complete* set of credentials inherited via `secrets: inherit` but unused by a target you didn't request is harmless; a *partial* set is not -- Docker Hub and private-registry credentials must be all-or-nothing, and a partial set fails the job even for a target you never requested, since there's no way to tell "half-inherited and unused" apart from "half-configured by mistake"); a run with no publish targets configured is a green build-only run (also warned), and in that case `digest`/`image_refs` come back empty since nothing was pushed. Registry-backed layer caching imports/exports a `:branch-<name>` ref per branch plus a shared `:cache-latest`, and OCI labels/annotations are derived from the git ref, which must resolve to a branch or a tag (`git_ref` may be fully-qualified or bare) -- anything else, e.g. a `refs/pull/N/merge` ref, fails the job rather than publishing an unversioned image. `platforms`, `label_title`, `label_description`, and `timeout_minutes` all have defaults (`linux/amd64`; the caller repo's name/description; `30`) but can be overridden per call. See "Publishing to GHCR" below for the `packages: write` permission this workflow requires unconditionally from every caller, and other caveats specific to that target. |
 | [`chainsaw-test.yaml`](.github/workflows/chainsaw-test.yaml) | Spin up a `kind` cluster with Flux installed and run [`kyverno/chainsaw`](https://github.com/kyverno/chainsaw) tests against it. |
 | [`detect-changed-files.yaml`](.github/workflows/detect-changed-files.yaml) | Wrap [`tj-actions/changed-files`](https://github.com/tj-actions/changed-files) so downstream jobs can gate on which paths changed in a PR. |
 | [`lint-commit-messages.yaml`](.github/workflows/lint-commit-messages.yaml) | Lint a commit range with `commitlint`. |
@@ -39,10 +39,15 @@ repo-specific guidance when working with Claude Code.
 -- **no secrets are needed**. A minimal call looks like:
 
 ```yaml
+jobs:
+  build-image:
     permissions:
       contents: read           # must be restated: any permissions: block zeroes unlisted scopes
       packages: write          # required on EVERY caller of this workflow, see below
+    uses: ppat/github-workflows/.github/workflows/build-docker-image.yaml@v5.0.0 # x-release-please-version
     with:
+      image_context_path: .
+      git_ref: ${{ github.head_ref || github.ref }}
       ghcr_repository: owner/name
 ```
 
@@ -103,6 +108,16 @@ Two things to know beyond the permission, neither of which the job can catch for
   do it ([cli/cli#6820](https://github.com/cli/cli/issues/6820) is still open as of 2026-08-20). That cuts
   both ways: you can't script *making* an image public, and if your package turns out public when you
   didn't want that, you can't script undoing it either -- budget for a manual click either direction.
+- **A fork PR cannot disable GHCR the way it can Docker Hub or the private registry.** The fork carve-out
+  (repository requested, credentials withheld -> warn and disable instead of failing) only ever fires when
+  the target has a non-zero credential set to be missing; GHCR authenticates with the ambient
+  `GITHUB_TOKEN` and has none (`creds_total` is 0 for it), so that branch is arithmetically unreachable for
+  GHCR regardless of fork status. If `ghcr_repository` is well-formed -- including one built from the
+  `github` context, which still resolves on a fork PR -- GHCR stays a requested, enabled target: there's no
+  code path here that turns it off for a fork the way there is for the other two targets. GitHub separately
+  clamps a fork PR's token to read-only, so a run that reaches this state either fails at load (the job's
+  unconditional `packages: write` request exceeds what a fork PR's token is allowed) or 403s at the push
+  step.
 
 ## Usage
 
