@@ -67,12 +67,14 @@ env:
   VERSION_SHA: ''
   CACHE_FROM: ''
   CACHE_TO: ''
-  CACHE_LATEST: ''
 
 jobs:
   build-image:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    permissions:
+      contents: read
 
     outputs:
       digest: ${{ steps.image_info.outputs.digest }}
@@ -80,6 +82,51 @@ jobs:
       image_tag: ${{ steps.image_info.outputs.image_tag }}
 
     steps:
+    - name: Validate publish target configuration
+      shell: bash
+      env:
+        DOCKERHUB_REPOSITORY: ${{ inputs.dockerhub_repository }}
+        DOCKERHUB_USERNAME: ${{ secrets.dockerhub_username }}
+        DOCKERHUB_TOKEN: ${{ secrets.dockerhub_token }}
+        PRIVATE_REGISTRY: ${{ secrets.private_registry }}
+        PRIVATE_REGISTRY_REPOSITORY: ${{ inputs.private_registry_repository }}
+        PRIVATE_REGISTRY_USERNAME: ${{ secrets.private_registry_username }}
+        PRIVATE_REGISTRY_TOKEN: ${{ secrets.private_registry_token }}
+      # yamllint disable-line rule:indentation
+      run: |
+        # Each publish target is all-or-nothing: its repository input and every one of its
+        # credential secrets must be set together, or none of them. A target that is only
+        # partially configured is silently disabled today (see env.PUBLISH_DOCKERHUB /
+        # env.PUBLISH_PRIVATE_REGISTRY above), which produces a green job that publishes
+        # nothing and gives no indication why. Fail loudly here instead, before any expensive
+        # setup runs.
+        fail=0
+
+        dockerhub_fields_set=0
+        for field in "$DOCKERHUB_REPOSITORY" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN"; do
+          [[ -n "$field" ]] && dockerhub_fields_set=$((dockerhub_fields_set + 1))
+        done
+        if [[ "$dockerhub_fields_set" -gt 0 && "$dockerhub_fields_set" -lt 3 ]]; then
+          echo "::error::Docker Hub is partially configured: dockerhub_repository input plus dockerhub_username and dockerhub_token secrets must all be set together, or none of them."
+          fail=1
+        fi
+
+        private_registry_fields_set=0
+        for field in "$PRIVATE_REGISTRY" "$PRIVATE_REGISTRY_REPOSITORY" "$PRIVATE_REGISTRY_USERNAME" "$PRIVATE_REGISTRY_TOKEN"; do
+          [[ -n "$field" ]] && private_registry_fields_set=$((private_registry_fields_set + 1))
+        done
+        if [[ "$private_registry_fields_set" -gt 0 && "$private_registry_fields_set" -lt 4 ]]; then
+          echo "::error::Private registry is partially configured: the private_registry secret, private_registry_repository input, and private_registry_username / private_registry_token secrets must all be set together, or none of them."
+          fail=1
+        fi
+
+        if [[ "$PUBLISH_DOCKERHUB" != 'true' && "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
+          echo "::error::No publish target resolved (Docker Hub and private registry are both unconfigured or misconfigured) -- this build would publish nothing."
+          fail=1
+        fi
+
+        exit "$fail"
+
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -127,47 +174,65 @@ jobs:
       shell: bash
       env:
         SOURCE_GIT_REF: ${{ env.SOURCE_GIT_REF_NORMALIZED }}
+        PRIVATE_REGISTRY_BUILD_CACHE: ${{ inputs.private_registry_build_cache }}
         IMAGE_CACHE: ${{ secrets.private_registry }}/${{ inputs.private_registry_build_cache }}
+        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         CACHE_PARAMS: image-manifest=true,oci-mediatypes=true,mode=max,compression=zstd
       # yamllint disable-line rule:indentation
       run: |
-        if [[ "$IMAGE_CACHE" == '' || "$CONNECT_TAILSCALE" != 'true' || "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
+        # Guard on private_registry_build_cache directly: IMAGE_CACHE always contains a
+        # literal "/" (it's secrets.private_registry + "/" + this input), so it can never be
+        # empty even when the input itself is unset -- that made this guard dead.
+        if [[ -z "$PRIVATE_REGISTRY_BUILD_CACHE" || "$CONNECT_TAILSCALE" != 'true' || "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
           echo "No repository for docker build cache specified, disabling build cache all together."
           CACHE_FROM=""
           CACHE_TO=""
-          CACHE_LATEST=""
         else
           LAST_COMMIT_MSG=$(git log --oneline --no-merges -1)
+          BUST_CACHE=false
           # shellcheck disable=SC2076  # literal substring match is intended; unquoting would make [ci: bust-cache] a regex character class
           if [[ "$LAST_COMMIT_MSG" =~ "[ci: bust-cache]" ]]; then
             echo "Instruction to bust cache detected in commit message."
             echo "Disabling use of cache for the build. This build itself will still be cached."
-            CACHE_FROM=""
-          else
-            if [[ -z "$VERSION_SEMVER" ]]; then
-              echo "Setting cache-from to use current branch, main branch and last build of any branch as caches..."
-              CACHE_FROM="type=registry,ref=${IMAGE_CACHE}:main type=registry,ref=${IMAGE_CACHE}:branch-${VERSION_RAW} type=registry,ref=${IMAGE_CACHE}:cache-latest"
-            else
-              echo "Setting cache-from to use only main branch and current build of any branch as caches..."
-              CACHE_FROM="type=registry,ref=${IMAGE_CACHE}:main type=registry,ref=${IMAGE_CACHE}:cache-latest"
-            fi
+            BUST_CACHE=true
           fi
 
-          if [[ -z "$VERSION_SEMVER" ]]; then
-            echo "Setting cache-to to push to branch cache..."
-            CACHE_TO="type=registry,ref=${IMAGE_CACHE}:branch-${VERSION_RAW},${CACHE_PARAMS}"
+          if [[ "$BUST_CACHE" == 'true' ]]; then
+            CACHE_FROM=""
+          elif [[ -z "$VERSION_SEMVER" ]]; then
+            echo "Setting cache-from to use main branch, current branch and last build of any branch as caches..."
+            CACHE_FROM=$(printf 'type=registry,ref=%s:main\ntype=registry,ref=%s:branch-%s\ntype=registry,ref=%s:cache-latest' \
+              "$IMAGE_CACHE" "$IMAGE_CACHE" "$VERSION_RAW" "$IMAGE_CACHE")
           else
-            echo "Setting cache-to to push to main cache..."
-            CACHE_TO="type=registry,ref=${IMAGE_CACHE}:main,${CACHE_PARAMS}"
+            echo "Setting cache-from to use main branch and last build of any branch as caches..."
+            CACHE_FROM=$(printf 'type=registry,ref=%s:main\ntype=registry,ref=%s:cache-latest' \
+              "$IMAGE_CACHE" "$IMAGE_CACHE")
           fi
-          CACHE_LATEST="type=registry,ref=${IMAGE_CACHE}:cache-latest,${CACHE_PARAMS}"
+
+          if [[ -n "$VERSION_SEMVER" ]]; then
+            # Tag builds only ever refresh cache-latest -- never clobber :main with a
+            # point-in-time release build.
+            echo "Setting cache-to to push to cache-latest only (tag build, leaving main cache untouched)..."
+            CACHE_TO=$(printf 'type=registry,ref=%s:cache-latest,%s' "$IMAGE_CACHE" "$CACHE_PARAMS")
+          elif [[ -n "$DEFAULT_BRANCH" && "$VERSION_RAW" == "$DEFAULT_BRANCH" ]]; then
+            echo "Setting cache-to to push to main cache (default branch build)..."
+            CACHE_TO=$(printf 'type=registry,ref=%s:main,%s\ntype=registry,ref=%s:cache-latest,%s' \
+              "$IMAGE_CACHE" "$CACHE_PARAMS" "$IMAGE_CACHE" "$CACHE_PARAMS")
+          else
+            echo "Setting cache-to to push to branch cache..."
+            CACHE_TO=$(printf 'type=registry,ref=%s:branch-%s,%s\ntype=registry,ref=%s:cache-latest,%s' \
+              "$IMAGE_CACHE" "$VERSION_RAW" "$CACHE_PARAMS" "$IMAGE_CACHE" "$CACHE_PARAMS")
+          fi
         fi
 
         set -x
         {
-          echo "CACHE_FROM=\"$CACHE_FROM\""
-          echo "CACHE_TO=\"$CACHE_TO\""
-          echo "CACHE_LATEST=\"$CACHE_LATEST\""
+          echo "CACHE_FROM<<CACHE_FROM_EOF"
+          echo "$CACHE_FROM"
+          echo "CACHE_FROM_EOF"
+          echo "CACHE_TO<<CACHE_TO_EOF"
+          echo "$CACHE_TO"
+          echo "CACHE_TO_EOF"
         } >> "$GITHUB_ENV"
 
     - name: Show build parameters
@@ -190,8 +255,8 @@ jobs:
       uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
       with:
         images: |-
-          ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
-          ${{ inputs.dockerhub_repository != '' && inputs.dockerhub_repository || '' }}
+          ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' && format('{0}/{1}', secrets.private_registry, inputs.private_registry_repository) || '' }}
+          ${{ env.PUBLISH_DOCKERHUB == 'true' && inputs.dockerhub_repository || '' }}
         labels: |
           org.opencontainers.image.title=${{ inputs.label_title }}
           org.opencontainers.image.description=${{ inputs.label_description }}
@@ -260,22 +325,6 @@ jobs:
         cache-from: ${{ env.CACHE_FROM }}
         cache-to: ${{ env.CACHE_TO }}
         no-cache: ${{ env.CACHE_FROM == '' && env.CACHE_TO == '' }}
-        sbom: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
-        provenance: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
-        secrets: ${{ secrets.build_secrets }}
-
-    - name: Also cache build as cache-latest
-      if: ${{ env.CACHE_LATEST != '' }}
-      uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
-      with:
-        context: ./${{ inputs.image_context_path }}
-        platforms: ${{ inputs.platforms }}
-        load: false
-        push: false
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        annotations: ${{ steps.meta.outputs.annotations }}
-        cache-to: ${{ env.CACHE_LATEST }}
         sbom: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
         provenance: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
         secrets: ${{ secrets.build_secrets }}

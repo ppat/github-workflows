@@ -8,7 +8,7 @@ releases, and dependency updates.
 
 | Workflow | Description |
 | --- | --- |
-| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image (Docker Hub and/or a private registry over Tailscale), with registry-backed layer caching and OCI labels/annotations derived from the git ref. |
+| [`build-docker-image.yaml`](.github/workflows/build-docker-image.yaml) | Build and optionally push a multi-platform Docker image (Docker Hub and/or a private registry over Tailscale) to every fully-configured target -- a partially configured target, or none at all, fails the job before the build starts -- with registry-backed layer caching (keyed off the default branch) and OCI labels/annotations derived from the git ref. |
 | [`chainsaw-test.yaml`](.github/workflows/chainsaw-test.yaml) | Spin up a `kind` cluster with Flux installed and run [`kyverno/chainsaw`](https://github.com/kyverno/chainsaw) tests against it. |
 | [`detect-changed-files.yaml`](.github/workflows/detect-changed-files.yaml) | Wrap [`tj-actions/changed-files`](https://github.com/tj-actions/changed-files) so downstream jobs can gate on which paths changed in a PR. |
 | [`lint-commit-messages.yaml`](.github/workflows/lint-commit-messages.yaml) | Lint a commit range with `commitlint`. |
