@@ -95,37 +95,76 @@ jobs:
         PRIVATE_REGISTRY_REPOSITORY: ${{ inputs.private_registry_repository }}
         PRIVATE_REGISTRY_USERNAME: ${{ secrets.private_registry_username }}
         PRIVATE_REGISTRY_TOKEN: ${{ secrets.private_registry_token }}
+        TAILSCALE_OAUTH_CLIENT_ID: ${{ secrets.tailscale_oauth_client_id }}
+        TAILSCALE_OAUTH_SECRET: ${{ secrets.tailscale_oauth_secret }}
       # yamllint disable-line rule:indentation
       run: |
-        # Each publish target is all-or-nothing: its repository input and every one of its
-        # credential secrets must be set together, or none of them. A target that is only
-        # partially configured is silently disabled today (see env.PUBLISH_DOCKERHUB /
-        # env.PUBLISH_PRIVATE_REGISTRY above), which produces a green job that publishes
-        # nothing and gives no indication why. Fail loudly here instead, before any expensive
-        # setup runs.
+        # A target's *credentials* (secrets only) are all-or-nothing -- unlike a repository
+        # input, a secret is genuinely empty when the caller hasn't set it, so it's the only
+        # reliable signal of intent. A repository input commonly gets built by the caller by
+        # interpolating a repo/org variable in front of a literal path segment, and so is
+        # never cleanly empty even when that variable is unset (this is what made the previous
+        # version of this check reject every fork PR, where secrets are empty but
+        # repository/build-cache inputs still resolve to a non-empty, garbage string).
+        #
+        #   - some but not all of a target's credentials set -> unambiguous misconfiguration,
+        #     fail the job before any expensive setup runs.
+        #   - none of a target's credentials set -> the target is simply disabled. This is the
+        #     fork-PR case and the "I only want a build" case, indistinguishable from outside.
+        #     Warn, don't fail.
+        #   - all of a target's credentials set but its repository input is empty -> still an
+        #     error: the caller clearly wanted this target on.
+        #
+        # This mirrors env.PUBLISH_DOCKERHUB / env.PUBLISH_PRIVATE_REGISTRY, computed once above
+        # from these same fields; the zero-targets check at the bottom reads those rather than
+        # recomputing a second notion of "is this target on".
         fail=0
 
-        dockerhub_fields_set=0
-        for field in "$DOCKERHUB_REPOSITORY" "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN"; do
-          [[ -n "$field" ]] && dockerhub_fields_set=$((dockerhub_fields_set + 1))
+        dockerhub_creds_set=0
+        for field in "$DOCKERHUB_USERNAME" "$DOCKERHUB_TOKEN"; do
+          [[ -n "$field" ]] && dockerhub_creds_set=$((dockerhub_creds_set + 1))
         done
-        if [[ "$dockerhub_fields_set" -gt 0 && "$dockerhub_fields_set" -lt 3 ]]; then
-          echo "::error::Docker Hub is partially configured: dockerhub_repository input plus dockerhub_username and dockerhub_token secrets must all be set together, or none of them."
+        if [[ "$dockerhub_creds_set" -gt 0 && "$dockerhub_creds_set" -lt 2 ]]; then
+          echo "::error::Docker Hub is partially configured: dockerhub_username and dockerhub_token secrets must both be set together, or neither."
+          fail=1
+        elif [[ "$dockerhub_creds_set" -eq 0 ]]; then
+          echo "::warning::Docker Hub credentials (dockerhub_username / dockerhub_token) are not configured -- Docker Hub publish is disabled for this run."
+        elif [[ -z "$DOCKERHUB_REPOSITORY" ]]; then
+          echo "::error::Docker Hub credentials are configured but dockerhub_repository is empty."
           fail=1
         fi
 
-        private_registry_fields_set=0
-        for field in "$PRIVATE_REGISTRY" "$PRIVATE_REGISTRY_REPOSITORY" "$PRIVATE_REGISTRY_USERNAME" "$PRIVATE_REGISTRY_TOKEN"; do
-          [[ -n "$field" ]] && private_registry_fields_set=$((private_registry_fields_set + 1))
+        private_registry_creds_set=0
+        for field in "$PRIVATE_REGISTRY" "$PRIVATE_REGISTRY_USERNAME" "$PRIVATE_REGISTRY_TOKEN"; do
+          [[ -n "$field" ]] && private_registry_creds_set=$((private_registry_creds_set + 1))
         done
-        if [[ "$private_registry_fields_set" -gt 0 && "$private_registry_fields_set" -lt 4 ]]; then
-          echo "::error::Private registry is partially configured: the private_registry secret, private_registry_repository input, and private_registry_username / private_registry_token secrets must all be set together, or none of them."
+        if [[ "$private_registry_creds_set" -gt 0 && "$private_registry_creds_set" -lt 3 ]]; then
+          echo "::error::Private registry is partially configured: the private_registry, private_registry_username and private_registry_token secrets must all be set together, or none of them."
           fail=1
+        elif [[ "$private_registry_creds_set" -eq 0 ]]; then
+          echo "::warning::Private registry credentials (private_registry / private_registry_username / private_registry_token) are not configured -- private registry publish is disabled for this run."
+        elif [[ -z "$PRIVATE_REGISTRY_REPOSITORY" ]]; then
+          echo "::error::Private registry credentials are configured but private_registry_repository is empty."
+          fail=1
+        fi
+
+        # Tailscale is a precondition for the private registry (a Tailnet-only host): apply the
+        # same all-or-nothing rule to its OAuth pair so a half-configured Tailscale fails fast
+        # here instead of silently disabling the build cache and then failing late at
+        # "Login to Private Registry" with no tunnel up.
+        tailscale_creds_set=0
+        for field in "$TAILSCALE_OAUTH_CLIENT_ID" "$TAILSCALE_OAUTH_SECRET"; do
+          [[ -n "$field" ]] && tailscale_creds_set=$((tailscale_creds_set + 1))
+        done
+        if [[ "$tailscale_creds_set" -gt 0 && "$tailscale_creds_set" -lt 2 ]]; then
+          echo "::error::Tailscale is partially configured: tailscale_oauth_client_id and tailscale_oauth_secret secrets must both be set together, or neither."
+          fail=1
+        elif [[ "$tailscale_creds_set" -eq 0 ]]; then
+          echo "::warning::Tailscale credentials (tailscale_oauth_client_id / tailscale_oauth_secret) are not configured -- Tailscale connectivity, and anything depending on it (the private registry build cache, a Tailnet-only registry login), is disabled for this run."
         fi
 
         if [[ "$PUBLISH_DOCKERHUB" != 'true' && "$PUBLISH_PRIVATE_REGISTRY" != 'true' ]]; then
-          echo "::error::No publish target resolved (Docker Hub and private registry are both unconfigured or misconfigured) -- this build would publish nothing."
-          fail=1
+          echo "::warning::No publish target is configured (Docker Hub and private registry are both disabled) -- this will be a build-only run that publishes nothing."
         fi
 
         exit "$fail"
@@ -180,7 +219,12 @@ jobs:
             ref_kind=tag
             # use the git ref segment after the final slash (a tag name can contain a slash)
             version_raw="$(echo "$tag" | grep -oE '[^/]+$')"
-            version_semver="$(echo "$version_raw" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+            # A non-semver tag (nightly, rc1, a date stamp) is legitimate and yields an empty
+            # version_semver, not a failure: grep exits 1 on no match, and under bash's default
+            # `-eo pipefail` that would otherwise kill this step outright. The trailing
+            # `|| true` sits after the whole pipeline (not inside it) so it absorbs that
+            # exit status regardless of which stage produced it.
+            version_semver="$(echo "$version_raw" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
           else
             echo "::error::source_git_ref '$SOURCE_GIT_REF' resolved to neither a branch nor a tag after checkout (detached HEAD, no tag points at it) -- refusing to publish an image with an unclassifiable version."
             exit 1
@@ -214,6 +258,20 @@ jobs:
           CACHE_FROM=""
           CACHE_TO=""
         else
+          # Normalise DEFAULT_BRANCH the same way "Resolve git ref" normalised VERSION_RAW for a
+          # branch build (last path segment, non-alphanumerics collapsed to '-', no leading/
+          # trailing '-'), so the default-branch comparison below compares like with like.
+          # Comparing the raw default_branch context directly against the already-normalised
+          # VERSION_RAW silently never matched whenever the default branch name contained a
+          # character the normalisation rewrites (e.g. "2.x" -> "2-x", "dev_main" -> "dev-main").
+          # Guarded on non-empty input: grep -oE with no match exits 1, which would otherwise
+          # kill this step under bash's default `-eo pipefail` on the (rare) event payload where
+          # default_branch is blank.
+          DEFAULT_BRANCH_NORMALIZED=""
+          if [[ -n "$DEFAULT_BRANCH" ]]; then
+            DEFAULT_BRANCH_NORMALIZED="$(echo "$DEFAULT_BRANCH" | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
+          fi
+
           LAST_COMMIT_MSG=$(git log --oneline --no-merges -1)
           BUST_CACHE=false
           # shellcheck disable=SC2076  # literal substring match is intended; unquoting would make [ci: bust-cache] a regex character class
@@ -223,9 +281,12 @@ jobs:
             BUST_CACHE=true
           fi
 
+          # Use REF_KIND, not VERSION_SEMVER emptiness, as the single answer to "what kind of
+          # ref is this" -- a non-semver tag also has an empty VERSION_SEMVER, and treating it
+          # like a branch here would import/export a bogus :branch-<tag-name> cache ref.
           if [[ "$BUST_CACHE" == 'true' ]]; then
             CACHE_FROM=""
-          elif [[ -z "$VERSION_SEMVER" ]]; then
+          elif [[ "$REF_KIND" == 'branch' ]]; then
             echo "Setting cache-from to use main branch, current branch and last build of any branch as caches..."
             CACHE_FROM=$(printf 'type=registry,ref=%s:main\ntype=registry,ref=%s:branch-%s\ntype=registry,ref=%s:cache-latest' \
               "$IMAGE_CACHE" "$IMAGE_CACHE" "$VERSION_RAW" "$IMAGE_CACHE")
@@ -235,12 +296,12 @@ jobs:
               "$IMAGE_CACHE" "$IMAGE_CACHE")
           fi
 
-          if [[ -n "$VERSION_SEMVER" ]]; then
+          if [[ "$REF_KIND" == 'tag' ]]; then
             # Tag builds only ever refresh cache-latest -- never clobber :main with a
             # point-in-time release build.
             echo "Setting cache-to to push to cache-latest only (tag build, leaving main cache untouched)..."
             CACHE_TO=$(printf 'type=registry,ref=%s:cache-latest,%s' "$IMAGE_CACHE" "$CACHE_PARAMS")
-          elif [[ -n "$DEFAULT_BRANCH" && "$VERSION_RAW" == "$DEFAULT_BRANCH" ]]; then
+          elif [[ -n "$DEFAULT_BRANCH_NORMALIZED" && "$VERSION_RAW" == "$DEFAULT_BRANCH_NORMALIZED" ]]; then
             echo "Setting cache-to to push to main cache (default branch build)..."
             CACHE_TO=$(printf 'type=registry,ref=%s:main,%s\ntype=registry,ref=%s:cache-latest,%s' \
               "$IMAGE_CACHE" "$CACHE_PARAMS" "$IMAGE_CACHE" "$CACHE_PARAMS")
@@ -263,8 +324,17 @@ jobs:
 
     - name: Show build parameters
       shell: bash
+      # yamllint disable-line rule:indentation
       run: |
-        env | sort | grep -E '^(CACHE_|VERSION_)'
+        # `env | grep` is line-based and would only show the first ref of each multi-line
+        # CACHE_FROM / CACHE_TO value (they're deliberately newline-separated -- see "Automatically
+        # set image build cache parameters" -- since docker/build-push-action's Util.getInputList
+        # only splits cache-from/cache-to on newlines). Print each variable explicitly instead so
+        # every ref is visible; this step exists to make cache plumbing auditable.
+        for var in VERSION_RAW VERSION_SEMVER VERSION_SHA CACHE_FROM CACHE_TO; do
+          echo "=== $var ==="
+          echo "${!var}"
+        done
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
@@ -292,7 +362,7 @@ jobs:
           org.opencontainers.image.description=${{ inputs.label_description }}
           org.opencontainers.image.version=${{ env.VERSION_RAW }}
         tags: |-
-          type=raw,value=${{ env.VERSION_RAW }},enable=${{ env.VERSION_SEMVER != '' }},priority=1000
+          type=raw,value=${{ env.VERSION_RAW }},enable=${{ env.REF_KIND == 'tag' }},priority=1000
           type=semver,pattern={{version}},value=${{ env.VERSION_SEMVER }},enable=${{ env.VERSION_SEMVER != '' }},priority=900
           type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION_SEMVER }},enable=${{ env.VERSION_SEMVER != '' }},priority=800
           type=semver,pattern={{major}},value=${{ env.VERSION_SEMVER }},enable=${{ env.VERSION_SEMVER != '' }},priority=700
@@ -367,7 +437,6 @@ jobs:
         annotations: ${{ steps.meta.outputs.annotations }}
         cache-from: ${{ env.CACHE_FROM }}
         cache-to: ${{ env.CACHE_TO }}
-        no-cache: ${{ env.CACHE_FROM == '' && env.CACHE_TO == '' }}
         sbom: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
         provenance: ${{ env.PUBLISH_PRIVATE_REGISTRY == 'true' || env.PUBLISH_DOCKERHUB == 'true' }}
         secrets: ${{ secrets.build_secrets }}
