@@ -63,7 +63,7 @@ env:
   PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
   PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
   CONNECT_TAILSCALE: ${{ secrets.tailscale_oauth_client_id != '' && secrets.tailscale_oauth_secret != '' }}
-  SOURCE_GIT_REF_NORMALIZED: ${{ startsWith(inputs.source_git_ref, 'refs/') && inputs.source_git_ref || format('refs/heads/{0}', inputs.source_git_ref) }}
+  REF_KIND: ''
   VERSION_SEMVER: ''
   VERSION_RAW: ''
   VERSION_SHA: ''
@@ -139,44 +139,67 @@ jobs:
         ref: ${{ inputs.source_git_ref }}
 
 
-    - name: Automatically set image tag from git tag
-      if: ${{ startsWith(env.SOURCE_GIT_REF_NORMALIZED, 'refs/tags/') }}
+    - name: Resolve git ref
       shell: bash
       env:
-        SOURCE_GIT_REF: ${{ env.SOURCE_GIT_REF_NORMALIZED }}
+        SOURCE_GIT_REF: ${{ inputs.source_git_ref }}
       # yamllint disable-line rule:indentation
       run: |
-        # use the git ref segment after the final slash (as tag can contain a slash)
-        VERSION_RAW="$(echo "$SOURCE_GIT_REF" | grep -oE '[^/]+$')"
-        VERSION_SEMVER="$(echo "$VERSION_RAW" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
-        VERSION_SHA="$(git rev-parse --short HEAD)"
+        # Ask the repository actions/checkout just populated what source_git_ref actually
+        # resolved to, instead of guessing from the input string's shape (the previous
+        # startsWith(..., 'refs/') check). A pure string guess misclassifies a bare tag name
+        # (e.g. a consumer passing github.ref_name on a tag push, unqualified) as a branch --
+        # VERSION_SEMVER stays empty and the release publishes as branch-<name> with no
+        # semver/latest tags -- and leaves a ref that is neither (refs/pull/N/merge) matching
+        # nothing at all, so VERSION_RAW/VERSION_SEMVER stay empty and metadata-action applies
+        # its prefixes to nothing, pushing the literal tags "branch-" and "git-".
+        #
+        # actions/checkout (fetch-depth: 1, ref: source_git_ref, no sha:) only ever leaves a
+        # successful checkout in one of two states (verified against its ref-helper.ts): HEAD
+        # on a local branch -- `checkout -B <branch> <startpoint>`, used both for a
+        # fully-qualified refs/heads/<x> and for a bare name that matches a remote branch,
+        # which is also the priority actions/checkout itself gives a bare name matching both a
+        # branch and a tag -- or HEAD detached at a fetched tag ref -- `checkout
+        # refs/tags/<x>`, used both for a fully-qualified refs/tags/<x> and for a bare name
+        # that only matches a tag. Anything else (refs/pull/N/merge, an arbitrary
+        # refs/<other>/<x>) leaves HEAD detached with no tag pointing at it, which is exactly
+        # the case that used to slip through as blank VERSION_RAW/VERSION_SEMVER -- fail loudly
+        # instead of publishing garbage tags.
+        branch="$(git symbolic-ref -q --short HEAD || true)"
+
+        if [[ -n "$branch" ]]; then
+          ref_kind=branch
+          # use the git ref segment after the final slash (a branch name can contain a slash)
+          version_raw="$(echo "$branch" | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
+          version_semver=""
+        else
+          # --exact-match only requires a tag ref pointing at HEAD's commit, not full history,
+          # so this is safe under actions/checkout's fetch-depth: 1.
+          tag="$(git describe --tags --exact-match HEAD 2>/dev/null || true)"
+          if [[ -n "$tag" ]]; then
+            ref_kind=tag
+            # use the git ref segment after the final slash (a tag name can contain a slash)
+            version_raw="$(echo "$tag" | grep -oE '[^/]+$')"
+            version_semver="$(echo "$version_raw" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+          else
+            echo "::error::source_git_ref '$SOURCE_GIT_REF' resolved to neither a branch nor a tag after checkout (detached HEAD, no tag points at it) -- refusing to publish an image with an unclassifiable version."
+            exit 1
+          fi
+        fi
+
+        version_sha="$(git rev-parse --short HEAD)"
 
         set -x
         {
-          echo "VERSION_SEMVER=$VERSION_SEMVER"
-          echo "VERSION_RAW=$VERSION_RAW"
-          echo "VERSION_SHA=$VERSION_SHA"
+          echo "REF_KIND=$ref_kind"
+          echo "VERSION_SEMVER=$version_semver"
+          echo "VERSION_RAW=$version_raw"
+          echo "VERSION_SHA=$version_sha"
         } >> "$GITHUB_ENV"
-
-    - name: Automatically set image tag from branch
-      if: ${{ startsWith(env.SOURCE_GIT_REF_NORMALIZED, 'refs/heads/') }}
-      shell: bash
-      env:
-        SOURCE_GIT_REF: ${{ env.SOURCE_GIT_REF_NORMALIZED }}
-      # yamllint disable-line rule:indentation
-      run: |
-        # use the git ref segment after the final slash (as branch can contain a slash)
-        VERSION_RAW="$(echo "$SOURCE_GIT_REF" | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
-        VERSION_SHA="$(git rev-parse --short HEAD)"
-
-        set -x
-        echo "VERSION_RAW=$VERSION_RAW" >> "$GITHUB_ENV"
-        echo "VERSION_SHA=$VERSION_SHA" >> "$GITHUB_ENV"
 
     - name: Automatically set image build cache parameters
       shell: bash
       env:
-        SOURCE_GIT_REF: ${{ env.SOURCE_GIT_REF_NORMALIZED }}
         PRIVATE_REGISTRY_BUILD_CACHE: ${{ inputs.private_registry_build_cache }}
         IMAGE_CACHE: ${{ secrets.private_registry }}/${{ inputs.private_registry_build_cache }}
         DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -274,7 +297,7 @@ jobs:
           type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION_SEMVER }},enable=${{ env.VERSION_SEMVER != '' }},priority=800
           type=semver,pattern={{major}},value=${{ env.VERSION_SEMVER }},enable=${{ env.VERSION_SEMVER != '' }},priority=700
           type=raw,value=latest,enable=${{ env.VERSION_SEMVER != '' }},priority=200
-          type=raw,value=${{ env.VERSION_RAW }},enable=${{ env.VERSION_SEMVER == '' }},prefix=branch-,priority=400
+          type=raw,value=${{ env.VERSION_RAW }},enable=${{ env.REF_KIND == 'branch' }},prefix=branch-,priority=400
           type=raw,value=${{ env.VERSION_SHA }},prefix=git-,priority=300
 
     - name: Tailscale Connect
