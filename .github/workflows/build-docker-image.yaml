@@ -246,7 +246,6 @@ jobs:
       env:
         PRIVATE_REGISTRY_BUILD_CACHE: ${{ inputs.private_registry_build_cache }}
         IMAGE_CACHE: ${{ secrets.private_registry }}/${{ inputs.private_registry_build_cache }}
-        DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         CACHE_PARAMS: image-manifest=true,oci-mediatypes=true,mode=max,compression=zstd
       # yamllint disable-line rule:indentation
       run: |
@@ -258,20 +257,6 @@ jobs:
           CACHE_FROM=""
           CACHE_TO=""
         else
-          # Normalise DEFAULT_BRANCH the same way "Resolve git ref" normalised VERSION_RAW for a
-          # branch build (last path segment, non-alphanumerics collapsed to '-', no leading/
-          # trailing '-'), so the default-branch comparison below compares like with like.
-          # Comparing the raw default_branch context directly against the already-normalised
-          # VERSION_RAW silently never matched whenever the default branch name contained a
-          # character the normalisation rewrites (e.g. "2.x" -> "2-x", "dev_main" -> "dev-main").
-          # Guarded on non-empty input: grep -oE with no match exits 1, which would otherwise
-          # kill this step under bash's default `-eo pipefail` on the (rare) event payload where
-          # default_branch is blank.
-          DEFAULT_BRANCH_NORMALIZED=""
-          if [[ -n "$DEFAULT_BRANCH" ]]; then
-            DEFAULT_BRANCH_NORMALIZED="$(echo "$DEFAULT_BRANCH" | grep -oE '[^/]+$' | sed -E 's/[^a-zA-Z0-9]+/-/g; s/(^-+)|(-+$)//g')"
-          fi
-
           LAST_COMMIT_MSG=$(git log --oneline --no-merges -1)
           BUST_CACHE=false
           # shellcheck disable=SC2076  # literal substring match is intended; unquoting would make [ci: bust-cache] a regex character class
@@ -281,30 +266,27 @@ jobs:
             BUST_CACHE=true
           fi
 
-          # Use REF_KIND, not VERSION_SEMVER emptiness, as the single answer to "what kind of
-          # ref is this" -- a non-semver tag also has an empty VERSION_SEMVER, and treating it
-          # like a branch here would import/export a bogus :branch-<tag-name> cache ref.
+          # Only two caches exist: :branch-<name> (this branch's last build) and :cache-latest
+          # (the last build of anything, on either a branch or a tag). Use REF_KIND, not
+          # VERSION_SEMVER emptiness, as the single answer to "what kind of ref is this" -- a
+          # non-semver tag also has an empty VERSION_SEMVER, and treating it like a branch here
+          # would import/export a bogus :branch-<tag-name> cache ref.
           if [[ "$BUST_CACHE" == 'true' ]]; then
             CACHE_FROM=""
           elif [[ "$REF_KIND" == 'branch' ]]; then
-            echo "Setting cache-from to use main branch, current branch and last build of any branch as caches..."
-            CACHE_FROM=$(printf 'type=registry,ref=%s:main\ntype=registry,ref=%s:branch-%s\ntype=registry,ref=%s:cache-latest' \
-              "$IMAGE_CACHE" "$IMAGE_CACHE" "$VERSION_RAW" "$IMAGE_CACHE")
+            echo "Setting cache-from to use current branch and last build of any branch or tag as caches..."
+            CACHE_FROM=$(printf 'type=registry,ref=%s:branch-%s\ntype=registry,ref=%s:cache-latest' \
+              "$IMAGE_CACHE" "$VERSION_RAW" "$IMAGE_CACHE")
           else
-            echo "Setting cache-from to use main branch and last build of any branch as caches..."
-            CACHE_FROM=$(printf 'type=registry,ref=%s:main\ntype=registry,ref=%s:cache-latest' \
-              "$IMAGE_CACHE" "$IMAGE_CACHE")
+            echo "Setting cache-from to use last build of any branch or tag as cache..."
+            CACHE_FROM=$(printf 'type=registry,ref=%s:cache-latest' "$IMAGE_CACHE")
           fi
 
           if [[ "$REF_KIND" == 'tag' ]]; then
-            # Tag builds only ever refresh cache-latest -- never clobber :main with a
+            # Tag builds only ever refresh cache-latest -- never clobber a branch cache with a
             # point-in-time release build.
-            echo "Setting cache-to to push to cache-latest only (tag build, leaving main cache untouched)..."
+            echo "Setting cache-to to push to cache-latest only (tag build)..."
             CACHE_TO=$(printf 'type=registry,ref=%s:cache-latest,%s' "$IMAGE_CACHE" "$CACHE_PARAMS")
-          elif [[ -n "$DEFAULT_BRANCH_NORMALIZED" && "$VERSION_RAW" == "$DEFAULT_BRANCH_NORMALIZED" ]]; then
-            echo "Setting cache-to to push to main cache (default branch build)..."
-            CACHE_TO=$(printf 'type=registry,ref=%s:main,%s\ntype=registry,ref=%s:cache-latest,%s' \
-              "$IMAGE_CACHE" "$CACHE_PARAMS" "$IMAGE_CACHE" "$CACHE_PARAMS")
           else
             echo "Setting cache-to to push to branch cache..."
             CACHE_TO=$(printf 'type=registry,ref=%s:branch-%s,%s\ntype=registry,ref=%s:cache-latest,%s' \
