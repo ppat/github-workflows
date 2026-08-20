@@ -57,6 +57,8 @@ on:
       image_tag:
         value: ${{ jobs.build-image.outputs.image_tag }}
 
+permissions: {}
+
 env:
   PUBLISH_DOCKERHUB: ${{ inputs.dockerhub_repository != '' && secrets.dockerhub_username != '' && secrets.dockerhub_token != '' }}
   PUBLISH_PRIVATE_REGISTRY: ${{ secrets.private_registry != '' && inputs.private_registry_repository != '' && secrets.private_registry_username != '' && secrets.private_registry_token != '' }}
@@ -70,6 +72,7 @@ env:
 
 jobs:
   build-image:
+    name: Build and publish image
     runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
@@ -284,16 +287,33 @@ jobs:
 
     - name: Tailscale Debug
       if: ${{ env.CONNECT_TAILSCALE == 'true' && github.event_name == 'workflow_dispatch' }}
+      env:
+        PRIVATE_REGISTRY: ${{ secrets.private_registry }}
+      # yamllint disable-line rule:indentation
       run: |
-        sudo -E tailscale netcheck --verbose 2>&1 | sed -f .github/.output-filter
+        # .github/.output-filter is read from the CALLER's checkout (this is a reusable
+        # workflow), so it is intentionally honoured when a consumer provides one, but must
+        # not be required: GNU sed exits 4 on a missing script file, which would otherwise
+        # fail this step's whole job for every consumer that doesn't ship one. Degrade to an
+        # unfiltered passthrough instead -- this step is debug scaffolding, not something with
+        # a correctness requirement beyond "runs and prints".
+        output_filter() {
+          if [[ -f .github/.output-filter ]]; then
+            sed -f .github/.output-filter
+          else
+            cat
+          fi
+        }
+
+        sudo -E tailscale netcheck --verbose 2>&1 | output_filter
         echo "------------------------------------------------------------------------------"
-        sudo -E tailscale status 2>&1 | sed -f .github/.output-filter
+        sudo -E tailscale status 2>&1 | output_filter
         echo "------------------------------------------------------------------------------"
-        sudo -E tailscale status --json --peers=false 2>&1 | sed -f .github/.output-filter
+        sudo -E tailscale status --json --peers=false 2>&1 | output_filter
         echo "------------------------------------------------------------------------------"
         sudo tailscale dns status --all
         echo "------------------------------------------------------------------------------"
-        sudo -E tailscale ping --verbose --until-direct=false --c 5 ${{ secrets.private_registry }} | sed -f .github/.output-filter
+        sudo -E tailscale ping --verbose --until-direct=false --c 5 "$PRIVATE_REGISTRY" | output_filter
         echo "------------------------------------------------------------------------------"
 
     - name: Login to Docker Hub
