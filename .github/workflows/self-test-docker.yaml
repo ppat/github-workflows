@@ -30,7 +30,7 @@ jobs:
   build-docker-image:
     uses: ./.github/workflows/build-docker-image.yaml
     with:
-      source_git_ref: ${{ github.head_ref || github.ref }}
+      git_ref: ${{ github.head_ref || github.ref }}
       image_context_path: test/docker
       label_title: "Test Docker Build"
       label_description: "Test Docker Build"

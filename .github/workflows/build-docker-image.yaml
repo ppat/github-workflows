@@ -26,7 +26,7 @@ on:
       private_registry_build_cache:
         required: false
         type: string
-      source_git_ref:
+      git_ref:
         required: true
         type: string
       timeout_minutes:
@@ -52,8 +52,6 @@ on:
     outputs:
       digest:
         value: ${{ jobs.build-image.outputs.digest }}
-      image_id:
-        value: ${{ jobs.build-image.outputs.image_id }}
       image_tag:
         value: ${{ jobs.build-image.outputs.image_tag }}
 
@@ -81,7 +79,6 @@ jobs:
 
     outputs:
       digest: ${{ steps.image_info.outputs.digest }}
-      image_id: ${{ steps.image_info.outputs.image_id }}
       image_tag: ${{ steps.image_info.outputs.image_tag }}
 
     steps:
@@ -175,16 +172,16 @@ jobs:
         fetch-depth: 1
         persist-credentials: false
         repository: ${{ github.repository }}
-        ref: ${{ inputs.source_git_ref }}
+        ref: ${{ inputs.git_ref }}
 
 
     - name: Resolve git ref
       shell: bash
       env:
-        SOURCE_GIT_REF: ${{ inputs.source_git_ref }}
+        GIT_REF: ${{ inputs.git_ref }}
       # yamllint disable-line rule:indentation
       run: |
-        # Ask the repository actions/checkout just populated what source_git_ref actually
+        # Ask the repository actions/checkout just populated what git_ref actually
         # resolved to, instead of guessing from the input string's shape (the previous
         # startsWith(..., 'refs/') check). A pure string guess misclassifies a bare tag name
         # (e.g. a consumer passing github.ref_name on a tag push, unqualified) as a branch --
@@ -193,7 +190,7 @@ jobs:
         # nothing at all, so VERSION_RAW/VERSION_SEMVER stay empty and metadata-action applies
         # its prefixes to nothing, pushing the literal tags "branch-" and "git-".
         #
-        # actions/checkout (fetch-depth: 1, ref: source_git_ref, no sha:) only ever leaves a
+        # actions/checkout (fetch-depth: 1, ref: git_ref, no sha:) only ever leaves a
         # successful checkout in one of two states (verified against its ref-helper.ts): HEAD
         # on a local branch -- `checkout -B <branch> <startpoint>`, used both for a
         # fully-qualified refs/heads/<x> and for a bare name that matches a remote branch,
@@ -226,7 +223,7 @@ jobs:
             # exit status regardless of which stage produced it.
             version_semver="$(echo "$version_raw" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
           else
-            echo "::error::source_git_ref '$SOURCE_GIT_REF' resolved to neither a branch nor a tag after checkout (detached HEAD, no tag points at it) -- refusing to publish an image with an unclassifiable version."
+            echo "::error::git_ref '$GIT_REF' resolved to neither a branch nor a tag after checkout (detached HEAD, no tag points at it) -- refusing to publish an image with an unclassifiable version."
             exit 1
           fi
         fi
@@ -427,14 +424,12 @@ jobs:
       id: image_info
       shell: bash
       env:
-        IMAGE_ID: ${{ steps.build-image.outputs.imageid }}
         IMAGE_TAG: ${{ steps.meta.outputs.version }}
         IMAGE_DIGEST: ${{ steps.build-image.outputs.digest }}
       # yamllint disable-line rule:indentation
       run: |
         {
           echo "digest=${IMAGE_DIGEST}"
-          echo "image_id=${IMAGE_ID}"
           echo "image_tag=${IMAGE_TAG}"
         } >> "$GITHUB_OUTPUT"
 
