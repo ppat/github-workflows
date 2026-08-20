@@ -511,50 +511,6 @@ jobs:
         oauth-secret: ${{ secrets.tailscale_oauth_secret }}
         tags: tag:github-action-ci-runner
 
-    - name: Tailscale Debug
-      if: ${{ env.CONNECT_TAILSCALE == 'true' && github.event_name == 'workflow_dispatch' }}
-      # Debug scaffolding, load-bearing on nothing: `sudo tailscale dns status --all` below is
-      # unpiped, so under `set -e` (on by default, and explicit here via shell: bash's
-      # -eo pipefail) a non-zero exit from it alone would kill this step before the later,
-      # more-likely-to-flake `tailscale ping` against a host that may sit behind a subnet router
-      # ever runs. continue-on-error keeps any of that from failing a build that would otherwise
-      # have succeeded.
-      continue-on-error: true
-      shell: bash
-      env:
-        PRIVATE_REGISTRY: ${{ secrets.private_registry }}
-      # yamllint disable-line rule:indentation
-      run: |
-        # .github/.output-filter is read from the CALLER's checkout (this is a reusable
-        # workflow), so it is intentionally honoured when a consumer provides one, but must
-        # not be required: GNU sed exits 4 on a missing script file, which would otherwise
-        # fail this step's whole job for every consumer that doesn't ship one. Degrade to an
-        # unfiltered passthrough instead -- this step is debug scaffolding, not something with
-        # a correctness requirement beyond "runs and prints".
-        output_filter() {
-          if [[ -f .github/.output-filter ]]; then
-            sed -f .github/.output-filter
-          else
-            cat
-          fi
-        }
-
-        sudo -E tailscale netcheck --verbose 2>&1 | output_filter
-        echo "------------------------------------------------------------------------------"
-        sudo -E tailscale status 2>&1 | output_filter
-        echo "------------------------------------------------------------------------------"
-        sudo -E tailscale status --json --peers=false 2>&1 | output_filter
-        echo "------------------------------------------------------------------------------"
-        sudo tailscale dns status --all
-        echo "------------------------------------------------------------------------------"
-        # Only ping the private registry when it's actually a publish target: this runs
-        # whenever Tailscale is connected regardless of whether the private registry is on,
-        # and pinging an empty argument (target disabled) is pointless as well as noisy.
-        if [[ "$PUBLISH_PRIVATE_REGISTRY" == 'true' ]]; then
-          sudo -E tailscale ping --verbose --until-direct=false --c 5 "$PRIVATE_REGISTRY" | output_filter
-          echo "------------------------------------------------------------------------------"
-        fi
-
     - name: Login to Docker Hub
       if: ${{ env.PUBLISH_DOCKERHUB == 'true' }}
       uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
@@ -666,6 +622,87 @@ jobs:
         short-description: ${{ steps.dockerhub_meta.outputs.short_description }}
         enable-url-completion: true
 
+    - name: Tailscale Debug
+      # Runs in two cases: a manual workflow_dispatch run (unconditionally, so the tailnet can
+      # be inspected on demand), OR when any earlier step in this job has failed -- added so the
+      # diagnostic actually fires for the failure mode it exists to catch (intermittent
+      # Tailscale route churn causing registry-login timeouts and, once, a DNS resolution
+      # failure for a public hostname -- see ppat/homelab-ops-kubernetes-clusters#968). Real
+      # failures happen on pull_request/push, not workflow_dispatch, so gating on the event name
+      # alone meant this evidence never got collected.
+      #
+      # Moved here, immediately before Tailscale Disconnect, so failure() can see a failure from
+      # ANY prior step -- both registry logins and the image build/push itself (buildx also
+      # talks to the private registry, for cache-from/cache-to). In its original position, right
+      # after Tailscale Connect and before the Login steps, failure() could only ever reflect a
+      # failure in Checkout/Resolve-git-ref/Tailscale-Connect: the steps this diagnostic actually
+      # needs to observe (Login to *, Build and publish image) all run AFTER that spot, so a
+      # failure there would still be in the future when this step's `if:` was evaluated.
+      #
+      # `!cancelled()` is deliberate: without a status-check function, GitHub Actions implicitly
+      # ANDs a step's condition with success(), which is why `github.event_name ==
+      # 'workflow_dispatch'` alone was sufficient to skip this step on every non-dispatch run.
+      # Introducing failure() as an explicit status-check function turns that implicit wrapper
+      # off entirely, so cancellation has to be excluded by hand -- otherwise a cancelled
+      # workflow_dispatch run (event name still matches) would run this step mid-shutdown, and a
+      # cancelled failure()-triggered run would too. `!cancelled()` restores "skip on
+      # cancellation" for both paths without reintroducing the implicit success()-only gate that
+      # caused the bug.
+      if: ${{ env.CONNECT_TAILSCALE == 'true' && !cancelled() && (github.event_name == 'workflow_dispatch' || failure()) }}
+      # Debug scaffolding, load-bearing on nothing: `sudo tailscale dns status --all` below is
+      # unpiped, so under `set -e` (on by default, and explicit here via shell: bash's
+      # -eo pipefail) a non-zero exit from it alone would kill this step before the later,
+      # more-likely-to-flake `tailscale ping` against a host that may sit behind a subnet router
+      # ever runs. continue-on-error keeps any of that from failing a build that would otherwise
+      # have succeeded.
+      continue-on-error: true
+      shell: bash
+      env:
+        PRIVATE_REGISTRY: ${{ secrets.private_registry }}
+      # yamllint disable-line rule:indentation
+      run: |
+        # .github/.output-filter is read from the CALLER's checkout (this is a reusable
+        # workflow), so it is intentionally honoured when a consumer provides one, but must
+        # not be required: GNU sed exits 4 on a missing script file, which would otherwise
+        # fail this step's whole job for every consumer that doesn't ship one. Degrade to an
+        # unfiltered passthrough instead -- this step is debug scaffolding, not something with
+        # a correctness requirement beyond "runs and prints".
+        output_filter() {
+          if [[ -f .github/.output-filter ]]; then
+            sed -f .github/.output-filter
+          else
+            cat
+          fi
+        }
+
+        sudo -E tailscale netcheck --verbose 2>&1 | output_filter
+        echo "------------------------------------------------------------------------------"
+        sudo -E tailscale status 2>&1 | output_filter
+        echo "------------------------------------------------------------------------------"
+        sudo -E tailscale status --json --peers=false 2>&1 | output_filter
+        echo "------------------------------------------------------------------------------"
+        sudo tailscale dns status --all
+        echo "------------------------------------------------------------------------------"
+        # Alongside Tailscale's own view of DNS (above), also capture systemd-resolved's live
+        # resolver state directly: the one confirmed failure this step exists to help diagnose
+        # was a DNS resolution timeout against systemd-resolved for a public hostname, and
+        # `tailscale dns status` reports what Tailscale has configured, not necessarily what the
+        # resolver is actually doing with it at this moment. No specific hostname is queried --
+        # which registry or endpoint stalls varies by incident, and this is a debug step, not a
+        # data-collection framework.
+        resolvectl status 2>&1 | output_filter
+        echo "------------------------------------------------------------------------------"
+        # Only ping the private registry when it's actually a publish target: this runs
+        # whenever Tailscale is connected regardless of whether the private registry is on,
+        # and pinging an empty argument (target disabled) is pointless as well as noisy.
+        if [[ "$PUBLISH_PRIVATE_REGISTRY" == 'true' ]]; then
+          sudo -E tailscale ping --verbose --until-direct=false --c 5 "$PRIVATE_REGISTRY" | output_filter
+          echo "------------------------------------------------------------------------------"
+        fi
+
     - name: Tailscale Disconnect
+      # Debug now shares this same (success-on-dispatch OR failure) OR'd shape via its own
+      # if: above; whenever Debug's condition can be true, this one is too -- so it always
+      # follows Debug immediately, and CONNECT_TAILSCALE=='true' sessions never get stranded.
       if: ${{ (success() || failure()) && (env.CONNECT_TAILSCALE == 'true') }}
       run: sudo -E tailscale logout
