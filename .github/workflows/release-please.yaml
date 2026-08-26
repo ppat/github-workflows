@@ -19,7 +19,7 @@ on:
 
 env:
   # renovate: datasource=npm depName=release-please
-  RELEASE_PLEASE_VERSION: "17.11.1"
+  RELEASE_PLEASE_VERSION: "17.11.2"
   # renovate: datasource=node-version
   NODE_VERSION: "24.11.1"
 
