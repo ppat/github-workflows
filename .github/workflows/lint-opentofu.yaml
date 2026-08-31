@@ -1,0 +1,118 @@
+---
+# yamllint disable rule:line-length
+name: opentofu
+
+on:
+  workflow_call:
+    inputs:
+      git_ref:
+        required: true
+        type: string
+      mise_ignore_cfg:
+        required: false
+        type: string
+        default: ""
+      mise_log_level:
+        required: false
+        type: string
+        default: "warn"
+      tofu_dirs:
+        description: 'JSON array of OpenTofu directories to validate'
+        required: true
+        type: string
+
+env:
+  # renovate: datasource=github-releases depName=opentofu/opentofu
+  OPENTOFU_VERSION: "v1.12.6"
+  # renovate: datasource=github-releases depName=terraform-linters/tflint
+  TFLINT_VERSION: "v0.64.0"
+
+jobs:
+  opentofu-fmt:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: Setup repository and tools
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
+      with:
+        current_git_ref: ${{ inputs.git_ref }}
+        current_repository: ${{ github.repository }}
+        mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
+        mise_log_level: ${{ inputs.mise_log_level }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          opentofu = "${{ env.OPENTOFU_VERSION }}"
+          tflint   = "${{ env.TFLINT_VERSION }}"
+
+    - name: tofu-fmt
+      working-directory: ./current
+      run: tofu fmt -check -recursive
+
+  opentofu-validate:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        dir: ${{ fromJSON(inputs.tofu_dirs) }}
+      fail-fast: false
+    timeout-minutes: 5
+    steps:
+    - name: Setup repository and tools
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
+      with:
+        current_git_ref: ${{ inputs.git_ref }}
+        current_repository: ${{ github.repository }}
+        mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
+        mise_log_level: ${{ inputs.mise_log_level }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          opentofu = "${{ env.OPENTOFU_VERSION }}"
+          tflint   = "${{ env.TFLINT_VERSION }}"
+
+    - name: tofu-init
+      working-directory: ./current/${{ matrix.dir }}
+      run: tofu init -backend=false
+
+    - name: tofu-validate
+      working-directory: ./current/${{ matrix.dir }}
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ -f .ci.env ]]; then
+          set -o allexport
+          source .ci.env
+          set +o allexport
+        fi
+        tofu validate
+
+  opentofu-lint:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        dir: ${{ fromJSON(inputs.tofu_dirs) }}
+      fail-fast: false
+    timeout-minutes: 5
+    steps:
+    - name: Setup repository and tools
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9c16506c3c527478b6314c86ca961c0011d9f94a # v2.2.0
+      with:
+        current_git_ref: ${{ inputs.git_ref }}
+        current_repository: ${{ github.repository }}
+        mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
+        mise_log_level: ${{ inputs.mise_log_level }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        mise_toml: |
+          [tools]
+          opentofu = "${{ env.OPENTOFU_VERSION }}"
+          tflint   = "${{ env.TFLINT_VERSION }}"
+
+    - name: tflint
+      working-directory: ./current/${{ matrix.dir }}
+      # yamllint disable-line rule:indentation
+      run: |
+        if [[ -f .ci.env ]]; then
+          set -o allexport
+          source .ci.env
+          set +o allexport
+        fi
+        tflint --config=${{ github.workspace }}/current/.tflint.hcl --color

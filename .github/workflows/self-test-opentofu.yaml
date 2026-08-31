@@ -1,0 +1,27 @@
+---
+# yamllint disable rule:line-length
+name: self-test-opentofu
+
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/lint-opentofu.yaml'
+    - '.github/workflows/self-test-opentofu.yaml'
+    - 'test/opentofu/**'
+  workflow_dispatch:
+  schedule:
+  - cron: '0 5 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-opentofu:
+    uses: ./.github/workflows/lint-opentofu.yaml
+    with:
+      git_ref: ${{ github.head_ref || github.ref }}
+      tofu_dirs: '["test/opentofu"]'
