@@ -1,5 +1,30 @@
 # Changelog
 
+## [6.1.0](https://github.com/ppat/github-workflows/compare/v6.0.0...v6.1.0) (2026-09-01)
+
+
+### 🧹 Miscellaneous
+
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#628](https://github.com/ppat/github-workflows/issues/628)) ([53603a3](https://github.com/ppat/github-workflows/commit/53603a3cf1c39b7aefd25510fcb4f7047eaa122c))
+
+
+### ✨ Features
+
+* **github-actions:** update docker/setup-buildx-action (v4.2.0 -&gt; v4.3.0) ([#620](https://github.com/ppat/github-workflows/issues/620)) ([4c83339](https://github.com/ppat/github-workflows/commit/4c83339f45936e9acfb1bb9ffd1aec520372f58f))
+* **github-actions:** update ppat/homelab-ops-actions (v2.2.0 -&gt; v2.3.2) ([#629](https://github.com/ppat/github-workflows/issues/629)) ([15f6ad6](https://github.com/ppat/github-workflows/commit/15f6ad66e95019d056853affb24c4f2b5d38931f))
+* **reusable-workflows:** add lint-opentofu.yaml for OpenTofu linting support ([#631](https://github.com/ppat/github-workflows/issues/631)) ([3d196fb](https://github.com/ppat/github-workflows/commit/3d196fb5e4f9703b28d1526b41099cd27f207271))
+* **shipped-dependencies:** update bun (1.3.14 -&gt; 1.4.0) ([#625](https://github.com/ppat/github-workflows/issues/625)) ([299df64](https://github.com/ppat/github-workflows/commit/299df64f7d30c6a052d349d62fae1f10597721eb))
+* **shipped-dependencies:** update renovatebot/renovate (44.31.0 -&gt; 44.50.3) ([#619](https://github.com/ppat/github-workflows/issues/619)) ([4fe6cf1](https://github.com/ppat/github-workflows/commit/4fe6cf18e750b5e49edfc94eacb8ec0fdf3ce9d2))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.12.5 -&gt; 0.12.6) ([#623](https://github.com/ppat/github-workflows/issues/623)) ([592a35b](https://github.com/ppat/github-workflows/commit/592a35bc4062b80cc414e77623d85ca9fa863e1a))
+* **shipped-dependencies:** update astral-sh/uv (0.12.6 -&gt; 0.12.7) ([#626](https://github.com/ppat/github-workflows/issues/626)) ([a044f8f](https://github.com/ppat/github-workflows/commit/a044f8fe570b7a985e5ba9ef00b8a07678601f41))
+* **shipped-dependencies:** update kindest/node (v1.36.1 -&gt; v1.36.4) ([#624](https://github.com/ppat/github-workflows/issues/624)) ([16d36f9](https://github.com/ppat/github-workflows/commit/16d36f91b1fe12b6101b64395b923c94d118ccad))
+* **shipped-dependencies:** update kubernetes/kubernetes (v1.36.3 -&gt; v1.36.4) ([#618](https://github.com/ppat/github-workflows/issues/618)) ([a259ee7](https://github.com/ppat/github-workflows/commit/a259ee7c179cebfcea222f43b2e955bb6e94203d))
+* **shipped-dependencies:** update release-please (17.11.1 -&gt; 17.11.2) ([#622](https://github.com/ppat/github-workflows/issues/622)) ([53e84da](https://github.com/ppat/github-workflows/commit/53e84da37ad1a9be21345a8f658d9af196d077d3))
+
 ## [6.0.0](https://github.com/ppat/github-workflows/compare/v5.0.1...v6.0.0) (2026-08-20)
 
 
