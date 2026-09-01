@@ -15,6 +15,7 @@ releases, and dependency updates.
 | [`lint-github-actions.yaml`](.github/workflows/lint-github-actions.yaml) | Lint workflow/action YAML with `actionlint` (shellcheck-integrated). |
 | [`lint-hadolint.yaml`](.github/workflows/lint-hadolint.yaml) | Lint Dockerfiles with `hadolint`. |
 | [`lint-markdown.yaml`](.github/workflows/lint-markdown.yaml) | Lint Markdown with `markdownlint-cli2`. |
+| [`lint-opentofu.yaml`](.github/workflows/lint-opentofu.yaml) | Run `tofu fmt -check`, `tofu validate`, and `tflint` across a set of [OpenTofu](https://opentofu.org/) directories -- the same checks as `lint-terraform.yaml`, against the `tofu` CLI instead of `terraform` (`tflint` parses HCL directly, so it lints either identically). |
 | [`lint-pre-commit.yaml`](.github/workflows/lint-pre-commit.yaml) | Run a fixed set of generic `pre-commit-hooks` (large files, shebangs, JSON, private keys, EOF, line endings, whitespace) against the whole repo. |
 | [`lint-renovate-config-check.yaml`](.github/workflows/lint-renovate-config-check.yaml) | Validate Renovate config file(s) with `renovate-config-validator`. |
 | [`lint-shellcheck.yaml`](.github/workflows/lint-shellcheck.yaml) | Lint shell scripts with `shellcheck`. With `files: ALL` it lints every executable file that identifies itself as shell, by shebang (`sh`/`bash`/`dash`/`ksh`) or by a `.sh`/`.bash` extension; otherwise it lints exactly the caller-supplied file list. |
