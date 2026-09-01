@@ -45,7 +45,7 @@ jobs:
     permissions:
       contents: read           # must be restated: any permissions: block zeroes unlisted scopes
       packages: write          # required on EVERY caller of this workflow, see below
-    uses: ppat/github-workflows/.github/workflows/build-docker-image.yaml@v6.0.0 # x-release-please-version
+    uses: ppat/github-workflows/.github/workflows/build-docker-image.yaml@v6.1.0 # x-release-please-version
     with:
       image_context_path: .
       git_ref: ${{ github.head_ref || github.ref }}
@@ -128,7 +128,7 @@ commit SHA:
 ```yaml
 jobs:
   lint-yaml:
-    uses: ppat/github-workflows/.github/workflows/lint-yaml.yaml@v6.0.0 # x-release-please-version
+    uses: ppat/github-workflows/.github/workflows/lint-yaml.yaml@v6.1.0 # x-release-please-version
     with:
       git_ref: ${{ github.head_ref || github.ref }}
 ```
@@ -139,7 +139,7 @@ For workflows that need a GitHub App token (`release-please.yaml`, `release-sema
 ```yaml
 jobs:
   release:
-    uses: ppat/github-workflows/.github/workflows/release-please.yaml@v6.0.0 # x-release-please-version
+    uses: ppat/github-workflows/.github/workflows/release-please.yaml@v6.1.0 # x-release-please-version
     secrets:
       app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
