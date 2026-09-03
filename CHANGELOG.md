@@ -1,5 +1,28 @@
 # Changelog
 
+## [8.0.0](https://github.com/ppat/github-workflows/compare/v7.0.0...v8.0.0) (2026-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **reusable-workflows:** input param consistency ([#639](https://github.com/ppat/github-workflows/issues/639))
+
+### 🧹 Miscellaneous
+
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#644](https://github.com/ppat/github-workflows/issues/644)) ([ab67f92](https://github.com/ppat/github-workflows/commit/ab67f927d5d7ba86747bc920c82ed9d342f137fb))
+
+
+### ✨ Features
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.3.2 -&gt; v2.5.0) ([#642](https://github.com/ppat/github-workflows/issues/642)) ([0af4885](https://github.com/ppat/github-workflows/commit/0af48853edf26f72c5534dac56952d043b46c832))
+* **reusable-workflows:** input param consistency ([#639](https://github.com/ppat/github-workflows/issues/639)) ([bd2f3f3](https://github.com/ppat/github-workflows/commit/bd2f3f37f1df7073b328fca8ab32c791d98e8d53))
+* **shipped-dependencies:** update renovatebot/renovate (44.50.3 -&gt; 44.52.1) ([#643](https://github.com/ppat/github-workflows/issues/643)) ([6a09d59](https://github.com/ppat/github-workflows/commit/6a09d594e06ba2a55dbe63bef4afa2ca2fafb3c4))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** update renovatebot/github-action (v46.2.2 -&gt; v46.2.5) ([#641](https://github.com/ppat/github-workflows/issues/641)) ([3901b8d](https://github.com/ppat/github-workflows/commit/3901b8d6f22e52fc8307e67818f33638c00090fb))
+
 ## [7.0.0](https://github.com/ppat/github-workflows/compare/v6.1.0...v7.0.0) (2026-09-03)
 
 
