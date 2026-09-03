@@ -1,5 +1,24 @@
 # Changelog
 
+## [7.0.0](https://github.com/ppat/github-workflows/compare/v6.1.0...v7.0.0) (2026-09-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **reusable-workflows:** release-semantic.yaml is no longer available; consumers must use release-please.yaml.
+* **reusable-workflows:** callers must pass client_id with the matching GitHub App Client ID instead of app_id.
+
+### ✨ Features
+
+* **reusable-workflows:** accept GitHub App client IDs ([#637](https://github.com/ppat/github-workflows/issues/637)) ([77010a0](https://github.com/ppat/github-workflows/commit/77010a03f3a99d0ce12ea5abb365bd35c73b1741))
+* **reusable-workflows:** remove semantic-release workflow ([#638](https://github.com/ppat/github-workflows/issues/638)) ([ddeb501](https://github.com/ppat/github-workflows/commit/ddeb501353758a793a485950158ae10bdda2bf2e))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.12.7 -&gt; 0.12.9) ([#633](https://github.com/ppat/github-workflows/issues/633)) ([0537508](https://github.com/ppat/github-workflows/commit/0537508176c8547fe0d81753eed2d548ecacd508))
+* **shipped-dependencies:** update fluxcd/flux2 (v2.9.4 -&gt; v2.9.5) ([#634](https://github.com/ppat/github-workflows/issues/634)) ([61d81b3](https://github.com/ppat/github-workflows/commit/61d81b3a901b118e09e4526576f87a6c42344383))
+
 ## [6.1.0](https://github.com/ppat/github-workflows/compare/v6.0.0...v6.1.0) (2026-09-01)
 
 
