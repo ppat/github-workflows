@@ -29,7 +29,7 @@ jobs:
       dry_run: true
       release_branch: ${{ github.head_ref || github.ref_name }}
     secrets:
-      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      client_id: ${{ secrets.HOMELAB_BOT_CLIENT_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
 
   show-release:

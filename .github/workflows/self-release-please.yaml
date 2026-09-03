@@ -17,5 +17,5 @@ jobs:
   release:
     uses: ./.github/workflows/release-please.yaml
     secrets:
-      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      client_id: ${{ secrets.HOMELAB_BOT_CLIENT_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}

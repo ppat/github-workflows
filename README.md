@@ -134,19 +134,19 @@ jobs:
 ```
 
 For workflows that need a GitHub App token (`release-please.yaml`, `release-semantic.yaml`,
-`renovate.yaml`, `update-aqua-checksums.yaml`), pass `app_id`/`app_private_key` as secrets:
+`renovate.yaml`, `update-aqua-checksums.yaml`), pass `client_id`/`app_private_key` as secrets:
 
 ```yaml
 jobs:
   release:
     uses: ppat/github-workflows/.github/workflows/release-please.yaml@v6.1.0 # x-release-please-version
     secrets:
-      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      client_id: ${{ secrets.HOMELAB_BOT_CLIENT_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
 ```
 
 Those tokens are minted scoped to the calling repository only, with an explicit permission set per
-workflow. The App installation behind `app_id`/`app_private_key` must already carry at least these
+workflow. The App installation behind `client_id`/`app_private_key` must already carry at least these
 permissions — `actions/create-github-app-token` fails outright when asked for one the installation
 does not have:
 
