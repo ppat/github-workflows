@@ -23,7 +23,6 @@ releases, and dependency updates.
 | [`lint-yaml.yaml`](.github/workflows/lint-yaml.yaml) | Lint YAML with `yamllint`. |
 | [`lint-zizmor.yaml`](.github/workflows/lint-zizmor.yaml) | Audit GitHub Actions workflows for security issues with [`zizmor`](https://github.com/zizmorcore/zizmor). `min_severity`/`min_confidence`/`persona` inputs tune what gets reported (defaulting to the org-wide `medium`/`high`/`regular`); `advisory_only: true` reports findings without failing the job. |
 | [`release-please.yaml`](.github/workflows/release-please.yaml) | Cut PR-batched releases (changelog + version + tag) with [`release-please`](https://github.com/googleapis/release-please), driven by conventional commits. |
-| [`release-semantic.yaml`](.github/workflows/release-semantic.yaml) | Cut immediate, commit-triggered releases with [`semantic-release`](https://github.com/semantic-release/semantic-release) — dry-run on PRs, real release on `workflow_dispatch`. |
 | [`renovate.yaml`](.github/workflows/renovate.yaml) | Run a self-hosted [Renovate](https://github.com/renovatebot/renovate) against a repository. |
 | [`update-aqua-checksums.yaml`](.github/workflows/update-aqua-checksums.yaml) | Recompute [`aqua`](https://aquaproj.github.io/) checksum lockfiles and push the result as a signed commit. |
 
@@ -133,8 +132,8 @@ jobs:
       git_ref: ${{ github.head_ref || github.ref }}
 ```
 
-For workflows that need a GitHub App token (`release-please.yaml`, `release-semantic.yaml`,
-`renovate.yaml`, `update-aqua-checksums.yaml`), pass `client_id`/`app_private_key` as secrets:
+For workflows that need a GitHub App token (`release-please.yaml`, `renovate.yaml`,
+`update-aqua-checksums.yaml`), pass `client_id`/`app_private_key` as secrets:
 
 ```yaml
 jobs:
@@ -153,7 +152,6 @@ does not have:
 | Workflow | Installation permissions requested |
 | --- | --- |
 | [`release-please.yaml`](.github/workflows/release-please.yaml) | `contents: write` (tags + releases), `pull-requests: write` (release PR), `issues: write` (`autorelease:*` labels) |
-| [`release-semantic.yaml`](.github/workflows/release-semantic.yaml) | `contents: write` (tags, releases, `@semantic-release/git` pushes), `pull-requests: write`, `issues: write` (release comments/labels) |
 | [`update-aqua-checksums.yaml`](.github/workflows/update-aqua-checksums.yaml) | `contents: write` (signed commit of the updated checksums) |
 | [`renovate.yaml`](.github/workflows/renovate.yaml) | whatever the installation grants — Renovate's needs are broad and config-dependent (contents, pull-requests, issues, workflows, packages, checks, statuses, members, vulnerability alerts) |
 

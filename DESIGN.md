@@ -61,7 +61,7 @@ Every reusable workflow that has runtime behavior worth exercising has a matchin
 - `self-lint.yaml` calls the `lint-*.yaml` workflows (gated by `detect-changed-files.yaml`) against this
   repo's own workflow/markdown/YAML/renovate-config files, on every PR plus a weekly schedule.
 - `self-test-docker.yaml`, `self-test-chainsaw.yaml`, `self-test-terraform.yaml`, `self-test-shellcheck.yaml`,
-  `self-test-aqua.yaml`, `self-test-semantic-release.yaml` each call one workflow against a fixture tree
+  `self-test-aqua.yaml` each call one workflow against a fixture tree
   under `test/<name>/`, triggered by `pull_request.paths` scoped to that workflow + its fixtures, a weekly
   `schedule`, and `workflow_dispatch`. The weekly run exists to catch upstream drift (a new tool release, an
   external API change) between PRs that would otherwise go unnoticed until the next unrelated change to
@@ -90,25 +90,9 @@ an oversight:
   behavior is unchanged: PR-based — commits land on a standing release PR that captures the pending
   changelog/version bump, and merging that PR is what cuts the release. Signed commits are the default
   behavior, not a workaround. It also natively supports monorepos, including both
-  same-version-across-all-components and independently-versioned components, which `semantic-release` has no
-  real equivalent for. This repo releases **itself** this way — `self-release-please.yaml` runs it on every
-  push to `main`, driven by `release-please-config.json` / `.release-please-manifest.json`.
-- `release-semantic.yaml` wraps
-  [`semantic-release`](https://github.com/semantic-release/semantic-release) (config in `.releaserc.js`,
-  dependencies in `package.json`/`bun.lock`): commit-driven, releases immediately on `workflow_dispatch`
-  without a batching PR, and needs a convoluted plugin workaround to produce a signed commit at all. This
-  repo does **not** use this workflow for its own releases — `self-test-semantic-release.yaml` only dry-runs
-  it on PRs that touch the workflow or its config, to confirm it still works for consumers who use it as
-  their primary release mechanism.
-
-Newer repos in this org default to `release-please`; most older repos still use `release-semantic` and
-haven't been migrated. That migration is intentionally not being rushed: `release-please` is the better fit
-on features (see above), but `semantic-release` has the larger community, and `release-please` being a
-Google product carries its own risk — Google has a track record of discontinuing tools with little notice,
-leaving adopters to deal with the fallout. Both workflows are kept working and tested (`self-*`/`self-test-*`
-above) rather than one being left to bit-rot in favor of the other. Don't take on a wholesale migration of
-consumer repos from one to the other without being asked — pick whichever mechanism a given repo already
-uses, or ask, rather than assuming `release-please` is always the right default going forward.
+  same-version-across-all-components and independently-versioned components. This repo releases **itself**
+  this way — `self-release-please.yaml` runs it on every push to `main`, driven by
+  `release-please-config.json` / `.release-please-manifest.json`.
 
 Commit messages are enforced by commitlint (`commitlint.config.js`) via `lint-commit-messages.yaml`. The
 type/scope taxonomy those rules encode — and the artifact boundary that decides it — is documented in

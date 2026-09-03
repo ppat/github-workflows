@@ -72,7 +72,7 @@
       "semanticCommitType": "fix"
     },
     {
-      "description": "SHIPS: package.json/bun.lock are copied into the caller's workspace by lint-commit-messages and release-semantic. No matchUpdateTypes, for the same reason as above",
+      "description": "SHIPS: package.json/bun.lock are copied into the caller's workspace by lint-commit-messages. No matchUpdateTypes, for the same reason as above",
       "commitMessageExtra": "({{currentVersion}} -> {{newVersion}})",
       "matchFileNames": [
         "package.json"

@@ -17,9 +17,8 @@ See [README.md](README.md) for what each workflow does and how to call one from 
   `test/terraform/*.tf`, `test/chainsaw/*.yaml`).
 - `.github/renovate.json` + `.github/renovate/*.json` — this repo's own Renovate config (also a template
   for consumers).
-- `.releaserc.js`, `package.json`, `bun.lock` — config/deps for `release-semantic.yaml`, checked out by
-  consumers of that workflow that don't have their own (see the `Install node packages` step in
-  `release-semantic.yaml` and `lint-commit-messages.yaml`).
+- `package.json`, `bun.lock` — dependencies for `lint-commit-messages.yaml`, checked out by consumers
+  that do not have their own package manifest.
 - `release-please-config.json`, `.release-please-manifest.json` — config for `release-please.yaml`, used
   both by consumers and by this repo's own `self-release-please.yaml`.
 - `zizmor.yaml` — accepted-risk findings for the `lint-zizmor.yaml` gate (see comment in the file).
@@ -55,7 +54,7 @@ Lint a commit message locally:
 echo "fix(github-actions): re-pin actions/checkout to its current major" | npx commitlint
 ```
 
-`bun install` is only needed if changing `package.json`/`.releaserc.js` (semantic-release deps); it is not
+`bun install` is only needed if changing `package.json`; it is not
 required to edit or lint workflow YAML.
 
 There is no way to run a `workflow_call` workflow locally — to exercise one's actual runtime behavior,
@@ -103,7 +102,3 @@ header, and squash-merge means the **PR title** is the released commit on a mult
 - Commit messages must pass commitlint (header ≤120 chars) — see
   [.claude/rules/commits.md](.claude/rules/commits.md) for which type/scope to pick. `CHANGELOG.md` and version numbers are fully automated by release-please (this
   repo's own release mechanism, see [DESIGN.md](DESIGN.md)) — don't hand-edit either.
-- This repo offers both `release-please.yaml` and `release-semantic.yaml` as reusable workflows for
-  consumers to pick one from, but only dogfoods `release-please` on itself. Don't assume the two are
-  interchangeable or that a change to one should mirror in the other — they're deliberately separate
-  mechanisms for consumers with different preferences.

@@ -27,9 +27,8 @@ easy to get backwards:
   and is not "dev tooling" merely because it is a linter. The deciding construct is the **file**, not any YAML key:
   pins live in workflow- and step-level `env:`, in a step's `with:` input, and in `mise_toml:` heredocs. `scopes.json`
   matches on file path for that reason, so a pin in a new shape is classified correctly with no config change.
-- **Files copied into a caller's workspace ship.** `lint-commit-messages.yaml` and `release-semantic.yaml` copy
-  `package.json` + `bun.lock` into callers that have none, so the commitlint and semantic-release versions consumers
-  run are pinned here.
+- **Files copied into a caller's workspace ship.** `lint-commit-messages.yaml` copies `package.json` + `bun.lock`
+  into callers that have none, so the commitlint versions consumers run are pinned here.
 
 Everything else — this repo's own pre-commit hooks, linter configs, `self-*.yaml` workflows and `test/` fixtures —
 does not ship; the reusable linters always run against the **caller's** config. The test is per-file, so one tool
