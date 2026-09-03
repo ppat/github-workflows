@@ -31,5 +31,5 @@ jobs:
       semantic_commit_type: test
       semantic_commit_scope: internal-workflows
     secrets:
-      app_id: ${{ secrets.HOMELAB_BOT_APP_ID }}
+      client_id: ${{ secrets.HOMELAB_BOT_CLIENT_ID }}
       app_private_key: ${{ secrets.HOMELAB_BOT_APP_PRIVATE_KEY }}
