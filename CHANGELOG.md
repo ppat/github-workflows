@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.0](https://github.com/ppat/github-workflows/compare/v8.0.0...v8.1.0) (2026-09-05)
+
+
+### ✨ Features
+
+* **shipped-dependencies:** update kubernetes-sigs/kind (v0.32.0 -&gt; v0.33.0) ([#636](https://github.com/ppat/github-workflows/issues/636)) ([fa0e1d7](https://github.com/ppat/github-workflows/commit/fa0e1d7f360d2ec73d00f177ee638698c5fe0807))
+
 ## [8.0.0](https://github.com/ppat/github-workflows/compare/v7.0.0...v8.0.0) (2026-09-03)
 
 
