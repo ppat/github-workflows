@@ -1,5 +1,22 @@
 # Changelog
 
+## [8.1.0](https://github.com/ppat/github-workflows/compare/v8.0.0...v8.1.0) (2026-09-10)
+
+
+### ✨ Features
+
+* **github-actions:** update docker/setup-qemu-action (v4.2.0 -&gt; v4.3.0) ([#645](https://github.com/ppat/github-workflows/issues/645)) ([fe7eb8e](https://github.com/ppat/github-workflows/commit/fe7eb8ea68121252078b964c05f7ef11c7af2920))
+* **shipped-dependencies:** update kubernetes-sigs/kind (v0.32.0 -&gt; v0.33.0) ([#636](https://github.com/ppat/github-workflows/issues/636)) ([fa0e1d7](https://github.com/ppat/github-workflows/commit/fa0e1d7f360d2ec73d00f177ee638698c5fe0807))
+* **shipped-dependencies:** update renovatebot/renovate (44.52.1 -&gt; 44.66.1) ([#650](https://github.com/ppat/github-workflows/issues/650)) ([e26adda](https://github.com/ppat/github-workflows/commit/e26addaf418e3fc66197384858036ab39705ea26))
+* **shipped-dependencies:** update zizmorcore/zizmor (v1.29.0 -&gt; v1.30.1) ([#652](https://github.com/ppat/github-workflows/issues/652)) ([9af1cce](https://github.com/ppat/github-workflows/commit/9af1cce8cd359d541aa9d4c1f7f1d1f1a58f5199))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.12.10 -&gt; 0.12.11) ([#651](https://github.com/ppat/github-workflows/issues/651)) ([086e177](https://github.com/ppat/github-workflows/commit/086e177eeff62399ad7ec49721e8450889c2148c))
+* **shipped-dependencies:** update astral-sh/uv (0.12.9 -&gt; 0.12.10) ([#647](https://github.com/ppat/github-workflows/issues/647)) ([ec77191](https://github.com/ppat/github-workflows/commit/ec77191b189fed9a298ab8541671aef6465cb295))
+* **shipped-dependencies:** update bun (1.4.0 -&gt; 1.4.2) ([#648](https://github.com/ppat/github-workflows/issues/648)) ([b84860f](https://github.com/ppat/github-workflows/commit/b84860fae1226c1f94b413d0d7e8ac29681e0785))
+
 ## [8.0.0](https://github.com/ppat/github-workflows/compare/v7.0.0...v8.0.0) (2026-09-03)
 
 
