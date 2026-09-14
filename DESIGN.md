@@ -13,11 +13,16 @@ See [README.md](README.md) for what each workflow does and how to call one from 
 ## Conventions used by the workflows themselves
 
 - Every workflow in `.github/workflows/*.yaml` is a single `on: workflow_call` job graph — no composite
-  actions, no shared scripts outside the workflow file. Anything that needs checking out a repo and
+  actions defined here, no shared scripts outside the workflow file. Anything that needs checking out a repo and
   installing a toolchain calls
   [`ppat/homelab-ops-actions`](https://github.com/ppat/homelab-ops-actions)'s
   `actions/setup-repository-tools@<pinned-sha>` (that action lives in a separate repo specifically so both
   `github-workflows` and its consumers can use the same checkout/`mise`-install/cache logic).
+- `build-docker-image.yaml` is the one workflow whose job is a thin wrapper: it checks out and calls
+  `ppat/homelab-ops-actions`' `actions/build-docker-image@<pinned-sha>`, which holds the build, publish,
+  signing and Tailscale logic. The action is the interface for callers that need steps in the same job as
+  the build or permissions this workflow cannot request from every caller; the workflow keeps its own
+  `with:`/`secrets:`/`outputs:` interface for callers that want a whole job.
 - Tool versions needed inside a workflow's `run:` steps are pinned as workflow `env:` values with a
   `# renovate: datasource=... depName=...` comment directly above, driving the custom regex manager in
   `.github/renovate.json`. This is what lets Renovate bump a version embedded in shell/YAML instead of a
