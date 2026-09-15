@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.2.0](https://github.com/ppat/github-workflows/compare/v8.1.0...v8.2.0) (2026-09-15)
+
+
+### 🧹 Miscellaneous
+
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#657](https://github.com/ppat/github-workflows/issues/657)) ([67da275](https://github.com/ppat/github-workflows/commit/67da2754c09e90585317026ab8c5243e26665b03))
+
+
+### ✨ Features
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.5.0 -&gt; v2.6.0) ([#655](https://github.com/ppat/github-workflows/issues/655)) ([0e1b5da](https://github.com/ppat/github-workflows/commit/0e1b5daf5d446b6635ae0202707cffa440311da9))
+* **shipped-dependencies:** update renovatebot/renovate (44.66.1 -&gt; 44.82.2) ([#656](https://github.com/ppat/github-workflows/issues/656)) ([24b927c](https://github.com/ppat/github-workflows/commit/24b927cb7d85969676381df679392daa373fcbc4))
+
 ## [8.1.0](https://github.com/ppat/github-workflows/compare/v8.0.0...v8.1.0) (2026-09-14)
 
 
