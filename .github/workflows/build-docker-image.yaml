@@ -113,7 +113,7 @@ jobs:
     # action cannot own (runner, timeout, permissions, the checkout, and secrets as inputs).
     - name: Build and publish image
       id: build
-      uses: ppat/homelab-ops-actions/actions/build-docker-image@1ca11af183c2f3f117e9e83638c3949a399070a0 # v2.6.0
+      uses: ppat/homelab-ops-actions/actions/build-docker-image@2045fb6e6cb00ab099280625b6989cf62ccc1b77 # v2.7.0
       with:
         image_context_path: ${{ inputs.image_context_path }}
         platforms: ${{ inputs.platforms }}
