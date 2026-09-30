@@ -29,7 +29,7 @@ env:
 
 jobs:
   opentofu-fmt:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
@@ -50,7 +50,7 @@ jobs:
       run: tofu fmt -check -recursive
 
   opentofu-validate:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         dir: ${{ fromJSON(inputs.tofu_dirs) }}
@@ -86,7 +86,7 @@ jobs:
         tofu validate
 
   opentofu-lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         dir: ${{ fromJSON(inputs.tofu_dirs) }}
