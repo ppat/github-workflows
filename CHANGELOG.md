@@ -1,5 +1,40 @@
 # Changelog
 
+## [8.2.0](https://github.com/ppat/github-workflows/compare/v8.1.0...v8.2.0) (2026-09-30)
+
+
+### 🧹 Miscellaneous
+
+* **internal-dependencies:** update pre-commit packages (non-major) ([#667](https://github.com/ppat/github-workflows/issues/667)) ([988c96c](https://github.com/ppat/github-workflows/commit/988c96c9e6efc2ed70c26eeea8c50affb8379f88))
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#657](https://github.com/ppat/github-workflows/issues/657)) ([67da275](https://github.com/ppat/github-workflows/commit/67da2754c09e90585317026ab8c5243e26665b03))
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#670](https://github.com/ppat/github-workflows/issues/670)) ([ec93d45](https://github.com/ppat/github-workflows/commit/ec93d4578f3b1b514f6efcff71a04187c4988767))
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#677](https://github.com/ppat/github-workflows/issues/677)) ([903b901](https://github.com/ppat/github-workflows/commit/903b9011412a4f1d0b84a41df9ee96aa30d15c70))
+
+
+### ✨ Features
+
+* **github-actions:** update ghcr.io/renovatebot/renovate (44.115.10 -&gt; 44.125.1) ([#676](https://github.com/ppat/github-workflows/issues/676)) ([25bcc40](https://github.com/ppat/github-workflows/commit/25bcc4035b2e61cc075f0cb816f9dc7c187aa6ac))
+* **github-actions:** update ppat/homelab-ops-actions (v2.5.0 -&gt; v2.6.0) ([#655](https://github.com/ppat/github-workflows/issues/655)) ([0e1b5da](https://github.com/ppat/github-workflows/commit/0e1b5daf5d446b6635ae0202707cffa440311da9))
+* **github-actions:** update ppat/homelab-ops-actions (v2.6.0 -&gt; v2.7.0) ([#660](https://github.com/ppat/github-workflows/issues/660)) ([f6288b4](https://github.com/ppat/github-workflows/commit/f6288b419e52e0c6634100c9e77d146b9fd1a94d))
+* **github-actions:** update renovatebot/github-action (v46.2.5 -&gt; v46.3.6) ([#672](https://github.com/ppat/github-workflows/issues/672)) ([4ee3950](https://github.com/ppat/github-workflows/commit/4ee3950e8dfd5561d41456a79dbd0885486b834b))
+* **shipped-dependencies:** update aquaproj/aqua (v2.62.3 -&gt; v2.63.0) ([#663](https://github.com/ppat/github-workflows/issues/663)) ([72a6c75](https://github.com/ppat/github-workflows/commit/72a6c75bfadee5a5f5790309a0e28bb8e31105d4))
+* **shipped-dependencies:** update kubernetes ([#673](https://github.com/ppat/github-workflows/issues/673)) ([a475fcc](https://github.com/ppat/github-workflows/commit/a475fccc10519080b10821b7eb8b80982008dc7c))
+* **shipped-dependencies:** update renovatebot/renovate (44.105.1 -&gt; 44.115.10) ([#669](https://github.com/ppat/github-workflows/issues/669)) ([2250aa4](https://github.com/ppat/github-workflows/commit/2250aa4408263ffe2cc783e16ad397c3a9899123))
+* **shipped-dependencies:** update renovatebot/renovate (44.66.1 -&gt; 44.82.2) ([#656](https://github.com/ppat/github-workflows/issues/656)) ([24b927c](https://github.com/ppat/github-workflows/commit/24b927cb7d85969676381df679392daa373fcbc4))
+* **shipped-dependencies:** update renovatebot/renovate (44.82.2 -&gt; 44.105.1) ([#662](https://github.com/ppat/github-workflows/issues/662)) ([c1adeca](https://github.com/ppat/github-workflows/commit/c1adecac23d896076bc1237f52197d275a8018a2))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.12.13 -&gt; 0.12.15) ([#659](https://github.com/ppat/github-workflows/issues/659)) ([4093fe6](https://github.com/ppat/github-workflows/commit/4093fe644e61b88d83b54fb23428560a1b09940a))
+* **shipped-dependencies:** update astral-sh/uv (0.12.15 -&gt; 0.12.17) ([#661](https://github.com/ppat/github-workflows/issues/661)) ([b64a661](https://github.com/ppat/github-workflows/commit/b64a66133a340bc1e74b2fc9aa1787c97329a28b))
+* **shipped-dependencies:** update astral-sh/uv (0.12.17 -&gt; 0.12.18) ([#664](https://github.com/ppat/github-workflows/issues/664)) ([a2971e0](https://github.com/ppat/github-workflows/commit/a2971e0b125e5f9ea97eef96661eb9e91a5b93b4))
+* **shipped-dependencies:** update astral-sh/uv (0.12.18 -&gt; 0.12.19) ([#666](https://github.com/ppat/github-workflows/issues/666)) ([e156cac](https://github.com/ppat/github-workflows/commit/e156cacc607f07190e99e7a4fc11e4f6dde06a8a))
+* **shipped-dependencies:** update astral-sh/uv (0.12.19 -&gt; 0.12.20) ([#671](https://github.com/ppat/github-workflows/issues/671)) ([839b0da](https://github.com/ppat/github-workflows/commit/839b0da08c1832c72332076a57aeaa09a4597752))
+* **shipped-dependencies:** update astral-sh/uv (0.12.20 -&gt; 0.12.21) ([#675](https://github.com/ppat/github-workflows/issues/675)) ([9bcaf9d](https://github.com/ppat/github-workflows/commit/9bcaf9d609a5369229e6ca95063ceff37af8b423))
+* **shipped-dependencies:** update commitlint packages (21.2.2 -&gt; 21.2.3) ([#668](https://github.com/ppat/github-workflows/issues/668)) ([6834d73](https://github.com/ppat/github-workflows/commit/6834d73aa97ee97bfbabbcde11006db9a2756b97))
+* **shipped-dependencies:** update kubernetes/kubernetes (v1.36.4 -&gt; v1.36.5) ([#665](https://github.com/ppat/github-workflows/issues/665)) ([29d3e33](https://github.com/ppat/github-workflows/commit/29d3e33090a591e1e05361f0232ca6110a09f7fb))
+
 ## [8.1.0](https://github.com/ppat/github-workflows/compare/v8.0.0...v8.1.0) (2026-09-14)
 
 
