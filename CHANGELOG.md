@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.3.0](https://github.com/ppat/github-workflows/compare/v8.2.0...v8.3.0) (2026-10-02)
+
+
+### ✨ Features
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.7.0 -&gt; v2.8.0) ([#679](https://github.com/ppat/github-workflows/issues/679)) ([2346047](https://github.com/ppat/github-workflows/commit/2346047807f8c79fcd0bdd59668e88064df5ed60))
+
 ## [8.2.0](https://github.com/ppat/github-workflows/compare/v8.1.0...v8.2.0) (2026-09-30)
 
 
