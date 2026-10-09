@@ -1,5 +1,25 @@
 # Changelog
 
+## [8.3.0](https://github.com/ppat/github-workflows/compare/v8.2.0...v8.3.0) (2026-10-09)
+
+
+### ✨ Features
+
+* **github-actions:** update ghcr.io/renovatebot/renovate (44.138.0 -&gt; 44.149.0) ([#689](https://github.com/ppat/github-workflows/issues/689)) ([1569145](https://github.com/ppat/github-workflows/commit/1569145be4108a06057019d91d0aace601ae8a3e))
+* **github-actions:** update ppat/homelab-ops-actions (v2.7.0 -&gt; v2.8.0) ([#679](https://github.com/ppat/github-workflows/issues/679)) ([2346047](https://github.com/ppat/github-workflows/commit/2346047807f8c79fcd0bdd59668e88064df5ed60))
+* **shipped-dependencies:** update renovatebot/renovate to v44.138.0 ([#678](https://github.com/ppat/github-workflows/issues/678)) ([061a7c3](https://github.com/ppat/github-workflows/commit/061a7c3f758ead0b3b98cf32a83c4ad7b4e42036))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** update renovatebot/github-action (v46.3.6 -&gt; v46.3.7) ([#687](https://github.com/ppat/github-workflows/issues/687)) ([78af81b](https://github.com/ppat/github-workflows/commit/78af81bad14ac3864b53187e357c22671aabb1b9))
+* **reusable-workflows:** fix renovate workflow ([#686](https://github.com/ppat/github-workflows/issues/686)) ([c6236eb](https://github.com/ppat/github-workflows/commit/c6236eb0794eea6b8f75841aa51dc4238e00d702))
+* **shipped-dependencies:** update astral-sh/uv (0.12.21 -&gt; 0.12.22) ([#681](https://github.com/ppat/github-workflows/issues/681)) ([308b27f](https://github.com/ppat/github-workflows/commit/308b27fbad0068ebb20e039a8434a370756bfebc))
+* **shipped-dependencies:** update astral-sh/uv (0.12.22 -&gt; 0.12.23) ([#684](https://github.com/ppat/github-workflows/issues/684)) ([575812f](https://github.com/ppat/github-workflows/commit/575812f8581ce2990fe7a3bc0d4e2668e3b6143d))
+* **shipped-dependencies:** update astral-sh/uv (0.12.23 -&gt; 0.12.24) ([#688](https://github.com/ppat/github-workflows/issues/688)) ([612a981](https://github.com/ppat/github-workflows/commit/612a981516d521bf70213a1700dbce09dd071b2c))
+* **shipped-dependencies:** update fluxcd/flux2 (v2.9.5 -&gt; v2.9.6) ([#682](https://github.com/ppat/github-workflows/issues/682)) ([36dc179](https://github.com/ppat/github-workflows/commit/36dc179b3ee58a86856cf9950c224241434c6c54))
+* **shipped-dependencies:** update opentofu/opentofu (v1.12.6 -&gt; v1.12.7) ([#683](https://github.com/ppat/github-workflows/issues/683)) ([7f3cf5c](https://github.com/ppat/github-workflows/commit/7f3cf5c27e26f0b9924584607b70e73ccab8c307))
+
 ## [8.2.0](https://github.com/ppat/github-workflows/compare/v8.1.0...v8.2.0) (2026-09-30)
 
 
