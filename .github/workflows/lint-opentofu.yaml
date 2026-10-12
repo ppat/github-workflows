@@ -23,7 +23,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=opentofu/opentofu
-  OPENTOFU_VERSION: "v1.12.7"
+  OPENTOFU_VERSION: "v1.13.1"
   # renovate: datasource=github-releases depName=terraform-linters/tflint
   TFLINT_VERSION: "v0.64.0"
 
