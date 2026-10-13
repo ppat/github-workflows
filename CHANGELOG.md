@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.4.0](https://github.com/ppat/github-workflows/compare/v8.3.0...v8.4.0) (2026-10-13)
+
+
+### ✨ Features
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.8.0 -&gt; v2.9.0) ([#690](https://github.com/ppat/github-workflows/issues/690)) ([195a0c6](https://github.com/ppat/github-workflows/commit/195a0c650caad989cd968ade4a87001140e4dfb4))
+* **shipped-dependencies:** update opentofu/opentofu (v1.12.7 -&gt; v1.13.1) ([#685](https://github.com/ppat/github-workflows/issues/685)) ([99c958c](https://github.com/ppat/github-workflows/commit/99c958c8abfee29a4fe68deb31ef86040615630d))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update bun (1.4.2 -&gt; 1.4.3) ([#691](https://github.com/ppat/github-workflows/issues/691)) ([83f8048](https://github.com/ppat/github-workflows/commit/83f8048b1798e4c461cc1f937a42e0b96e50f97e))
+
 ## [8.3.0](https://github.com/ppat/github-workflows/compare/v8.2.0...v8.3.0) (2026-10-09)
 
 
