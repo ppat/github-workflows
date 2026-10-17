@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.5.0](https://github.com/ppat/github-workflows/compare/v8.4.0...v8.5.0) (2026-10-17)
+
+
+### ✨ Features
+
+* **github-actions:** update actions/create-github-app-token (v3.2.0 -&gt; v3.3.0) ([#696](https://github.com/ppat/github-workflows/issues/696)) ([8834d6e](https://github.com/ppat/github-workflows/commit/8834d6e4b17d8a297f590cb572081236cb830e98))
+* **shipped-dependencies:** update aquaproj/aqua (v2.63.0 -&gt; v2.64.0) ([#693](https://github.com/ppat/github-workflows/issues/693)) ([315bbfa](https://github.com/ppat/github-workflows/commit/315bbfada26aa2b8c319f8fa6b08b8e9f32ae3f8))
+
 ## [8.4.0](https://github.com/ppat/github-workflows/compare/v8.3.0...v8.4.0) (2026-10-13)
 
 
