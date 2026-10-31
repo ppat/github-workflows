@@ -25,7 +25,7 @@ env:
   # renovate: datasource=github-releases depName=opentofu/opentofu
   OPENTOFU_VERSION: "v1.13.2"
   # renovate: datasource=github-releases depName=terraform-linters/tflint
-  TFLINT_VERSION: "v0.64.0"
+  TFLINT_VERSION: "v0.65.0"
 
 jobs:
   opentofu-fmt:
