@@ -1,5 +1,29 @@
 # Changelog
 
+## [8.5.0](https://github.com/ppat/github-workflows/compare/v8.4.0...v8.5.0) (2026-10-31)
+
+
+### 🧹 Miscellaneous
+
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#695](https://github.com/ppat/github-workflows/issues/695)) ([d72bf15](https://github.com/ppat/github-workflows/commit/d72bf15a2eccc1b0cf8d88dd20a0a3787452d937))
+
+
+### ✨ Features
+
+* **github-actions:** update actions/create-github-app-token (v3.2.0 -&gt; v3.3.0) ([#696](https://github.com/ppat/github-workflows/issues/696)) ([8834d6e](https://github.com/ppat/github-workflows/commit/8834d6e4b17d8a297f590cb572081236cb830e98))
+* **shipped-dependencies:** update aquaproj/aqua (v2.63.0 -&gt; v2.64.0) ([#693](https://github.com/ppat/github-workflows/issues/693)) ([315bbfa](https://github.com/ppat/github-workflows/commit/315bbfada26aa2b8c319f8fa6b08b8e9f32ae3f8))
+* **shipped-dependencies:** update pre-commit/pre-commit (v4.6.2 -&gt; v4.7.0) ([#698](https://github.com/ppat/github-workflows/issues/698)) ([fa807ca](https://github.com/ppat/github-workflows/commit/fa807ca9eb7b947e5a9933980e315837b1a1f878))
+* **shipped-dependencies:** update renovatebot/renovate to v44.178.5 ([#694](https://github.com/ppat/github-workflows/issues/694)) ([76c1451](https://github.com/ppat/github-workflows/commit/76c14513c342622bee06f24bad92ab4a7949b274))
+* **shipped-dependencies:** update zizmorcore/zizmor (v1.30.1 -&gt; v1.31.1) ([#699](https://github.com/ppat/github-workflows/issues/699)) ([cbe17e3](https://github.com/ppat/github-workflows/commit/cbe17e36daa69b16e9ed9ba87cd53b8c75d186a4))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update bun (1.4.3 -&gt; 1.4.4) ([#701](https://github.com/ppat/github-workflows/issues/701)) ([b99f7eb](https://github.com/ppat/github-workflows/commit/b99f7eb7c88c722fb18909ffd81faa46ed8c39f9))
+* **shipped-dependencies:** update commitlint packages (21.2.3 -&gt; 21.2.4) ([#702](https://github.com/ppat/github-workflows/issues/702)) ([aa44618](https://github.com/ppat/github-workflows/commit/aa44618b0edc09294665d2df68ae3237e19625dd))
+* **shipped-dependencies:** update kubernetes/kubernetes (v1.37.1 -&gt; v1.37.2) ([#703](https://github.com/ppat/github-workflows/issues/703)) ([0966133](https://github.com/ppat/github-workflows/commit/0966133c10ceddc9c087b9659a9c76decd1fcb7a))
+* **shipped-dependencies:** update opentofu/opentofu (v1.13.1 -&gt; v1.13.2) ([#700](https://github.com/ppat/github-workflows/issues/700)) ([7d30213](https://github.com/ppat/github-workflows/commit/7d30213bc8cf54376f8b1d1dce5c66b541b2d41c))
+
 ## [8.4.0](https://github.com/ppat/github-workflows/compare/v8.3.0...v8.4.0) (2026-10-13)
 
 
