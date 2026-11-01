@@ -24,8 +24,10 @@ on:
 env:
   # renovate: datasource=github-releases depName=adrienverge/yamllint
   YAMLLINT_VERSION: "1.38.0"
+  # renovate: datasource=python-version
+  PYTHON_VERSION: "3.15.2"
   # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.12.24"
+  UV_VERSION: "0.13.6"
 
 jobs:
   yamllint:
@@ -42,9 +44,10 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
+          python      = "${{ env.PYTHON_VERSION }}"
           yamllint    = "${{ env.YAMLLINT_VERSION }}"
           uv          = "${{ env.UV_VERSION }}"
-          [settings.pipx]
+          [settings.pypi]
           uvx         = true
 
     - name: Lint yaml files

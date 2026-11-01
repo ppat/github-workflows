@@ -30,7 +30,7 @@ env:
   # renovate: datasource=npm depName=bun
   BUN_VERSION: "1.4.4"
   # renovate: datasource=node-version
-  NODE_VERSION: "24.11.1"
+  NODE_VERSION: "26.13.0"
 
 jobs:
   commit-messages:
@@ -59,7 +59,7 @@ jobs:
           bun               = "${{ env.BUN_VERSION }}"
           node              = "${{ env.NODE_VERSION }}"
           [settings.npm]
-          bun               = true
+          package_manager   = "bun"
 
     - name: Checkout github-workflows
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
