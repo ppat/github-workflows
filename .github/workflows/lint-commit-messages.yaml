@@ -24,7 +24,7 @@ on:
       mise_log_level:
         required: false
         type: string
-        default: "warn"
+        default: "debug"
 
 jobs:
   commit-messages:
