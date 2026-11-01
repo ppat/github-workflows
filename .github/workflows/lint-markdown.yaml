@@ -25,9 +25,9 @@ env:
   # renovate: datasource=npm depName=bun
   BUN_VERSION: "1.4.4"
   # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
-  MARKDOWNLINT_CLIV2_VERSION: "v0.18.1"
+  MARKDOWNLINT_CLIV2_VERSION: "0.24.0"
   # renovate: datasource=node-version
-  NODE_VERSION: "24.11.1"
+  NODE_VERSION: "26.13.0"
 
 jobs:
   markdownlint:
@@ -48,7 +48,7 @@ jobs:
           markdownlint-cli2 = "${{ env.MARKDOWNLINT_CLIV2_VERSION }}"
           node              = "${{ env.NODE_VERSION }}"
           [settings.npm]
-          bun               = true
+          package_manager   = "bun"
 
     - name: Lint markdown files
       env:
