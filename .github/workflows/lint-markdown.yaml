@@ -21,14 +21,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=npm depName=bun
-  BUN_VERSION: "1.4.4"
-  # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
-  MARKDOWNLINT_CLIV2_VERSION: "v0.18.1"
-  # renovate: datasource=node-version
-  NODE_VERSION: "24.11.1"
-
 jobs:
   markdownlint:
     runs-on: ubuntu-24.04
@@ -42,13 +34,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          bun               = "${{ env.BUN_VERSION }}"
-          markdownlint-cli2 = "${{ env.MARKDOWNLINT_CLIV2_VERSION }}"
-          node              = "${{ env.NODE_VERSION }}"
-          [settings.npm]
-          bun               = true
 
     - name: Lint markdown files
       env:

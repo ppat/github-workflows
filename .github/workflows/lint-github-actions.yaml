@@ -21,14 +21,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=github-releases depName=rhysd/actionlint
-  ACTIONLINT_VERSION: "v1.7.12"
-  # actionlint shells out to this binary for the `shellcheck` rule; pin it so the
-  # findings do not drift with whatever the runner image happens to ship.
-  # renovate: datasource=github-releases depName=koalaman/shellcheck
-  SHELLCHECK_VERSION: "v0.11.0"
-
 jobs:
   github-actions:
     runs-on: ubuntu-24.04
@@ -42,10 +34,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          actionlint = "${{ env.ACTIONLINT_VERSION }}"
-          shellcheck = "${{ env.SHELLCHECK_VERSION }}"
 
     - name: Lint github actions
       env:

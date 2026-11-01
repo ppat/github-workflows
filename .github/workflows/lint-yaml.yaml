@@ -21,12 +21,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=github-releases depName=adrienverge/yamllint
-  YAMLLINT_VERSION: "1.38.0"
-  # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.12.24"
-
 jobs:
   yamllint:
     runs-on: ubuntu-24.04
@@ -40,12 +34,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          yamllint    = "${{ env.YAMLLINT_VERSION }}"
-          uv          = "${{ env.UV_VERSION }}"
-          [settings.pipx]
-          uvx         = true
 
     - name: Lint yaml files
       env:

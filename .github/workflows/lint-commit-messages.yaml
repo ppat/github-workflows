@@ -26,12 +26,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=npm depName=bun
-  BUN_VERSION: "1.4.4"
-  # renovate: datasource=node-version
-  NODE_VERSION: "24.11.1"
-
 jobs:
   commit-messages:
     runs-on: ubuntu-24.04
@@ -54,12 +48,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          bun               = "${{ env.BUN_VERSION }}"
-          node              = "${{ env.NODE_VERSION }}"
-          [settings.npm]
-          bun               = true
 
     - name: Checkout github-workflows
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

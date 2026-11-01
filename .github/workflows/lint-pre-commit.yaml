@@ -17,12 +17,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=github-releases depName=pre-commit/pre-commit
-  PRECOMMIT_VERSION: "v4.7.0"
-  # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.12.24"
-
 jobs:
   pre-commit:
     runs-on: ubuntu-24.04
@@ -38,12 +32,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          pre-commit  = "${{ env.PRECOMMIT_VERSION }}"
-          uv          = "${{ env.UV_VERSION }}"
-          [settings.pipx]
-          uvx         = true
 
     - name: Install pre-commit hooks
       working-directory: ./current

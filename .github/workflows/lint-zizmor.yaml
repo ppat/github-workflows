@@ -37,10 +37,6 @@ on:
         type: string
         default: 'regular'
 
-env:
-  # renovate: datasource=github-releases depName=zizmorcore/zizmor
-  ZIZMOR_VERSION: "v1.31.1"
-
 jobs:
   zizmor:
     runs-on: ubuntu-24.04
@@ -54,9 +50,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          "aqua:zizmorcore/zizmor" = "${{ env.ZIZMOR_VERSION }}"
 
     - name: Audit github actions with zizmor
       env:

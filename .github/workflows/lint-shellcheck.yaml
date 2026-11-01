@@ -21,10 +21,6 @@ on:
         type: string
         default: "warn"
 
-env:
-  # renovate: datasource=github-releases depName=koalaman/shellcheck
-  SHELLCHECK_VERSION: "v0.11.0"
-
 jobs:
   shellcheck:
     runs-on: ubuntu-24.04
@@ -38,9 +34,6 @@ jobs:
         mise_ignore_cfg: ${{ inputs.mise_ignore_cfg }}
         mise_log_level: ${{ inputs.mise_log_level }}
         token: ${{ secrets.GITHUB_TOKEN }}
-        mise_toml: |
-          [tools]
-          shellcheck = "${{ env.SHELLCHECK_VERSION }}"
 
     - name: Lint shell scripts
       env:
