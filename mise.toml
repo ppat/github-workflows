@@ -1,21 +1,16 @@
 [tools]
 actionlint        = "1.7.12"
 bun               = "1.4.4"
-node              = "26.12.1"
-markdownlint-cli2 = "0.18.1"
+node              = "26.13.0"
+markdownlint-cli2 = "0.24.0"
 pre-commit        = "4.7.0"
-python            = "3.14.10"
+python            = "3.15.2"
 shellcheck        = "0.11.0"
 uv                = "0.13.6"
 yamllint          = "1.38.0"
 zizmor            = "1.31.1"
 
-"npm:renovate" = "44.178.5"
+"npm:renovate" = "44.198.3"
 
 [settings]
-lockfile                            = true
-
-[settings.npm]
-package_manager = "bun"
-[settings.pipx]
-uvx = true
+lockfile = true
