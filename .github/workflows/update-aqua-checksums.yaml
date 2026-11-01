@@ -56,7 +56,7 @@ jobs:
         permission-contents: write
 
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9b4434d320fdd4f911da9bc33c07dddcee76b669 # v2.10.0
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@c2a67c08adba12689a0d09d311b3339a1853b8c5 # v2.11.0
       with:
         current_fetch_depth: 0
         current_git_ref: ${{ inputs.git_ref }}
@@ -100,7 +100,7 @@ jobs:
         git status
 
     - name: Commit and push updated checksums
-      uses: ppat/homelab-ops-actions/actions/create-signed-commit@9b4434d320fdd4f911da9bc33c07dddcee76b669 # v2.10.0
+      uses: ppat/homelab-ops-actions/actions/create-signed-commit@c2a67c08adba12689a0d09d311b3339a1853b8c5 # v2.11.0
       with:
         branch: ${{ inputs.git_ref }}
         commit_message: "${{ inputs.semantic_commit_type }}(${{ inputs.semantic_commit_scope }}): update aqua checksums"

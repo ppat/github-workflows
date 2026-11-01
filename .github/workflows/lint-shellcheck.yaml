@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 5
     steps:
     - name: Setup repository and tools
-      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@9b4434d320fdd4f911da9bc33c07dddcee76b669 # v2.10.0
+      uses: ppat/homelab-ops-actions/actions/setup-repository-tools@c2a67c08adba12689a0d09d311b3339a1853b8c5 # v2.11.0
       with:
         current_git_ref: ${{ inputs.git_ref }}
         current_repository: ${{ github.repository }}
