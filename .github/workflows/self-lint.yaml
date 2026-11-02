@@ -24,17 +24,25 @@ jobs:
         actions:
         - .github/workflows/**
         markdown:
-        - .github/workflows/lint-markdown.yaml
         - '**.md'
         renovate:
-        - .github/workflows/lint-renovate-config-check.yaml
         - .github/renovate.json
         - .github/renovate/**
         yaml:
-        - .github/workflows/lint-yaml.yaml
         - '**.yaml'
         - '**.yml'
       git_ref: ${{ github.head_ref || github.ref }}
+
+  test:
+    needs: [detect-changes]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+    - name: test
+      env:
+        RESULTS: ${{ needs.detect-changes.outputs.results }}
+      run: |
+        echo "$RESULTS" | jq -r
 
   commit-messages:
     if: ${{ github.event_name == 'pull_request' }}
