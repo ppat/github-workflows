@@ -18,9 +18,11 @@ on:
         required: true
 
 env:
+  # renovate: datasource=npm depName=bun
+  BUN_VERSION: "1.4.4"
   # renovate: datasource=npm depName=release-please
   RELEASE_PLEASE_VERSION: "17.11.2"
-  # renovate: datasource=node-version
+  # renovate: datasource=node-version depName=node
   NODE_VERSION: "24.11.1"
 
 jobs:
@@ -49,8 +51,11 @@ jobs:
         token: ${{ steps.app-token.outputs.token }}
         mise_toml: |
           [tools]
-          node                     = "${{ env.NODE_VERSION }}"
-          "npm:release-please"     = "${{ env.RELEASE_PLEASE_VERSION }}"
+          bun                   = "${{ env.BUN_VERSION }}"
+          "npm:release-please"  = "${{ env.RELEASE_PLEASE_VERSION }}"
+          node                  = "${{ env.NODE_VERSION }}"
+          [settings.npm]
+          package_manager       = "bun"
 
     # release-please itself never reads the checked-out working tree - both
     # the action and the CLI operate entirely over the GitHub API (config
