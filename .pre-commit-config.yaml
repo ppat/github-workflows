@@ -36,6 +36,7 @@ repos:
   rev: v9.27.0
   hooks:
   - id: commitlint
+    language: node
     stages: [commit-msg]
     additional_dependencies:
     - '@commitlint/cli@21.2.4'
