@@ -33,17 +33,6 @@ jobs:
         - '**.yml'
       git_ref: ${{ github.head_ref || github.ref }}
 
-  test:
-    needs: [detect-changes]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-    - name: test
-      env:
-        RESULTS: ${{ needs.detect-changes.outputs.results }}
-      run: |
-        echo "$RESULTS" | jq -r
-
   commit-messages:
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/lint-commit-messages.yaml
@@ -67,7 +56,7 @@ jobs:
     uses: ./.github/workflows/lint-markdown.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).markdown_all_changed_files }}
+      files: ${{ (github.event_name != 'pull_request' || contains(fromJSON(needs.detect-changes.outputs.results).actions_all_changed_files, '.github/workflows/lint-markdown.yaml')) && 'ALL' || fromJSON(needs.detect-changes.outputs.results).markdown_all_changed_files }}
 
   pre-commit:
     uses: ./.github/workflows/lint-pre-commit.yaml
@@ -80,7 +69,7 @@ jobs:
     uses: ./.github/workflows/lint-renovate-config-check.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
-      files: ${{ github.event_name != 'pull_request' && 'ALL' || fromJSON(needs.detect-changes.outputs.results).renovate_all_changed_files }}
+      files: ${{ (github.event_name != 'pull_request' || contains(fromJSON(needs.detect-changes.outputs.results).actions_all_changed_files, '.github/workflows/lint-renovate-config-check.yaml')) && 'ALL' || fromJSON(needs.detect-changes.outputs.results).renovate_all_changed_files }}
 
   yaml:
     needs: [detect-changes]
