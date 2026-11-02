@@ -44,7 +44,6 @@ jobs:
 
   github-actions:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).actions_any_changed == 'true' }}
     uses: ./.github/workflows/lint-github-actions.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
@@ -52,7 +51,6 @@ jobs:
 
   markdown:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).markdown_any_changed == 'true' }}
     uses: ./.github/workflows/lint-markdown.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
@@ -65,7 +63,6 @@ jobs:
 
   renovate-config-check:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).renovate_any_changed == 'true' }}
     uses: ./.github/workflows/lint-renovate-config-check.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
@@ -73,7 +70,6 @@ jobs:
 
   yaml:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).yaml_any_changed == 'true' }}
     uses: ./.github/workflows/lint-yaml.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
@@ -81,7 +77,6 @@ jobs:
 
   zizmor:
     needs: [detect-changes]
-    if: ${{ github.event_name != 'pull_request' || fromJSON(needs.detect-changes.outputs.results).actions_any_changed == 'true' }}
     uses: ./.github/workflows/lint-zizmor.yaml
     with:
       git_ref: ${{ github.head_ref || github.ref }}
