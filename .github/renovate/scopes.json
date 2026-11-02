@@ -72,6 +72,17 @@
       "semanticCommitType": "fix"
     },
     {
+      "description": "SHIPS: any version pinned anywhere inside a reusable workflow file is resolved in the caller's CI. The extglob excludes self-*.yaml, so this selects exactly what it claims and does not depend on a later rule to undo it. No matchUpdateTypes on purpose, so no update type can fall through to an upstream scope this repo rejects",
+      "matchFileNames": [
+        "test/*"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "semanticCommitScope": "internal-dependencies",
+      "semanticCommitType": "chore"
+    },
+    {
       "description": "SHIPS: package.json/bun.lock are copied into the caller's workspace by lint-commit-messages. No matchUpdateTypes, for the same reason as above",
       "commitMessageExtra": "({{currentVersion}} -> {{newVersion}})",
       "matchFileNames": [

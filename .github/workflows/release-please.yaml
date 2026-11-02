@@ -23,7 +23,7 @@ env:
   # renovate: datasource=npm depName=release-please
   RELEASE_PLEASE_VERSION: "17.11.2"
   # renovate: datasource=node-version depName=node
-  NODE_VERSION: "24.11.1"
+  NODE_VERSION: "26.13.0"
 
 jobs:
   release-please:
