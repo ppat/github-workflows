@@ -34,7 +34,7 @@ env:
 
 jobs:
   commit-messages:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
     - name: Set fetch depth
