@@ -22,9 +22,9 @@ on:
         default: "warn"
 
 env:
-  # renovate: datasource=github-releases depName=rhysd/actionlint
-  ACTIONLINT_VERSION: "v1.7.12"
-  # actionlint shells out to this binary for the `shellcheck` rule; pin it so the
+  # renovate: datasource=github-releases depName=jdx/jactionlint
+  JACTIONLINT_VERSION: "v2.5.0"
+  # jactionlint shells out to this binary for the `shellcheck` rule; pin it so the
   # findings do not drift with whatever the runner image happens to ship.
   # renovate: datasource=github-releases depName=koalaman/shellcheck
   SHELLCHECK_VERSION: "v0.11.0"
@@ -44,7 +44,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         mise_toml: |
           [tools]
-          actionlint = "${{ env.ACTIONLINT_VERSION }}"
+          jactionlint = "${{ env.JACTIONLINT_VERSION }}"
           shellcheck = "${{ env.SHELLCHECK_VERSION }}"
 
     - name: Lint github actions
@@ -54,16 +54,24 @@ jobs:
       working-directory: ./current
       # yamllint disable-line rule:indentation
       run: |
-        # actionlint always appends `--norc` to the shellcheck command it runs, so
-        # `--rcfile .shellcheckrc` never took effect. Findings in `run:` blocks must
-        # be handled inline with `# shellcheck disable=` directives instead.
+        # `--profile correctness` is actionlint's rule set plus jactionlint's bug detectors.
+        # It leaves out the security and policy rules of jactionlint's default profile, which
+        # overlap lint-zizmor.yaml. The flag wins over a `profile:` in the caller's
+        # .github/jactionlint.yaml, so a caller cannot widen this gate, only turn rules off.
+        #
+        # jactionlint runs shellcheck with `--norc` unless the caller's config sets
+        # `shellcheck.rcfile`, so a .shellcheckrc does not apply to `run:` blocks by default.
+        # Handle findings there with inline `# shellcheck disable=` directives.
+        #
+        # An explicit `--shellcheck` makes a missing binary exit 3 instead of skipping
+        # the rule with a note.
         if [[ "${ACTIONS_FILES}" == "ALL" ]]; then
           set -x
-          actionlint -shellcheck shellcheck
+          jactionlint --profile correctness --shellcheck=shellcheck
           set +x
         else
           set -x
           # shellcheck disable=SC2086  # intentional word splitting: $ACTIONS_FILES is a space-separated file list
-          actionlint -shellcheck shellcheck $ACTIONS_FILES
+          jactionlint --profile correctness --shellcheck=shellcheck $ACTIONS_FILES
           set +x
         fi

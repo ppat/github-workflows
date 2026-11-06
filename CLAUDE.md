@@ -41,12 +41,12 @@ pre-commit run markdownlint-cli2 --all-files
 shellcheck --rcfile .shellcheckrc <file>...
 
 # workflow `run:` blocks, as lint-github-actions.yaml runs them
-actionlint -shellcheck shellcheck
+jactionlint --profile correctness --shellcheck=shellcheck
 ```
 
-actionlint always appends `--norc` to the shellcheck command it invokes, so `.shellcheckrc` does
-**not** apply to `run:` blocks — suppress those findings with an inline `# shellcheck disable=SCxxxx`
-comment at the occurrence, never with a repo-wide disable.
+jactionlint passes `--norc` to shellcheck unless `shellcheck.rcfile` is set in
+`.github/jactionlint.yaml` (this repo sets none), so `.shellcheckrc` does **not** apply to `run:`
+blocks — suppress those findings with an inline `# shellcheck disable=SCxxxx` comment at the occurrence, never with a repo-wide disable.
 
 Lint a commit message locally:
 
