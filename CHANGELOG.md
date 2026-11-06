@@ -1,5 +1,26 @@
 # Changelog
 
+## [9.0.0](https://github.com/ppat/github-workflows/compare/v8.5.0...v9.0.0) (2026-11-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **github-actions:** update ubuntu to v26.04 ([#674](https://github.com/ppat/github-workflows/issues/674))
+
+### ✨ Features
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.11.0 -&gt; v2.12.0) ([#728](https://github.com/ppat/github-workflows/issues/728)) ([e7ee5f2](https://github.com/ppat/github-workflows/commit/e7ee5f2ca07ccb3432044d644db217e15a96d737))
+* **github-actions:** update ubuntu to v26.04 ([#674](https://github.com/ppat/github-workflows/issues/674)) ([a95775c](https://github.com/ppat/github-workflows/commit/a95775c70e7ee82d83266ddb36cc8c8a7c70220e))
+* **reusable-workflows:** lint github actions with jactionlint's correctness profile ([#726](https://github.com/ppat/github-workflows/issues/726)) ([bc987df](https://github.com/ppat/github-workflows/commit/bc987dfe8dad105224e0c119777d17673fcfa16d))
+* update alpine (3.21.3 -&gt; 3.24.3) ([#715](https://github.com/ppat/github-workflows/issues/715)) ([f388240](https://github.com/ppat/github-workflows/commit/f3882402f9221d7af937a8d66bdb2f5fb17e71a8))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.13.6 -&gt; 0.13.7) ([#724](https://github.com/ppat/github-workflows/issues/724)) ([d6c1919](https://github.com/ppat/github-workflows/commit/d6c1919e8dab2010ed2bf75190ade5cdbfd8aae4))
+* **shipped-dependencies:** update opentofu/opentofu (v1.13.2 -&gt; v1.13.8) ([#725](https://github.com/ppat/github-workflows/issues/725)) ([22e44f5](https://github.com/ppat/github-workflows/commit/22e44f5b37053971b6fe3ea9839f076ea728bc04))
+* **shipped-dependencies:** update opentofu/opentofu (v1.13.8 -&gt; v1.13.9) ([#727](https://github.com/ppat/github-workflows/issues/727)) ([4030eb4](https://github.com/ppat/github-workflows/commit/4030eb4fa2e06a00081243d98b7254d03dc0f494))
+
 ## [8.5.0](https://github.com/ppat/github-workflows/compare/v8.4.0...v8.5.0) (2026-11-02)
 
 
