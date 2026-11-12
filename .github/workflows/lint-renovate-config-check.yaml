@@ -25,7 +25,7 @@ env:
   # renovate: datasource=npm depName=bun
   BUN_VERSION: "1.4.4"
   # renovate: datasource=node-version depName=node
-  NODE_VERSION: "26.13.0"
+  NODE_VERSION: "26.13.1"
   # renovate: datasource=github-releases depName=renovatebot/renovate
   RENOVATE_VERSION: "44.202.1"
 
