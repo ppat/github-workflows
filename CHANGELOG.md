@@ -1,5 +1,34 @@
 # Changelog
 
+## [10.0.0](https://github.com/ppat/github-workflows/compare/v9.0.0...v10.0.0) (2026-11-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **github-actions:** update ppat/homelab-ops-actions (v2.12.0 -> v3.0.0) ([#730](https://github.com/ppat/github-workflows/issues/730))
+
+### 🧹 Miscellaneous
+
+* **shipped-dependencies:** update lockfile bun ( -&gt; ) ([#732](https://github.com/ppat/github-workflows/issues/732)) ([3d49400](https://github.com/ppat/github-workflows/commit/3d4940084b106f48044c04da5c6ad63df6259110))
+
+
+### ✨ Features
+
+* **github-actions:** update ghcr.io/renovatebot/renovate (44.199.2 -&gt; 44.224.1) ([#735](https://github.com/ppat/github-workflows/issues/735)) ([641d526](https://github.com/ppat/github-workflows/commit/641d526c05fe5e5d32e9cb94e1eb27dabf7b4753))
+* **github-actions:** update ppat/homelab-ops-actions (v2.12.0 -&gt; v3.0.0) ([#730](https://github.com/ppat/github-workflows/issues/730)) ([6b556c3](https://github.com/ppat/github-workflows/commit/6b556c3a75ee553fecc1c3fe7e75799bc3a32a08))
+* **shipped-dependencies:** update aquaproj/aqua (v2.65.2 -&gt; v2.66.0) ([#736](https://github.com/ppat/github-workflows/issues/736)) ([8e3fb6c](https://github.com/ppat/github-workflows/commit/8e3fb6c27914b03e3c94596af95672162b91efcb))
+* **shipped-dependencies:** update renovatebot/renovate (44.199.2 -&gt; 44.202.1) ([#737](https://github.com/ppat/github-workflows/issues/737)) ([93d7a30](https://github.com/ppat/github-workflows/commit/93d7a30b18bc10582609abda35742c2fd50d99c4))
+* **shipped-dependencies:** update zizmorcore/zizmor (v1.31.1 -&gt; v1.32.0) ([#739](https://github.com/ppat/github-workflows/issues/739)) ([d2c364c](https://github.com/ppat/github-workflows/commit/d2c364cc672988349adf7d8b1623d89d0184e4cc))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **github-actions:** update renovatebot/github-action (v46.3.12 -&gt; v46.3.13) ([#734](https://github.com/ppat/github-workflows/issues/734)) ([b6c9d42](https://github.com/ppat/github-workflows/commit/b6c9d42a234dac922e57f8a006e0726f30dab00e))
+* **shipped-dependencies:** update aquaproj/aqua (v2.66.0 -&gt; v2.66.1) ([#738](https://github.com/ppat/github-workflows/issues/738)) ([cfdef10](https://github.com/ppat/github-workflows/commit/cfdef105a2f37ea8c3f8d412aef201cae3f74490))
+* **shipped-dependencies:** update node (v26.13.0 -&gt; v26.13.1) ([#740](https://github.com/ppat/github-workflows/issues/740)) ([3115d6d](https://github.com/ppat/github-workflows/commit/3115d6d9498314acdd13bc11be7f2bc8b53d65ff))
+* update alpine (3.24.3 -&gt; 3.24.4) ([#729](https://github.com/ppat/github-workflows/issues/729)) ([3d86b7c](https://github.com/ppat/github-workflows/commit/3d86b7c13f8efd8d812e3bd50c90752b90564560))
+* update digest alpine (93b41ef -&gt; f59abe6) ([#733](https://github.com/ppat/github-workflows/issues/733)) ([09b0fde](https://github.com/ppat/github-workflows/commit/09b0fdecc98e12e0925231eb251dacfc5f848f3d))
+
 ## [9.0.0](https://github.com/ppat/github-workflows/compare/v8.5.0...v9.0.0) (2026-11-06)
 
 
