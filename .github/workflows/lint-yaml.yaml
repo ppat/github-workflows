@@ -27,7 +27,7 @@ env:
   # renovate: datasource=python-version depName=python
   PYTHON_VERSION: "3.15.2"
   # renovate: datasource=github-releases depName=astral-sh/uv
-  UV_VERSION: "0.13.7"
+  UV_VERSION: "0.13.8"
 
 jobs:
   yamllint:
