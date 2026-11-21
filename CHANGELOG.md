@@ -1,5 +1,17 @@
 # Changelog
 
+## [10.0.1](https://github.com/ppat/github-workflows/compare/v10.0.0...v10.0.1) (2026-11-21)
+
+
+### 🧹 Miscellaneous
+
+* **internal-dependencies:** update davidanson/markdownlint-cli2 (non-major) ([#745](https://github.com/ppat/github-workflows/issues/745)) ([ca56cc2](https://github.com/ppat/github-workflows/commit/ca56cc27cf9c96e53be67cb7b0a49946855ab4b8))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.13.8 -&gt; 0.13.9) ([#746](https://github.com/ppat/github-workflows/issues/746)) ([9285741](https://github.com/ppat/github-workflows/commit/9285741eb3775ad342e507e5d9b176a4caee895c))
+
 ## [10.0.0](https://github.com/ppat/github-workflows/compare/v9.0.0...v10.0.0) (2026-11-16)
 
 
