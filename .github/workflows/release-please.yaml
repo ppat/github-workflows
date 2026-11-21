@@ -19,7 +19,7 @@ on:
 
 env:
   # renovate: datasource=npm depName=bun
-  BUN_VERSION: "1.4.4"
+  BUN_VERSION: "1.4.5"
   # renovate: datasource=npm depName=release-please
   RELEASE_PLEASE_VERSION: "17.11.2"
   # renovate: datasource=node-version depName=node
