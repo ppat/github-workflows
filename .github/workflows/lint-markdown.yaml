@@ -23,7 +23,7 @@ on:
 
 env:
   # renovate: datasource=npm depName=bun
-  BUN_VERSION: "1.4.4"
+  BUN_VERSION: "1.4.5"
   # renovate: datasource=github-releases depName=DavidAnson/markdownlint-cli2
   MARKDOWNLINT_CLIV2_VERSION: "0.24.0"
   # renovate: datasource=node-version depName=node
