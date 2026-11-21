@@ -23,7 +23,7 @@ on:
 
 env:
   # renovate: datasource=github-releases depName=jdx/jactionlint
-  JACTIONLINT_VERSION: "v2.5.0"
+  JACTIONLINT_VERSION: "v2.6.0"
   # jactionlint shells out to this binary for the `shellcheck` rule; pin it so the
   # findings do not drift with whatever the runner image happens to ship.
   # renovate: datasource=github-releases depName=koalaman/shellcheck
