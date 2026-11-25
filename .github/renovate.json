@@ -24,7 +24,9 @@
     }
   ],
   "configMigration": true,
-  "dependencyDashboard": true,
+  "dependencyDashboard": {
+    "enabled": true
+  },
   "extends": [
     "abandonments:recommended",
     "docker:pinDigests",
