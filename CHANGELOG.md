@@ -1,5 +1,29 @@
 # Changelog
 
+## [10.1.0](https://github.com/ppat/github-workflows/compare/v10.0.0...v10.1.0) (2026-11-28)
+
+
+### 🧹 Miscellaneous
+
+* **internal-dependencies:** update davidanson/markdownlint-cli2 (non-major) ([#745](https://github.com/ppat/github-workflows/issues/745)) ([ca56cc2](https://github.com/ppat/github-workflows/commit/ca56cc27cf9c96e53be67cb7b0a49946855ab4b8))
+
+
+### ✨ Features
+
+* **github-actions:** update actions/create-github-app-token (v3.3.0 -&gt; v3.4.0) ([#751](https://github.com/ppat/github-workflows/issues/751)) ([169392d](https://github.com/ppat/github-workflows/commit/169392db2dc2e8ba5a65bd53eeb536a1cb760dc4))
+* **shipped-dependencies:** update jdx/jactionlint (v2.5.0 -&gt; v2.6.0) ([#749](https://github.com/ppat/github-workflows/issues/749)) ([8e3efb6](https://github.com/ppat/github-workflows/commit/8e3efb613f03cccfcf3c13e7360016bcea2b6380))
+* **shipped-dependencies:** update renovatebot/renovate to v44.247.2 ([#752](https://github.com/ppat/github-workflows/issues/752)) ([69fb340](https://github.com/ppat/github-workflows/commit/69fb3408f58f821af69063c9a941bde6f04ec365))
+* update ppat/renovate-presets (v1.0.1 -&gt; v1.1.0) ([#747](https://github.com/ppat/github-workflows/issues/747)) ([8fcbb4b](https://github.com/ppat/github-workflows/commit/8fcbb4b91799746e7086727fe574d967f5101816))
+
+
+### 🚀 Enhancements + Bug Fixes
+
+* **shipped-dependencies:** update astral-sh/uv (0.13.8 -&gt; 0.13.9) ([#746](https://github.com/ppat/github-workflows/issues/746)) ([9285741](https://github.com/ppat/github-workflows/commit/9285741eb3775ad342e507e5d9b176a4caee895c))
+* **shipped-dependencies:** update astral-sh/uv (0.13.9 -&gt; 0.13.10) ([#756](https://github.com/ppat/github-workflows/issues/756)) ([e2227c1](https://github.com/ppat/github-workflows/commit/e2227c14f31d2b31e1a34d25f89dc8f528583a08))
+* **shipped-dependencies:** update bun (1.4.4 -&gt; 1.4.5) ([#750](https://github.com/ppat/github-workflows/issues/750)) ([5c6406f](https://github.com/ppat/github-workflows/commit/5c6406f8a599a26cf936e73ca081fa9ad9e5f4bc))
+* **shipped-dependencies:** update kubernetes/kubernetes (v1.37.2 -&gt; v1.37.3) ([#759](https://github.com/ppat/github-workflows/issues/759)) ([5a3ae5b](https://github.com/ppat/github-workflows/commit/5a3ae5bd774daa2452c698aadbefb671c2a76879))
+* **shipped-dependencies:** update opentofu/opentofu (v1.13.9 -&gt; v1.13.10) ([#753](https://github.com/ppat/github-workflows/issues/753)) ([30269ad](https://github.com/ppat/github-workflows/commit/30269addcc1772fc6006983aa61390ba83688307))
+
 ## [10.0.0](https://github.com/ppat/github-workflows/compare/v9.0.0...v10.0.0) (2026-11-16)
 
 
